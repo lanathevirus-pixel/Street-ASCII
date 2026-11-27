@@ -6,6 +6,14 @@ const INDEX = path.join(__dirname, 'public', 'index.html');
 const MAX_ROOM = 24, MAX_MSG = 4096, TICK = 120;
 
 const srv = http.createServer((req, res) => {
+  if (req.url.split('?')[0] === '/og.png') {
+    fs.readFile(path.join(__dirname, 'public', 'og.png'), (e, d) => { if (e) { res.writeHead(404); return res.end(); }
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' }); res.end(d); });
+    return;
+  }
+  const stat = { '/og.png': 'og.png', '/favicon.png': 'favicon.png' }[req.url.split('?')[0]];
+  if (stat) { fs.readFile(path.join(__dirname, 'public', stat), (e, d) => { if (e) { res.writeHead(404); return res.end('404'); }
+    res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' }); res.end(d); }); return; }
   if (req.url === '/info') {
     fs.readFile(INDEX, (e, d) => { res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(e ? { err: String(e) } : { octets: d.length, fin: d.toString('utf8').slice(-40), ok: d.toString('utf8').trimEnd().endsWith('</html>'), sha: require('crypto').createHash('sha256').update(d).digest('hex').slice(0, 12) })); });
