@@ -6,6 +6,11 @@ const INDEX = path.join(__dirname, 'public', 'index.html');
 const MAX_ROOM = 24, MAX_MSG = 4096, TICK = 120;
 
 const srv = http.createServer((req, res) => {
+  if (req.url === '/info') {
+    fs.readFile(INDEX, (e, d) => { res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(e ? { err: String(e) } : { octets: d.length, fin: d.toString('utf8').slice(-40), ok: d.toString('utf8').trimEnd().endsWith('</html>'), sha: require('crypto').createHash('sha256').update(d).digest('hex').slice(0, 12) })); });
+    return;
+  }
   if (req.url === '/healthz') { res.writeHead(200); return res.end('ok'); }
   if (req.url.split('?')[0] === '/' || req.url.startsWith('/index')) {
     fs.readFile(INDEX, (e, d) => {
