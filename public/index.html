@@ -1314,7 +1314,7 @@ addEventListener('keydown',e=>{
  else if(e.code==='KeyK'){setCODE(!CODE);}
 
  else if(e.code==='KeyN'){setMute(!MUTE);}
- else if(e.code==='KeyG'){$('styBtn').click();}
+ else if(e.code==='KeyG'){const sb=$('styBtn');if(sb)sb.click();}
  else if(e.code==='KeyP'){e.preventDefault();togglePanel('mapPanel');setMapTab(smsUnread?'sms':'map');}
  else if(e.code==='KeyI'||e.code==='Tab'){e.preventDefault();togglePanel('invPanel');}
  else if(e.code==='KeyB')toggleBuild();else if(e.code==='KeyT')toggleCourses();else if(e.code==='KeyC')togglePanel('craftPanel');
@@ -6218,7 +6218,7 @@ function updateInside(dt){
 function nearPersonIn(){
  if(!inside||!inside.people)return null;
  let best=null,bd=9;
- for(const p of inside.people){const dx=(p.ix-inside.x)/1.7,dy=p.iy-inside.y,v=dx*dx+dy*dy;
+ for(const p of inside.people){if(p.state==='down')continue;const dx=(p.ix-inside.x)/1.7,dy=p.iy-inside.y,v=dx*dx+dy*dy;
   if(v<bd&&v<2.6){bd=v;best=p;}}
  return best;}
 function nearObj(){if(!inside)return null;let best=null,bd=9;for(const o of inside.objs){const dx=(o.x+.5-inside.x)/1.7,dy=o.y+.5-inside.y,v=dx*dx+dy*dy;if(v<bd&&v<2.2){bd=v;best=o;}}return best;}
@@ -6893,7 +6893,7 @@ function renderInside(){
       fem:s.sx?s.sx==='f':pedFem(s.id)}}));
   L.push({x:I.x,y:I.y,pl:1,o:{player:true,shirt:hexC(outfit),skin:SKIN[0],state:'walk',moving:player.moving,dir:player.dir??2}});L.sort((a,b)=>a.y-b.y);ctx.imageSmoothingEnabled=true;const HP=chh*3.1;
   const prox=nearPersonIn();
-  for(const r of L){const S=personSprite(r.o,false),hp=HP*tailleDe(r.ref||r.o),wP=hp*S.cv.width/S.cv.height,fx=ox0+r.x*cw,fy=oy0+(r.y+0.5)*chh;ctx.drawImage(S.cv,fx-wP*(S.ax/S.g.w),fy-hp,wP,hp);if(r.pl){PSX=fx;PSY=fy-HP*0.5;}
+  for(const r of L){const S=personSprite(r.o,false),hp=r.o.state==='down'?chh*1.7:HP*tailleDe(r.ref||r.o),wP=hp*S.cv.width/S.cv.height,fx=ox0+r.x*cw,fy=oy0+(r.y+0.5)*chh;ctx.drawImage(S.cv,fx-wP*(S.ax/S.g.w),fy-hp,wP,hp);if(r.pl){PSX=fx;PSY=fy-HP*0.5;}
    if(r.ref&&r.ref===prox){ctx.save();ctx.font=`700 ${Math.max(9,fsI*0.6)}px 'IBM Plex Mono', monospace`;ctx.textAlign='center';
     const nm=pedName(r.ref),ty=fy-HP*tailleDe(r.ref||r.o)-fsI*0.8,tw=ctx.measureText(nm).width;
     ctx.fillStyle='rgba(9,13,26,.75)';ctx.fillRect(fx-tw/2-4,ty-2,tw+8,fsI*0.6+4);
