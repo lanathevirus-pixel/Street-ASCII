@@ -217,6 +217,9 @@ body.touch #kbHint{display:none}
   </div>
 </div>
 <script>
+window.addEventListener('error',function(e){try{var d=document.getElementById('__err');if(!d){d=document.createElement('pre');d.id='__err';d.style.cssText='position:fixed;left:8px;bottom:40px;right:8px;max-height:40vh;overflow:auto;z-index:99999;background:#300;color:#fff;font:12px monospace;padding:8px;white-space:pre-wrap';document.body.appendChild(d);}d.textContent+=(e.message||'erreur')+' @'+(e.lineno||'?')+':'+(e.colno||'?')+'\n';}catch(_){}});
+</script>
+<script>
 (()=>{
 // mesure du temps passe dans chaque phase du rendu (inerte par defaut)
 const PROF={on:0,n:0,t:{},reset(){this.n=0;this.t={};}};
@@ -225,7 +228,7 @@ const profDeb=()=>{if(PROF.on)_pt=performance.now();};
 const profFin=k=>{if(!PROF.on)return;const d=performance.now()-_pt;PROF.t[k]=(PROF.t[k]||0)+d;_pt=performance.now();};
 const profImage=()=>{if(PROF.on)PROF.n++;};
 const PX=18,PY=14,RWD=4,SCX=PX/16,SCY=PY/12,NB0=14,NB=18,W=PX*NB+2,CITYH=PY*NB+2,BEACH=6,SEA=46,H=CITYH+BEACH+SEA,KEY='street-ascii-v2';
-const ROAD=1,SIDE=2,WALL=3,ROOF=4,ALLEY=5,GRASS=6,TREE=7,PATH=8,LOT=9,FOUNT=10,GARAGE=11,CROSS=12,FREE=13,B_BRICK=14,B_WOOD=15,B_FENCE=16,B_FLOOR=17,B_DOOR=18,B_LAMP=19,B_BED=20,B_PLANT=21,WATER=22,SAND=23,DOCK=24;
+const ROAD=1,SIDE=2,WALL=3,ROOF=4,ALLEY=5,GRASS=6,TREE=7,PATH=8,LOT=9,FOUNT=10,GARAGE=11,CROSS=12,FREE=13,B_BRICK=14,B_WOOD=15,B_FENCE=16,B_FLOOR=17,B_DOOR=18,B_LAMP=19,B_BED=20,B_PLANT=21,WATER=22,SAND=23,DOCK=24,B_SHOWER=25,B_KITCHEN=26,B_TV=27,B_GAR=28;
 const DX=[0,1,0,-1],DY=[-1,0,1,0],GLYPH=['^','>','v','<'];
 // coefficient global de vitesse (pietons, PNJ, voitures, motos, bus, bateaux, taxis)
 const SPDK=0.8;
@@ -242,7 +245,7 @@ const $=id=>document.getElementById(id);
 const cv=$('cv'),ctx=cv.getContext('2d'),wrap=$('wrap');
 const tile=new Uint8Array(W*H),lane=new Uint8Array(W*H),colr=new Uint8Array(W*H),wch=new Uint8Array(W*H);
 const occ=new Int32Array(W*H),dist=new Int16Array(W*H),q=new Int32Array(W*H);
-const labels=[],garages=[],buildings=[],lamps=[],strees=[],mobilier=[],toits=[];let policeDoor={x:W/2,y:H/2},hospDoor={x:W/2,y:H/2},agenceDoor=null;const REDZ=[];
+const plots=[],labels=[],garages=[],buildings=[],lamps=[],strees=[],mobilier=[],toits=[];let policeDoor={x:W/2,y:H/2},hospDoor={x:W/2,y:H/2},agenceDoor=null;const REDZ=[];
 const inRed=(x,y)=>{for(const z of REDZ)if(x>=z[0]&&y>=z[1]&&x<z[2]&&y<z[3])return true;return false;};const medkits=[],floaters=[],vinv=[],bag={};
 
 function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
@@ -357,7 +360,7 @@ function genCity(){
    if((bi===13&&bj===6)||(bi===13&&bj===8))labels.push({x:x0+6,y:y0+BH-0.5,text:bj===6?'QUARTIER ROUGE':'SOI PHET',neon:'#ff2a6d',dim2:1});
    continue;}
   if(kind==='taxis'){building(x0,y0,7,BH,13,'TAXIS',2);for(let yy=0;yy<BH;yy++)for(let xx=7;xx<BW;xx++)set(x0+xx,y0+yy,LOT);for(let xx=8;xx<BW-1;xx+=2){const c=addCar('parked',x0+xx,y0+1,0,'#ff5fa8');c.taxi=true;const c2=addCar('parked',x0+xx,y0+6,2,'#ff5fa8');c2.taxi=true;}continue;}
-  if(kind==='free'){for(let yy=0;yy<BH;yy++)for(let xx=0;xx<BW;xx++)set(x0+xx,y0+yy,FREE);labels.push({x:x0+6,y:y0+0.5,text:'TERRAIN LIBRE',neon:'#e8b870'});continue;}
+  if(kind==='free'){for(let yy=0;yy<BH;yy++)for(let xx=0;xx<BW;xx++)set(x0+xx,y0+yy,FREE);labels.push({x:x0+6,y:y0+0.5,text:'TERRAIN LIBRE',neon:'#e8b870'});plots.push({x:x0,y:y0,w:BW,h:BH,lab:labels[labels.length-1],id:plots.length});continue;}
   if(kind==='wat'){for(let yy=0;yy<BH;yy++)for(let xx=0;xx<BW;xx++)set(x0+xx,y0+yy,PATH);building(x0+3,y0+1,6,6,14,'WAT',9);set(x0+6,y0+7,SIDE);buildings[buildings.length-1].temple=1;labels.push({x:x0+6,y:y0+7.6,text:'WAT ARUN',neon:'#ffd54a',dim2:1});for(const[xx,yy]of[[1,1],[10,1],[1,6],[10,6]])set(x0+xx,y0+yy,TREE);continue;}
   if(kind==='palace'){for(let yy=0;yy<BH;yy++)for(let xx=0;xx<BW;xx++)set(x0+xx,y0+yy,GRASS);building(x0+1,y0+1,10,5,13,'PALAIS',5);set(x0+6,y0+6,SIDE);buildings[buildings.length-1].temple=2;labels.push({x:x0+6,y:y0+7.4,text:'GRAND PALAIS',neon:'#ffd54a',dim2:1});set(x0+1,y0+7,TREE);set(x0+10,y0+7,TREE);continue;}
   if(kind==='market'){for(let yy=0;yy<BH;yy++)for(let xx=0;xx<BW;xx++)set(x0+xx,y0+yy,(xx===6||yy===4)?PATH:LOT);labels.push({x:x0+6,y:y0+4.5,text:MKT[bi+','+bj]||'MARCHÉ',neon:'#ff7a4f',dim2:1});for(let xx=1;xx<BW-1;xx+=2){if(r()<0.35)addCar('parked',x0+xx,y0+1,0);}continue;}
@@ -3478,7 +3481,7 @@ function render(){
 // ---------------- GPS ----------------
 let gpsPin=null,route=[],routeT=0,routeFor='';
 const gDist=new Float32Array(W*H),gPrev=new Int32Array(W*H),gDone=new Uint8Array(W*H);
-const tcost=t=>t===ROAD||t===CROSS||t===GARAGE?1:t===LOT?2:t===ALLEY?2.5:t===SIDE||t===B_FLOOR||t===B_DOOR?4:t===PATH||t===B_LAMP||t===B_BED?5:t===GRASS||t===FOUNT||t===FREE?6:0;
+const tcost=t=>t===ROAD||t===CROSS||t===GARAGE?1:t===LOT?2:t===ALLEY?2.5:t===SIDE||t===B_FLOOR||t===B_DOOR?4:t===PATH||t===B_LAMP||t===B_BED||t===B_SHOWER||t===B_KITCHEN||t===B_TV||t===B_GAR?5:t===GRASS||t===FOUNT||t===FREE?6:0;
 function gpsGoal(){if(gpsPin)return{x:gpsPin.x,y:gpsPin.y,kind:'pin'};{const g=typeof missionGoal==='function'?missionGoal():null;if(g)return{x:g.x,y:g.y,kind:'mission'};}{const g=typeof taxiGoal==='function'?taxiGoal():null;if(g)return{x:g.x,y:g.y,kind:'taxi'};}if(job)return{x:job.x,y:job.y,kind:'job'};if(giver)return{x:giver.x,y:giver.y,kind:'giver'};return null;}
 const GPS_COL={pin:'#3ce0ff',job:'#ff4fd8',giver:'#ffcc00',mission:'#7dff7d',taxi:'#ffd000'};
 function snapTile(x,y){
@@ -3530,7 +3533,7 @@ function drawRoute(inV){
 }
 
 // ---------------- image de la ville (carte et mini-carte) ----------------
-const MAPCOL={[WATER]:'#3d8fd6',[SAND]:'#ecd9a6',[DOCK]:'#9a6a3e',[ROAD]:'#4c4e56',[CROSS]:'#4c4e56',[GARAGE]:'#e0a800',[SIDE]:'#bdb9ae',[LOT]:'#62646b',[ALLEY]:'#b9ab92',[GRASS]:'#63ad52',[TREE]:'#63ad52',[PATH]:'#d8c290',[FOUNT]:'#63ad52',[WALL]:'#888',[ROOF]:'#888',[FREE]:'#b48c5c',[B_BRICK]:'#a8523a',[B_WOOD]:'#a7763f',[B_FENCE]:'#8a6a3a',[B_FLOOR]:'#d0a56a',[B_DOOR]:'#7a4a22',[B_LAMP]:'#d0a56a',[B_BED]:'#3a5ab4',[B_PLANT]:'#3e8a3a'};
+const MAPCOL={[WATER]:'#3d8fd6',[SAND]:'#ecd9a6',[DOCK]:'#9a6a3e',[ROAD]:'#4c4e56',[CROSS]:'#4c4e56',[GARAGE]:'#e0a800',[SIDE]:'#bdb9ae',[LOT]:'#62646b',[ALLEY]:'#b9ab92',[GRASS]:'#63ad52',[TREE]:'#63ad52',[PATH]:'#d8c290',[FOUNT]:'#63ad52',[WALL]:'#888',[ROOF]:'#888',[FREE]:'#b48c5c',[B_BRICK]:'#a8523a',[B_WOOD]:'#a7763f',[B_FENCE]:'#8a6a3a',[B_FLOOR]:'#d0a56a',[B_DOOR]:'#7a4a22',[B_LAMP]:'#d0a56a',[B_BED]:'#3a5ab4',[B_PLANT]:'#3e8a3a',[B_SHOWER]:'#6fb7d6',[B_KITCHEN]:'#c9c9c9',[B_TV]:'#222',[B_GAR]:'#8d8f96'};
 const MS=4,cityC=document.createElement('canvas');cityC.width=W*MS;cityC.height=H*MS;const WMS=8,cityW=document.createElement('canvas');cityW.width=W*WMS;cityW.height=H*WMS;
 function warpMap(x0,y0,x1,y1){const sc=cityC.getContext('2d'),dc=cityW.getContext('2d');x0=Math.max(0,(x0*WMS/MS)|0);y0=Math.max(0,(y0*WMS/MS)|0);x1=Math.min(W*WMS,(x1*WMS/MS)|0);y1=Math.min(H*WMS,(y1*WMS/MS)|0);if(x1<=x0||y1<=y0)return;
  if(!warpMap.src)warpMap.src=sc.getImageData(0,0,W*MS,H*MS);const S=warpMap.src.data,out=dc.createImageData(x1-x0,y1-y0),O=out.data;
@@ -3830,14 +3833,18 @@ const BLD={
  brick:{t:B_BRICK,n:'Mur brique',ico:'[#]'},wood:{t:B_WOOD,n:'Mur bois',ico:'|||'},fence:{t:B_FENCE,n:'Clôture',ico:'+-+'},
  floor:{t:B_FLOOR,n:'Plancher',ico:'=_='},door:{t:B_DOOR,n:'Porte',ico:'[o]'},lamp:{t:B_LAMP,n:'Lampe',ico:' * '},
  bed:{t:B_BED,n:'Lit',ico:'[=]'},plant:{t:B_PLANT,n:'Plante',ico:'%&%'},
+ shower:{t:B_SHOWER,n:'Douche',ico:'~|~'},kitchen:{t:B_KITCHEN,n:'Cuisine',ico:'[o]'},tv:{t:B_TV,n:'Télé',ico:'[T]'},garage:{t:B_GAR,n:'Garage',ico:'|=|'},
+ roof:{t:-1,n:'Toit en tôle',ico:'/\\/'},
 };
 const BLD_BY_T={};for(const k in BLD)BLD_BY_T[BLD[k].t]=k;
-const FURN=new Set([B_LAMP,B_BED,B_PLANT]);
+const FURN=new Set([B_LAMP,B_BED,B_PLANT,B_SHOWER,B_KITCHEN,B_TV,B_GAR]);
 const MATS={bois:'Bois',fer:'Ferraille',pierre:'Pierre'};
 const RECIPES=[
  {out:'wood',n:1,cost:{bois:2}},{out:'brick',n:1,cost:{pierre:2}},{out:'fence',n:2,cost:{bois:1}},
  {out:'floor',n:2,cost:{bois:1}},{out:'door',n:1,cost:{bois:2,fer:1}},{out:'lamp',n:1,cost:{fer:2}},
  {out:'bed',n:1,cost:{bois:3,pierre:1}},{out:'plant',n:1,cost:{bois:1}},
+ {out:'shower',n:1,cost:{fer:2,pierre:1}},{out:'kitchen',n:1,cost:{fer:2,pierre:2,bois:1}},{out:'tv',n:1,cost:{fer:3,bois:1}},{out:'garage',n:1,cost:{fer:3,bois:2,pierre:2}},
+ {out:'roof',n:2,cost:{fer:2}},
  {out:'ammo',n:10,cost:{fer:2},label:'10 balles de pistolet'},
  {out:'medkit',n:1,cost:{fer:1,bois:1},label:'Trousse de soin (dans le sac)'},
 ];
@@ -3852,15 +3859,53 @@ function paintTileMap(x,y){const c=cityC.getContext('2d');c.fillStyle=MAPCOL[til
  if(tile[y*W+x]===TREE){c.fillStyle='#2f7a2c';c.beginPath();c.arc(x*MS+2,y*MS+2,2.2,0,7);c.fill();}}
 function setTile(k,t){tile[k]=t;paintTileMap(k%W,(k/W)|0);}
 function builtCount(t){let n=0;for(const k of freeTiles)if(tile[k]===t)n++;return n;}
+// ---- terrains : chaque TERRAIN LIBRE est une parcelle à acheter (5 000 – 20 000 ฿ selon le quartier) ----
+const PLOT_BASE={SUKHUMVIT:19000,SILOM:17500,SATHORN:16500,SIAM:18500,RATTANAKOSIN:13500,CHATUCHAK:9500,YAOWARAT:12000,THONBURI:7000,'BANG KRACHAO':5200,'BANG KHUN THIAN':5000};
+const plotOf=new Int16Array(W*H).fill(-1),ownedPlots=new Set();
+const roofSet=new Set();let roofVer=0;
+for(const p of plots){
+ const d=districtAt(p.x+p.w/2,p.y+p.h/2),base=PLOT_BASE[d]||9000;
+ p.dist=d;p.price=clamp(Math.round(base*(0.9+hash(p.x*7+1,p.y*13+5)*0.2)/100)*100,5000,20000);
+ for(let y=p.y;y<p.y+p.h;y++)for(let x=p.x;x<p.x+p.w;x++)if(tile[y*W+x]===FREE)plotOf[y*W+x]=p.id;}
+const fmtB=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ฿';
+function plotLabels(){for(const p of plots){if(!p.lab)continue;const o=ownedPlots.has(p.id);
+ p.lab.text=o?'MON TERRAIN':'À VENDRE '+fmtB(p.price);p.lab.neon=o?'#7dff7d':'#ffd54a';}}
+plotLabels();
+function buyPlot(p,done){
+ if(ownedPlots.has(p.id)){toast('Ce terrain est déjà à toi.');return;}
+ if(money+bank<p.price){toast('Pas assez d\'argent ('+fmtB(p.price)+')');return;}
+ let r=p.price;const m=Math.min(money,r);money-=m;r-=m;bank-=r;
+ ownedPlots.add(p.id);plotLabels();toast('Terrain acheté ! Tu peux construire dessus.',3000);sfx('coin');saveGame();if(done)done();}
+function plotOfTile(k){const i=plotOf[k];return i>=0?plots[i]:null;}
+// le toit disparaît quand le joueur se trouve sous un toit : on masque toute la nappe de toit connectée
+let _rhK=-1,_rhV=-1,_rhS=null;
+function roofHidden(){
+ const pk=Math.floor(player.y)*W+Math.floor(player.x);
+ if(pk===_rhK&&roofVer===_rhV)return _rhS;_rhK=pk;_rhV=roofVer;_rhS=null;
+ if(!roofSet.has(pk))return null;
+ const S=new Set([pk]),q=[pk];
+ while(q.length){const c=q.pop(),cx=c%W,cy=(c/W)|0;
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const n=(cy+dy)*W+cx+dx;if(roofSet.has(n)&&!S.has(n)){S.add(n);q.push(n);}}}
+ return _rhS=S;}
 function tryBuildAt(tx,ty){
  if(!inB(tx,ty))return;const k=ty*W+tx,t=tile[k];
- if(d2(tx+.5,ty+.5,player.x,player.y)>5.5*5.5){toast('Trop loin');return;}
- if(demolish){const key=BLD_BY_T[t];if(!key){toast('Rien à démolir ici');return;}
-  inv[key]=(inv[key]||0)+1;setTile(k,FURN.has(t)?(under[k]||FREE):FREE);toast('Démoli : '+BLD[key].n+' récupéré');saveGame();return;}
+ if(d2(tx+.5,ty+.5,player.x,player.y)>5.5*5.5)return toast('Trop loin');
+ const pl=plotOfTile(k);
+ if(!pl){toast('On ne construit que sur un TERRAIN LIBRE');return;}
+ if(!ownedPlots.has(pl.id)){
+  showTalk('TERRAIN À VENDRE',`Parcelle ${pl.w*pl.h*4} m² · quartier <b>${pl.dist}</b><br>Prix : <b style="color:#ffd54a">${fmtB(pl.price)}</b><br><small>Il faut acheter le terrain avant d'y construire. En poche ${money} ฿ · en banque ${bank} ฿.</small>`,
+   [{label:'🏗 Acheter — '+fmtB(pl.price),fn:()=>buyPlot(pl)},{label:'Pas maintenant'}]);return;}
+ if(demolish){
+  if(roofSet.has(k)){roofSet.delete(k);roofVer++;inv.roof=(inv.roof||0)+1;toast('Démoli : toit récupéré');saveGame();refreshBuildBar();return;}
+  const key=BLD_BY_T[t];if(!key){toast('Rien à démolir ici');return;}
+  inv[key]=(inv[key]||0)+1;setTile(k,FURN.has(t)?(under[k]||FREE):FREE);toast('Démoli : '+BLD[key].n+' récupéré');saveGame();refreshBuildBar();return;}
  const b=BLD[bsel];
  if(!(inv[bsel]>0)){toast('Plus de '+b.n.toLowerCase()+' : fabrique-en à l\'ATELIER');return;}
+ if(bsel==='roof'){
+  if(roofSet.has(k)){toast('Il y a déjà du toit ici');return;}
+  roofSet.add(k);roofVer++;inv.roof--;refreshBuildBar();saveGame();toast('Toit posé — il disparaît quand tu es dessous',2200);return;}
  const okBase=t===FREE||(FURN.has(b.t)&&t===B_FLOOR);
- if(!okBase){toast(t===B_FLOOR?'Seuls lampe, lit et plante vont sur un plancher':'On ne construit que sur un TERRAIN LIBRE');return;}
+ if(!okBase){toast(t===B_FLOOR?'Seuls lampe, lit, plante, douche, cuisine, télé et garage vont sur un plancher':'On ne construit que sur un terrain libre (ou un plancher pour les meubles)');return;}
  if(carSolid(b.t)&&Math.floor(player.x)===tx&&Math.floor(player.y)===ty){toast('Tu es dessus !');return;}
  if(cars.some(c=>c.cx===tx&&c.cy===ty)){toast('Une voiture gêne');return;}
  const di=debris.findIndex(o=>o.k===k);if(di>=0){toast('Ramasse d\'abord les gravats');return;}
@@ -3896,7 +3941,7 @@ function refreshBuildBar(){
  bar.querySelectorAll('.slot').forEach(el=>el.onclick=()=>{const k=el.dataset.k;if(k==='__dem')demolish=!demolish;else if(k==='__craft'){togglePanel('craftPanel');return;}else{bsel=k;demolish=false;}refreshBuildBar();});
 }
 function toggleBuild(){buildMode=!buildMode;$('buildBtn').classList.toggle('hl',buildMode);refreshBuildBar();
- if(buildMode)toast('Mode construction : touche une case d\'un TERRAIN LIBRE proche');}
+ if(buildMode)toast('Mode construction : touche un TERRAIN LIBRE proche (à acheter avant de bâtir)');}
 
 // ---------------- personnages à missions ----------------
 const NPCDEF=[
@@ -3914,7 +3959,7 @@ const NPCDEF=[
   {t:'La voiture du rival',intro:"Mon rival a garé sa voiture NOIRE sur un parking. Détruis-la.",type:'wreck',reward:600,give:'uzi',outro:"Joli travail. Prends cet UZI, tu l'as mérité."}]},
  {id:'bob',g:'m',name:'BOB',col:'#ffb000',hair:'#7a2e1a',spot:[5,7,'t'],done:'Elle est belle, ta cabane !',missions:[
   {t:'Premier chantier',intro:"Tu vois ce terrain vague ? On peut y construire ! Coupe des arbres dans un parc et rapporte-moi 4 BOIS.",type:'collect',item:'bois',n:4,reward:100,givei:{pierre:6,bois:6},outro:"Voilà des matériaux pour démarrer. Appuie sur BÂTIR, puis ATELIER pour fabriquer des murs !"},
-  {t:'Ta planque',intro:"Construis ta planque sur un terrain libre : au moins 8 murs, 1 porte et 1 lit. Dormir dans ton lit te soigne.",type:'build',reward:500,outro:"Belle planque ! Repose-toi bien."}]},
+  {t:'Ta planque',intro:"Achète un terrain libre (5 000 à 20 000 ฿ selon le quartier) puis construis ta planque : au moins 8 murs, 1 porte et 1 lit. Dormir dans ton lit te soigne.",type:'build',reward:500,outro:"Belle planque ! Repose-toi bien."}]},
 ];
 NPCDEF.push(
  {id:'sofia',g:'f',name:'SOFIA',col:'#ff9ff3',hair:'#5a3a22',spot:[9,9,'b'],done:'Mon reportage cartonne grâce à toi !',missions:[
@@ -4131,7 +4176,7 @@ function objectiveText(){
   case 'redcar':return player.car&&isRed(player.car.color)?'ramène-la à Kenji':'trouve une voiture rouge';
   case 'collect':return`${MATS[d.item]} ${Math.min(inv[d.item]||0,d.n)}/${d.n} puis parle à ${mission.npc.def.name}`;
   case 'escape':return mission.phase?'sème la police':'obtiens 2 étoiles';
-  case 'build':{const w=builtCount(B_BRICK)+builtCount(B_WOOD),dr=builtCount(B_DOOR),bd=builtCount(B_BED);return`murs ${Math.min(w,8)}/8 · porte ${Math.min(dr,1)}/1 · lit ${Math.min(bd,1)}/1`;}
+  case 'build':{const w=builtCount(B_BRICK)+builtCount(B_WOOD),dr=builtCount(B_DOOR),bd=builtCount(B_BED);return`terrain ${ownedPlots.size?1:0}/1 · murs ${Math.min(w,8)}/8 · porte ${Math.min(dr,1)}/1 · lit ${Math.min(bd,1)}/1`;}
  }return'';
 }
 let mafiaRel=-1,debt=50000,kidnapT=0;
@@ -4158,7 +4203,7 @@ function updateMissions(dt){
  else if(d.type==='wreck'){if(mission.target&&mission.target.kind==='wreck')completeMission();}
  else if(d.type==='redcar'){if(player.car&&isRed(player.car.color)&&d2(mission.npc.x,mission.npc.y,player.x,player.y)<3*3){player.car=null;player.x=mission.npc.x+1;player.y=mission.npc.y;completeMission();}}
  else if(d.type==='escape'){if(!mission.phase&&stars>=2){mission.phase=1;toast('Maintenant, sème-les !');}else if(mission.phase&&stars===0)completeMission();}
- else if(d.type==='build'){if(Math.floor(time*2)%2===0&&builtCount(B_BRICK)+builtCount(B_WOOD)>=8&&builtCount(B_DOOR)>=1&&builtCount(B_BED)>=1)completeMission();}
+ else if(d.type==='build'){if(Math.floor(time*2)%2===0&&builtCount(B_BRICK)+builtCount(B_WOOD)>=8&&builtCount(B_DOOR)>=1&&builtCount(B_BED)>=1&&ownedPlots.size>0)completeMission();}
 }
 function repayMenu(){
  const mx=Math.min(money,debt);if(mx<=0){toast('Tu n\'as pas un sou sur toi.');return;}
@@ -5400,7 +5445,7 @@ function talk(npc,direct){
 function nearInteract(){
  if(taxiRide)return{t:'stoptaxi',label:'ARRÊTER'};
  if(player.ride)return{t:'leavebus',label:rideStopped(player.ride)?'DESCENDRE':'ATTENDS'};
- if(player.car||player.bike)return null;
+ if(player.car||player.bike){const px=Math.floor(player.x),py=Math.floor(player.y);for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(inB(px+dx,py+dy)&&tile[(py+dy)*W+px+dx]===B_GAR)return{t:'bgarage',label:'GARAGE'};return null;}
  for(const n of npcs)if(d2(n.x,n.y,player.x,player.y)<1.6*1.6)return{t:'npc',n,label:'PARLER'};
  {const d=nearDoor();if(d)return{t:'enter',d,label:'ENTRER'};}
  {const sp=nearSunset();if(sp)return{t:'sunset',sp,label:sunsetHeure()?'🌅 REGARDER LE COUCHER DE SOLEIL':'🌅 COUCHER DE SOLEIL (17h-19h)'};}
@@ -5410,6 +5455,10 @@ function nearInteract(){
  const tx=Math.floor(player.x),ty=Math.floor(player.y);
  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const x=tx+dx,y=ty+dy;if(!inB(x,y))continue;const k=y*W+x,t=tile[k];
   if(t===B_BED)return{t:'bed',label:'DORMIR'};
+  if(t===B_SHOWER)return{t:'bshower',label:'SE DOUCHER'};
+  if(t===B_KITCHEN)return{t:'bkitchen',label:'CUISINER'};
+  if(t===B_TV)return{t:'btv',label:'REGARDER LA TÉLÉ'};
+  if(t===B_GAR)return{t:'bgarage',label:'GARAGE'};
   if(t===TREE&&d2(x+.5,y+.5,player.x,player.y)<1.5*1.5)return{t:'tree',k,label:'COUPER'};}
  for(const dd of debris)if(d2(dd.k%W+.5,((dd.k/W)|0)+.5,player.x,player.y)<1.4*1.4)return{t:'debris',d:dd,label:'RAMASSER'};
  for(const c of cars)if(c.kind==='wreck'&&!c.target){const[x,y]=carPos(c);if(d2(x,y,player.x,player.y)<1.7*1.7)return{t:'wreck',c,label:'FOUILLER'};}
@@ -5423,6 +5472,10 @@ function doInteract(it){
  if(it.t==='npc')talk(it.n);
  else if(it.t==='bed'){if(stars>0){toast('Impossible de dormir avec la police aux trousses !');return;}
   const h=hour();time+=((8-h+24)%24||24)*DAYLEN/24;player.hp=player.maxHp;toast('Bien dormi ! ♥ 100 · il est 8 h',2400);saveGame();}
+ else if(it.t==='bshower')useObj({c:'/'});
+ else if(it.t==='bkitchen')useObj({c:'?'});
+ else if(it.t==='btv')useObj({c:'T'});
+ else if(it.t==='bgarage')garageMenu();
  else if(it.t==='tree'){setTile(it.k,GRASS);regrow.push({k:it.k,t:240});const n=2+(Math.random()<0.4?1:0);inv.bois+=n;floaters.push({x:it.k%W+.5,y:((it.k/W)|0)+.5,text:'+'+n+' bois',col:C(230,190,110),t:0});saveGame();}
  else if(it.t==='debris'){const n=2+(Math.random()<0.5?1:0);inv.pierre+=n;floaters.push({x:it.d.k%W+.5,y:((it.d.k/W)|0)+.5,text:'+'+n+' pierre',col:C(200,200,210),t:0});placeDebris(it.d);saveGame();}
  else if(it.t==='wreck'){cars.splice(cars.indexOf(it.c),1);const n=2+Math.floor(Math.random()*2);inv.fer+=n;floaters.push({x:it.c.cx+.5,y:it.c.cy+.5,text:'+'+n+' ferraille',col:C(190,200,215),t:0});saveGame();}
@@ -5446,13 +5499,23 @@ function extraTile(x,y,k,t){
   case B_DOOR:{const bg=C(150,100,55),fg=C(70,40,20);putS(X,Y,'[-----]',fg,bg);putS(X,Y+1,'|     |',fg,bg);putS(X,Y+2,'|   o |',fg,bg);putS(X,Y+3,'[_____]',fg,bg);break;}
   case B_LAMP:{const n=curDk>0.3;put(X+3,Y,n?'*':'o',n?C(255,235,170):C(60,60,65),KEEP,n);put(X+3,Y+1,'|',C(60,60,65),KEEP);put(X+3,Y+2,'|',C(60,60,65),KEEP);putS(X+2,Y+3,'/_\\',C(60,60,65),KEEP);if(curDk>0.05)addLight(X+3.5,Y+0.5,9,1.2,1,0.6);break;}
   case B_BED:{const w=C(245,245,245),bl=C(60,90,180),fr=C(110,70,35);putS(X,Y,'.-----.',fr,KEEP);putS(X,Y+1,'|o====|',C(40,60,120),bl);put(X+1,Y+1,'o',C(120,120,120),w);putS(X,Y+2,'|=====|',C(40,60,120),bl);putS(X,Y+3,"'-----'",fr,KEEP);break;}
+  case B_SHOWER:{const m=C(120,170,200),w=C(200,230,245),g=C(90,95,105);putS(X+1,Y,'.-o-.',g,KEEP);putS(X+1,Y+1,'|~~~|',m,w);putS(X+1,Y+2,'|~~~|',m,w);putS(X+1,Y+3,"'---'",g,KEEP);break;}
+  case B_KITCHEN:{const bg=C(205,205,210),fg=C(70,70,80),r=C(220,80,60);putS(X,Y,'[=====]',fg,bg);putS(X,Y+1,'|o o o|',fg,bg);put(X+1,Y+1,'o',r,bg);put(X+3,Y+1,'o',r,bg);put(X+5,Y+1,'o',r,bg);putS(X,Y+2,'|_____|',fg,bg);putS(X,Y+3,'|[___]|',fg,bg);break;}
+  case B_TV:{const fr=C(40,40,45),sc=C(90,160,210);putS(X,Y,'.-----.',fr,KEEP);putS(X,Y+1,'|:::::|',C(160,220,255),sc);putS(X,Y+2,'|:::::|',C(160,220,255),sc);putS(X+1,Y+3,"'-/ \\-'",fr,KEEP);break;}
+  case B_GAR:{const bg=C(150,152,160),fg=C(80,82,92);for(let r=0;r<TH;r++)putS(X,Y+r,r===0?'#######':'|=====|',fg,bg);putS(X+2,Y+2,'[P]',C(255,210,60),bg);break;}
   case B_PLANT:{const g1=C(90,180,70),g2=C(40,120,45),pot=C(160,90,50);putS(X+1,Y,'.%&%.',g1,KEEP);putS(X+1,Y+1,'%%&%%',g2,KEEP);putS(X+2,Y+2,'\\_/',pot,KEEP);break;}
  }
 }
+function roofArt(X,Y,x,y){const j=hash(x*3,y*5),bg=C(150+j*22,158+j*18,170+j*14),fg=C(92,100,114);
+ for(let r=0;r<TH;r++)for(let i=0;i<TW;i++){const rust=hash(X+i,Y+r)<0.06;put(X+i,Y+r,r===0||r===TH-1?'=':((i+r)%2?'/':'\\'),rust?C(160,84,50):fg,bg);}}
 function drawWorld2(inV){
+ if(roofSet.size){const hid=roofHidden();
+  for(const k of roofSet){if(hid&&hid.has(k))continue;const x=k%W,y=(k/W)|0;if(!inV(x,y,0))continue;
+   if(buildMode){put(x*TW+3,y*TH+1,'^',C(120,220,255),KEEP,true);continue;}
+   roofArt(x*TW,y*TH,x,y);}}
  for(const d of debris){const x=d.k%W,y=(d.k/W)|0;if(!inV(x,y,1))continue;const X=x*TW,Y=y*TH,g=C(120,118,112),g2=C(160,158,150);putS(X+2,Y+1,'.^.',g2,KEEP);putS(X+1,Y+2,'/#%#\\',g,KEEP);}
  if(buildMode){for(const k of freeTiles){const x=k%W,y=(k/W)|0;if(!inV(x,y,0))continue;if(d2(x+.5,y+.5,player.x,player.y)>5.5*5.5)continue;
-  const X=x*TW,Y=y*TH,c=demolish?C(255,90,90):C(255,255,255);put(X,Y,'+',c,KEEP,true);put(X+TW-1,Y+TH-1,'+',c,KEEP,true);}}
+  const X=x*TW,Y=y*TH,ow=ownedPlots.has(plotOf[k]),c=demolish?C(255,90,90):ow?C(255,255,255):C(255,200,60),ch=ow?'+':'$';put(X,Y,ch,c,KEEP,true);put(X+TW-1,Y+TH-1,ch,c,KEEP,true);}}
 }
 // Clic sur quelqu'un : on ouvre ses interactions
 // une base de prénoms (surnoms thaïs) assez large pour ne plus croiser deux fois le même
@@ -5524,11 +5587,14 @@ function drawNPCs(inV){
 // ---------------- sauvegarde ----------------
 function saveGame(){
  try{const b=[];for(const k of freeTiles){const t=tile[k];if(BLD_BY_T[t])b.push([k,t,under[k]]);}
-  localStorage.setItem(KEY,JSON.stringify(extraSave({W,money,jobs:jobsDone,inv,b,prog:npcs.map(n=>n.prog),has:player.has,ammo:player.ammo})));}catch(e){}
+  localStorage.setItem(KEY,JSON.stringify(extraSave({W,money,jobs:jobsDone,inv,b,pl:[...ownedPlots],rf:[...roofSet],prog:npcs.map(n=>n.prog),has:player.has,ammo:player.ammo})));}catch(e){}
 }
 (function loadGame(){
  try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s)return;
-  if(s.inv)inv=Object.assign(inv,s.inv);if(s.b)for(let[k,t,u]of s.b){const oW=s.W||226;if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(tile[k]===FREE||tile[k]===B_FLOOR){under[k]=u||FREE;tile[k]=t;paintTileMap(k%W,(k/W)|0);}}
+  if(s.inv)inv=Object.assign(inv,s.inv);if(s.b)for(let[k,t,u]of s.b){const oW=s.W||226;if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(tile[k]===FREE||tile[k]===B_FLOOR){under[k]=u||FREE;tile[k]=t;paintTileMap(k%W,(k/W)|0);if(plotOf[k]>=0)ownedPlots.add(plotOf[k]);}}
+  if(Array.isArray(s.pl))s.pl.forEach(i=>{if(plots[i])ownedPlots.add(i);});
+  if(Array.isArray(s.rf)){const oW=s.W||226;for(let k of s.rf){if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(plotOf[k]>=0)roofSet.add(k);}roofVer++;}
+  plotLabels();
   if(s.prog)s.prog.forEach((p,i)=>{if(npcs[i])npcs[i].prog=p|0;});if(s.has)player.has=Object.assign({poing:1},s.has);if(s.ammo)player.ammo=s.ammo;
  }catch(e){}
 })();
@@ -5768,7 +5834,7 @@ function isHome(b){return b&&b.house&&(owned.has(b.house.i)||(lease&&lease.i===b
 const owned=new Set();
 // maisons à vendre
 const houses=[];
-buildings.forEach((b,i)=>{if(b.label||b.lm||b.pi>=12||b.pi<4)return;if(hash(b.x*3,b.y*7)<0.13&&houses.length<12){b.house={price:Math.round((1500+b.w*b.h*48)*(0.65+hash(b.x*5+1,b.y*11+3)*1.35)/100)*100,i};houses.push(b);
+buildings.forEach((b,i)=>{if(b.label||b.lm||b.pi>=12||b.pi<4)return;if(hash(b.x*3,b.y*7)<0.13&&houses.length<12){b.house={price:Math.round((1500+b.w*b.h*48)*(0.65+hash(b.x*5+1,b.y*11+3)*1.35)*1.2/100)*100,i};houses.push(b);
  const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;}});
 function doorOf(b){return{x:b.x+Math.floor(b.w/2),y:b.y+b.h};}
 const LMTYPE={mall:'PARAGON',gare:'GARE',mbk:'MBK',pho:'WAT PHO',stade:'STADE'};
@@ -6579,9 +6645,9 @@ function buyN(titre,prixU,quoi,fn,plafond){
     toast(quoi+' \u00d7'+v+' (-'+(v*prixU)+' \u0e3f)');}])
    .concat([['Annuler',()=>{}]]));}
 function useObj(o){
- const t=inside.type;
+ const t=inside?inside.type:'house';
  if(o.c==='$'){ouvrirCaisse();return;}
- if(t==='house'&&!inside.own&&o.c!=='V'){toast('Achète d\'abord la maison (panneau V)');return;}
+ if(inside&&t==='house'&&!inside.own&&o.c!=='V'){toast('Achète d\'abord la maison (panneau V)');return;}
  switch(o.c){
   case 'Z':
    if(FOOD.has(t))menu(t,'Qu\'est-ce que je te sers ?',[['Menu 15 ฿ (+40 ♥)',()=>buyN(t,15,'Menu',()=>addItem('menu'))],['Boisson 5 ฿ (+10 ♥)',()=>buyN(t,5,'Boisson',()=>addItem('boisson'))]]);
@@ -7135,6 +7201,10 @@ function storeVehicle(){
  else if(n.kind==='car')cars.splice(cars.indexOf(n.c),1);else bikes.splice(bikes.indexOf(n.b),1);
  toast((n.type==='car'?'Voiture':'Vélo')+' rangé dans l\'inventaire');save();if($('invPanel').classList.contains('open'))renderInv();
 }
+function garageMenu(){
+ const items=[['🚗 Ranger le véhicule à côté',()=>storeVehicle()]];
+ vinv.forEach((v,i)=>items.push(['↗ Sortir : '+(v.type==='car'?(v.sport?'voiture de sport':v.tuk?'tuk-tuk':v.taxi?'taxi':'voiture'):v.moto?'moto':'vélo'),()=>takeOutVehicle(i)]));
+ menu('TON GARAGE','Véhicules rangés : <b>'+vinv.length+'</b> / '+VMAX+'.<br><small>Gare ton véhicule juste à côté, puis range-le ici.</small>',items);}
 function takeOutVehicle(i){
  if(inside||player.car||player.bike||player.ride){toast(inside?'Sors d\'abord du bâtiment':'Descends d\'abord de ton véhicule');return;}
  const v=vinv[i];if(!v)return;
@@ -7301,7 +7371,7 @@ let PNAME='Kai';try{PNAME=localStorage.getItem('street-ascii-name')||'Kai';}catc
 // ---------- atlas : toute la ville pré-dessinée en caractères (sert de texture au sol / toits) ----------
 let A_ch=null,A_fg=null,A_bg=null,A_em=null,atlasT=0;
 const B_ID=new Int16Array(W*H),LMAP=new Float32Array(W*H);
-const TILE_H={[B_BRICK]:0.75,[B_WOOD]:0.7,[B_FENCE]:0.32,[B_PLANT]:0.25,[FOUNT]:0.18,[B_LAMP]:0.0,[B_BED]:0.15};
+const TILE_H={[B_BRICK]:0.75,[B_WOOD]:0.7,[B_FENCE]:0.32,[B_PLANT]:0.25,[FOUNT]:0.18,[B_LAMP]:0.0,[B_BED]:0.15,[B_SHOWER]:0.6,[B_KITCHEN]:0.4,[B_TV]:0.3,[B_GAR]:0.2};
 let IN_ATLAS=false;
 function withAtlas(fn){IN_ATLAS=true;try{withAtlas0(fn);}finally{IN_ATLAS=false;}}
 function withAtlas0(fn){
@@ -8753,7 +8823,7 @@ function sunsetFrame(S){
 //  les neuf contacts. Chacun peut renseigner (Discuter > Demander apres Niran) ;
 //  ceux qui ne savent rien disent ou chercher.
 // =====================================================================
-const NQ=[
+var NQ=[
  {id:'rumeur',kind:'ped',n:3,titre:'La photo de Niran',
   hint:'Montre sa photo aux passants : demande à 3 personnes différentes.',
   pointe:'Les passants le croisent sans le savoir. Essaie avec trois personnes différentes.',
@@ -8788,7 +8858,7 @@ const NQ=[
   clue:'Le Boss : « Ton frère travaillait pour moi. Le Lotus l’a pris. Il est vivant : dans un entrepôt du port. Ne me demande pas comment je le sais. »',next:'Va au port, tout au bout des pontons.'},
  {id:'port',kind:'zone',titre:'L’entrepôt du port',
   hint:'L’entrepôt, au bout des pontons du port.',pointe:'L’entrepôt est au bout des pontons, côté fleuve.'}];
-const niranOn=()=>niran.st<NQ.length;
+function niranOn(){return !!NQ&&niran.st<NQ.length;}
 function niranPort(){const d=DOCKS[Math.min(2,DOCKS.length-1)];return d?{x:d.x+1,y:d.y}:null;}
 function niranCible(){
  const Q=NQ[niran.st];if(!Q)return null;
@@ -8848,7 +8918,7 @@ function niranPortScene(){
   [{label:'👊 Forcer le passage (−30 ♥)',fn:()=>{player.hp=Math.max(5,player.hp-30);niran.scene=0;sfx('hit');niranFin();}},
    {label:'💰 Les payer — 1 000 ฿',fn:()=>{if(money<1000){toast('Pas assez d’argent (1 000 ฿)');niran.scene=0;return;}money-=1000;niran.scene=0;niranFin();}},
    {label:'Revenir plus tard',fn:()=>{niran.scene=0;niran.skip=time+60;}}]);}
-let niranT=0;
+var niranT=0;
 function niranTick(dt){
  if(!niranOn()||inside||CHAT)return;
  niranT-=dt;if(niranT>0)return;niranT=0.5;
