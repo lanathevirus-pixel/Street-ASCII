@@ -87,6 +87,11 @@ const invitations = new Map(); // uidDestinataire -> {gid, de, exp}
 async function api(req, res, url) {
   const p = url.pathname;
   const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '?').split(',')[0].trim();
+  if (p === '/api/config') {
+    const u = String(process.env.SUPPORT_URL || '').trim();
+    const ok = /^https?:\/\/[^\s<>"']+$/i.test(u);
+    return json(res, 200, { support: ok ? { url: u, label: String(process.env.SUPPORT_LABEL || 'Soutenir la créatrice').slice(0, 40) } : null });
+  }
   if (p === '/api/ping') return json(res, 200, { ok: 1, acc: 1, db: store.mode() });
   let b = {};
   if (req.method === 'POST' || req.method === 'PUT') { try { b = await lireCorps(req); } catch (e) { return json(res, 400, { err: 'requête illisible' }); } }
@@ -172,7 +177,7 @@ async function api(req, res, url) {
 }
 
 // ---------------------------------------------------------------- HTTP
-const TYPES = { '.png': 'image/png', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const TYPES = { '.png': 'image/png', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
 const srv = http.createServer(async (req, res) => {
   let url; try { url = new URL(req.url, 'http://x'); } catch (e) { res.writeHead(400); return res.end(); }
   const p = url.pathname;
@@ -187,7 +192,7 @@ const srv = http.createServer(async (req, res) => {
     if (p === '/info') {
       return fs.readFile(INDEX, (e, d) => json(res, 200, e ? { err: String(e) } : { octets: d.length, ok: d.toString('utf8').trimEnd().endsWith('</html>'), sha: sha(d).slice(0, 12), db: store.mode() }));
     }
-    const stat = { '/og.png': 'og.png', '/favicon.png': 'favicon.png' }[p];
+    const stat = { '/og.png': 'og.png', '/favicon.png': 'favicon.png', '/icon-192.png': 'icon-192.png', '/icon-512.png': 'icon-512.png', '/icon-maskable.png': 'icon-maskable.png', '/apple-touch-icon.png': 'apple-touch-icon.png', '/manifest.webmanifest': 'manifest.webmanifest' }[p];
     if (stat) return fs.readFile(path.join(PUB, stat), (e, d) => {
       if (e) { res.writeHead(404); return res.end('404'); }
       res.writeHead(200, { 'Content-Type': TYPES[path.extname(stat)] || 'application/octet-stream', 'Cache-Control': 'public, max-age=86400' }); res.end(d);

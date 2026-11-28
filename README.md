@@ -11,3 +11,12 @@ Un seul service Node : il sert le jeu, relaie le multijoueur (WebSocket `/ws`) e
 4. Vérifie sur `https://ton-site/info` : `"db":"postgres"` ou `"fichier"`.
 
 Sans `DATABASE_URL` ni disque, le jeu fonctionne mais tout est perdu au redémarrage.
+
+## Bouton « Soutenir la créatrice »
+
+Sur Render → Environment, ajoute :
+
+- `SUPPORT_URL` = ton lien (Ko-fi, Tipeee, PayPal… doit commencer par https://)
+- `SUPPORT_LABEL` (facultatif) = texte du bouton (par défaut « Soutenir la créatrice »)
+
+Change la valeur quand tu veux : Render redémarre le service et le bouton prend le nouveau lien, sans toucher au code. Si `SUPPORT_URL` est vide, le bouton reste caché.
