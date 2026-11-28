@@ -3407,6 +3407,8 @@ function render(){
  if(PREC){if(!toits.length)meublerToits();
   for(const m of toits){if(!inVH(m.x,m.y,2,4))continue;
    if(decorOK(m.x,m.y))PREC.push({dec:m.k,seed:m.seed,x:m.x+0.5,y:m.y+0.9});}}
+ if(PREC&&typeof LOOT!=='undefined'&&LOOT)for(const o of LOOT){if(o.k<0)continue;const lx=o.k%W,ly=(o.k/W)|0;if(!inVH(lx,ly,2,4))continue;
+  if(decorOK(lx,ly))PREC.push({dec:o.t==='tole'?'tole':'cailloux',seed:(lx*3+ly*7)&15,x:lx+0.5,y:ly+0.9});}
  if(PREC)for(const m of mobilier){if(!inVH(m.x,m.y,2,4))continue;
   if(decorOK(m.x,m.y))PREC.push({dec:m.k,seed:(m.x*3+m.y*7)&15,x:m.x+0.5,y:m.y+0.9});}
  for(const t of strees)if(inVH(t.x,t.y,2,9)){
@@ -4150,7 +4152,7 @@ function renderCraft(){
   row.innerHTML=`<span><b>${name}</b><br><span style="color:#999">${cost}</span></span>`;
   const b=document.createElement('button');b.textContent='Fabriquer';b.disabled=!ok;b.onclick=()=>craft(r);row.appendChild(b);box.appendChild(row);
  }
- const p=document.createElement('p');p.innerHTML='Récolte : <b>COUPER</b> les arbres des parcs (bois), <b>FOUILLER</b> les épaves ou <b>RAMASSER</b> les tôles dans les rues (ferraille), <b>RAMASSER</b> les gravats des terrains libres et les cailloux des plages, berges et chemins (pierre).';box.appendChild(p);
+ const p=document.createElement('p');p.innerHTML='Récolte : <b>COUPER</b> les arbres des parcs (bois), <b>FOUILLER</b> les épaves ou <b>RAMASSER</b> les tôles qui traînent dans les quartiers pauvres (ferraille), <b>RAMASSER</b> les gravats des terrains libres et les cailloux des plages, berges et chemins (pierre).';box.appendChild(p);
 }
 function refreshBuildBar(){
  const bar=$('buildBar');if(!buildMode){bar.style.display='none';return;}bar.style.display='flex';
@@ -7882,7 +7884,7 @@ function rasterSDF(P,W0,H0,cx0,Q,nuit){
 // --- les modèles ---
 // hauteur en unités de modèle : un personnage fait 26, on cale les décors dessus
 const DECOR_H={lampe:36,arbre:44,palmier:52,abribus:30,banc:16,poubelle:12,borne:14,autel:38,
- clim:14,cuve:22,cage:20,antenne:30,parabole:16};
+ clim:14,cuve:22,cage:20,antenne:30,parabole:16,tole:20,cailloux:11};
 function decorHD(kind,seed,nuit){
  const P=[],add=(pr,fn,col,R,o)=>P.push(Object.assign({pr,fn,col,R},o||{}));
  const h=k=>hash(seed*31+7,k*17+3);
@@ -8005,13 +8007,31 @@ function decorHD(kind,seed,nuit){
    add(3.1,dSeg(0,7.6,1.8,5.0,0.3,0.25),SOMBRE,0.24);
    add(1.1,dBox(0,15.4,2.2,0.7,0.2),SOMBRE,0.6);
    break;}
+  case 'tole':{                     // tas de tôles ondulées : deux plaques appuyées, une à plat, de la rouille
+   const f=h(2)<0.5?1:-1,GALV=C(176,184,196),ROUILLE=C(158,98,58),VIEUX=C(120,128,140);
+   add(1,dEll(0,18.6,8.6,1.2),C(40,40,44),0.5);
+   add(2,dBox(0,17.0,7.4,1.1,0.4),VIEUX,1.0);
+   add(3,dSeg(-5.2*f,17.2,-1.2*f,4.6,1.5,1.3),GALV,1.5);
+   add(3.2,dSeg(5.0*f,17.2,1.8*f,6.6,1.4,1.2),h(3)<0.5?ROUILLE:C(196,166,92),1.4);
+   for(let i=-2;i<=2;i++){const t=0.5+i*0.17;add(3.3,dSeg((-5.2+4*t)*f,17.2-12.6*t,(-5.2+4*t)*f+0.2,17.2-12.6*t+0.1,0.45,0.4),C(96,104,116),0.35);}
+   for(let i=0;i<3;i++)add(3.4,dEll((-3.4+i*1.4)*f,9.6+i*2.2,0.7,0.5),ROUILLE,0.5);
+   add(3.5,dSeg(-7*f,17,-5*f,13.4,0.5,0.4),C(150,104,64),0.4);
+   break;}
+  case 'cailloux':{                 // tas de cailloux gris
+   add(1,dEll(0,10.0,8.0,0.9),C(60,60,56),0.4);
+   add(2,dEll(-3.2,7.4,3.6,2.8),C(150,148,142),2.4);
+   add(2.1,dEll(3.4,7.0,3.2,2.5),C(120,118,114),2.2);
+   add(2.3,dEll(0.2,5.2,2.8,2.2),C(176,174,166),2.0);
+   add(2.4,dEll(6.4,8.6,1.7,1.2),C(138,136,130),1.1);
+   add(2.4,dEll(-6.6,8.5,1.6,1.1),C(160,156,148),1.0);
+   break;}
   case 'borne':{
    add(2,dSeg(0,13,0,3,0.75,0.65),C(190,80,60),0.7);
    add(3,dEll(0,2.6,1.1,1.0),C(214,96,70),1.0);
    add(3.1,dEll(0,13.4,1.7,0.7),SOMBRE,0.6);
    break;}
  }
- const H0=Math.round(DECOR_H[kind]||30),W0=kind==='abribus'?31:kind==='autel'?25:kind==='arbre'?29:kind==='palmier'?33:kind==='lampe'?19:kind==='banc'?25:kind==='clim'?17:kind==='cage'?19:kind==='parabole'?15:15;
+ const H0=Math.round(DECOR_H[kind]||30),W0=kind==='abribus'?31:kind==='autel'?25:kind==='arbre'?29:kind==='palmier'?33:kind==='lampe'?19:kind==='banc'?25:kind==='clim'?17:kind==='cage'?19:kind==='parabole'?15:kind==='tole'?21:kind==='cailloux'?17:15;
  return rasterSDF(P,W0,H0,(W0-1)/2,1.0,nuit);}
 // --- un seul dessin par objet, a tous les zooms ---
 // Il n'y a plus de version grossiere de repli : un arbre est le meme arbre de pres
@@ -9913,7 +9933,7 @@ function drawStaff(inV){
 // Matériaux ramassables : tôles et ferraille dans les rues, cailloux sur les plages, berges et chemins.
 var LOOT=[],LOOT_C={tole:[],cail:[]};
 (function(){for(let k=0;k<W*H;k++){const t=tile[k],y=(k/W)|0;
- if((t===SIDE||t===ALLEY)&&y<CITYH)LOOT_C.tole.push(k);
+ if((t===SIDE||t===ALLEY)&&y<CITYH&&wealthS(k%W,y)<-0.2)LOOT_C.tole.push(k); // tôles = déchets des quartiers pauvres
  else if(t===SAND||(t===GRASS&&y>=CITYH)||t===PATH&&y>=CITYH)LOOT_C.cail.push(k);}
  // quelques cailloux aussi près de l'eau en ville (berges) et dans les parcs
  for(let k=0;k<W*H;k++){if(tile[k]===GRASS&&((k/W)|0)<CITYH&&hash(k%W,(k/W)|0)>0.985)LOOT_C.cail.push(k);}})();
@@ -9928,7 +9948,7 @@ function lootTake(o){const x=o.k%W+.5,y=((o.k/W)|0)+.5;
  if(o.t==='tole'){const n=1+(Math.random()<0.45?1:0);inv.fer+=n;floaters.push({x,y,text:'+'+n+' ferraille',col:C(190,200,215),t:0});}
  else{const n=1+(Math.random()<0.5?1:0);inv.pierre+=n;floaters.push({x,y,text:'+'+n+' pierre',col:C(200,200,210),t:0});}
  sfx('coin');lootPlace(o);saveGame();}
-function drawLoot(inV){if(!LOOT)return;
+function drawLoot(inV){if(!LOOT||PREC)return;
  for(const o of LOOT){if(o.k<0)continue;const x=o.k%W,y=(o.k/W)|0;if(!inV(x,y,1))continue;const X=x*TW,Y=y*TH;
   if(o.t==='tole'){putS(X+1,Y+1,'_/=\\_',C(176,184,196),KEEP);putS(X+2,Y+2,'[###]',C(120,126,138),KEEP);}
   else{putS(X+2,Y+1,'.o.',C(200,198,190),KEEP);putS(X+1,Y+2,'o O o',C(150,148,140),KEEP);}}}
