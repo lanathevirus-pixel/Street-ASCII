@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Crect%20width=%2264%22%20height=%2264%22%20rx=%2212%22%20fill=%22%23090d1a%22/%3E%3Ctext%20x=%2232%22%20y=%2243%22%20font-family=%22monospace%22%20font-weight=%22700%22%20font-size=%2232%22%20text-anchor=%22middle%22%20fill=%22%23ff3fb4%22%20stroke=%22%23ff9bdc%22%20stroke-width=%220.8%22%3ESA%3C/text%3E%3C/svg%3E">
 <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#090d1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Street ASCII">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#090d1a">
 <meta property="og:type" content="website"><meta property="og:title" content="Street ASCII — GTA en ASCII à Bangkok">
 <meta property="og:description" content="Krung Thep, la Cité des Anges : missions, quartiers, multijoueur. Joue dans ton navigateur.">
@@ -173,7 +180,7 @@ body.touch #kbHint{display:none}
     <span class="title">STREET<span>ASCII</span></span>
     <div id="hMain"><button id="mapBtn" title="Carte (M)">CARTE</button><button id="invBtn" title="Inventaire (I)">SAC</button><button id="sndBtn" title="Son (N)">🔊</button></div>
     <button id="moreBtn" title="Menu" aria-label="Menu">☰</button>
-    <div id="hMore"><button id="zOut" title="Dézoomer">− zoom</button><button id="zIn" title="Zoomer">+ zoom</button><button id="styBtn">STYLE</button><button id="jobBtn">LIVR.</button><button id="buildBtn" title="Bâtir (B)">BÂTIR</button><button id="coursesBtn">COURSES</button><button id="lookBtn">PERSO</button><button id="radioBtn" title="Radio">RADIO</button><button id="objBtn" title="Ta vie à Krung Thep">VIE</button><button id="mjBtn" title="Multijoueur">MULTI</button><button id="loreBtn">LORE</button><button id="helpBtn">AIDE</button><button id="hdBtn" title="Version PC haute définition" style="display:none">HD</button></div>
+    <div id="hMore"><button id="zOut" title="Dézoomer">− zoom</button><button id="zIn" title="Zoomer">+ zoom</button><button id="supportBtn" style="display:none;background:#3a0f2c;color:#ffd1ee;border-color:#ff3fb4">💖 Soutenir la créatrice</button><button id="styBtn">STYLE</button><button id="jobBtn">LIVR.</button><button id="buildBtn" title="Bâtir (B)">BÂTIR</button><button id="coursesBtn">COURSES</button><button id="lookBtn">PERSO</button><button id="radioBtn" title="Radio">RADIO</button><button id="objBtn" title="Ta vie à Krung Thep">VIE</button><button id="mjBtn" title="Multijoueur">MULTI</button><button id="loreBtn">LORE</button><button id="helpBtn">AIDE</button><button id="hdBtn" title="Version PC haute définition" style="display:none">HD</button></div>
   </header>
   <div id="wrap">
     <canvas id="cv"></canvas>
@@ -218,6 +225,11 @@ body.touch #kbHint{display:none}
       <p><b>Conduite :</b> appuie sur la direction où tu veux aller (comme à pied) : la voiture tourne toute seule et accélère. Direction opposée = freinage puis demi-tour. Lâche tout pour ralentir. Les trottoirs et l'herbe te ralentissent.</p>
       <p><b>Ton personnage :</b> huit orientations — face, dos, les deux profils et les quatre trois-quarts — à l’arrêt comme en marche, à pied comme à vélo. Le créateur (bouton <b>PERSO</b>) est rangé en trois onglets : Silhouette, Visage, Tenue.</p>
       <p><b>Multijoueur :</b> le bouton <b>MULTI</b> ouvre une rue partagée. Tous ceux qui ont la page ouverte et rejoignent la même rue se voient marcher dans la même ville, avec leur pseudo au-dessus de la tête, en 2D comme en 3D. Rue publique, ou partie privée : un code au hasard à donner à tes amis. Ta partie reste la tienne : argent, missions et véhicules ne circulent pas, seules la position et la silhouette.</p>
+      <p><b>Sud de la ville (vers la mer) :</b> des <b>maisons à vendre ou à louer</b> et des <b>terrains libres</b> à acheter bordent la côte, passe par l’agence immobilière pour la carte des biens.</p>
+      <p><b>Excursion à Ayutthaya :</b> à la gare Hua Lamphong, le billet aller-retour lance un voyage animé : le train, le temple Wat Chaiwatthanaram, puis le retour au crépuscule.</p>
+      <p><b>Coucher de soleil :</b> l’animation va maintenant jusqu’au bout : le soleil disparaît, les étoiles sortent et il fait nuit à ton retour.</p>
+      <p><b>7-Eleven :</b> café, iced cocoa, energy drink, onigiri, banane et mochis choco rejoignent les sandwichs et produits d’hygiène.</p>
+      <p><b>GPS en voiture :</b> l’itinéraire ne suit plus que les routes.</p>
       <p><b>Construction :</b> achète d’abord un <b>terrain</b> (5 000 à 20 000 ฿ selon le quartier ; les maisons coûtent un peu plus cher), puis construis dessus. Dans l’atelier, fabrique tout ce qu’il faut à une maison : <b>lit, douche, cuisine, télé, garage</b>, murs, sol et <b>toit en tôle</b> — le toit disparaît quand tu entres chez toi.</p>
       <p><b>Compte et sauvegarde en ligne :</b> sur le site hébergé, crée un compte (pseudo + mot de passe) : ta partie est enregistrée <b>automatiquement</b> toutes les 15 s sur le serveur, dans une base permanente. Tu te reconnectes <b>là où tu t’étais arrêté</b> (position, argent, missions, bâtiments, gang…), seul ou en multi, depuis n’importe quel appareil. « Jouer sans compte » garde la sauvegarde sur cet appareil seulement.</p>
       <p><b>Joueurs en multi :</b> la pastille du bouton <b>MULTI</b> indique le nombre de joueurs en ligne. Touche un joueur comme un PNJ : <b>message privé</b>, saluer, inviter dans ton gang, GPS vers lui, offrir de l’argent. Le bouton 📍 d’un chat (commun, privé, SMS) envoie un <b>point GPS</b> cliquable.</p>
@@ -240,6 +252,18 @@ body.touch #kbHint{display:none}
 </div>
 <script>
 window.addEventListener('error',function(e){try{var d=document.getElementById('__err');if(!d){d=document.createElement('pre');d.id='__err';d.style.cssText='position:fixed;left:8px;bottom:40px;right:8px;max-height:40vh;overflow:auto;z-index:99999;background:#300;color:#fff;font:12px monospace;padding:8px;white-space:pre-wrap';document.body.appendChild(d);}d.textContent+=(e.message||'erreur')+' @'+(e.lineno||'?')+':'+(e.colno||'?')+'\n';}catch(_){}});
+</script>
+<script>
+/* Bouton « Soutenir la créatrice » : le lien se règle sur le serveur (variable SUPPORT_URL), sans toucher au jeu. */
+(function(){
+ if(window.claude||!/^https?:$/.test(location.protocol))return;
+ function go(){fetch('/api/config').then(function(r){return r.json();}).then(function(j){
+  var s=j&&j.support,b=document.getElementById('supportBtn');if(!s||!b)return;
+  b.textContent='\u{1F496} '+s.label;b.style.display='';
+  b.onclick=function(e){e.stopPropagation();window.open(s.url,'_blank','noopener');};
+ }).catch(function(){});}
+ if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go();
+})();
 </script>
 <script>
 /* Comptes : hors Claude, le jeu hébergé peut sauvegarder ta partie sur le serveur (base permanente). */
@@ -265,6 +289,7 @@ window.SA_ACC={tok:'',nom:'',uid:'',on:false,api:false};
    +'<div style="margin:6px 0 14px;color:#8fa3bd;font-size:12px">Ton compte garde ta partie en ligne : tu reprends là où tu t’es arrêté, sur n’importe quel appareil.</div>'
    +'<input id="saNom" maxlength="14" placeholder="Pseudo" autocomplete="username" style="width:100%;box-sizing:border-box;margin-bottom:8px;background:#090d1a;color:#fff;border:1px solid #2b3144;border-radius:8px;padding:10px;font:15px monospace">'
    +'<input id="saPw" type="password" maxlength="64" placeholder="Mot de passe" autocomplete="current-password" style="width:100%;box-sizing:border-box;margin-bottom:8px;background:#090d1a;color:#fff;border:1px solid #2b3144;border-radius:8px;padding:10px;font:15px monospace">'
+   +(p.j.db!=='postgres'?'<div style="margin:0 0 10px;padding:7px 9px;border:1px solid #7a5a20;border-radius:8px;background:#241a08;color:#ffcf7a;font-size:11px;text-align:left">⚠ Ce serveur n’a pas de base permanente (mode « '+p.j.db+' ») : les comptes peuvent être effacés à chaque redémarrage. Branche une base Postgres (DATABASE_URL) pour les garder.</div>':'')
    +'<div id="saErr" style="min-height:18px;color:#ff8a8a;font-size:12px;margin-bottom:6px"></div>'
    +'<button id="saLog" style="width:100%;padding:10px;margin-bottom:6px;background:#ff3fb4;color:#14061a;border:0;border-radius:8px;font:700 14px monospace;cursor:pointer">Se connecter</button>'
    +'<button id="saReg" style="width:100%;padding:10px;margin-bottom:6px;background:#13203a;color:#9ad7ff;border:1px solid #2b3144;border-radius:8px;font:700 14px monospace;cursor:pointer">Créer mon compte</button>'
@@ -383,7 +408,7 @@ function genCity(){
  }
  const special={'6,5':'palace','3,6':'wat','6,3':'market','7,8':'market','15,6':'market','11,7':'lumphini','8,0':'bigpark','12,13':'forest','11,13':'forest','13,12':'forest','12,14':'bigpark',
   '9,5':'police','10,5':'hospital','4,2':'garage','13,4':'garage','15,12':'garage','3,12':'garage','9,3':'taxis','2,7':'bigpark','15,10':'lot','5,10':'lot','11,10':'lot','2,4':'lot',
-  '5,7':'mall','13,7':'free','2,13':'gare','10,2':'stade','16,2':'wathpho','7,13':'mbk','0,0':'forest','17,0':'forest','0,16':'forest','1,15':'forest','16,16':'forest','0,9':'forest','4,16':'bigpark','14,15':'lot','8,5':'agence','12,5':'rouge','13,5':'rouge','14,5':'rouge','12,6':'rouge','13,6':'rouge','14,6':'rouge','12,7':'rouge','13,7':'rouge','14,7':'rouge','13,8':'rouge','14,8':'rouge'};
+  '5,7':'mall','13,7':'free','2,13':'gare','10,2':'stade','16,2':'wathpho','7,13':'mbk','0,0':'forest','17,0':'forest','0,16':'forest','1,15':'forest','16,16':'forest','0,9':'forest','4,16':'bigpark','14,15':'lot','8,5':'agence','3,17':'free','5,17':'free','7,17':'free','9,17':'free','11,17':'free','13,17':'free','15,17':'free','12,5':'rouge','13,5':'rouge','14,5':'rouge','12,6':'rouge','13,6':'rouge','14,6':'rouge','12,7':'rouge','13,7':'rouge','14,7':'rouge','13,8':'rouge','14,8':'rouge'};
  const MKT={'6,3':'KHAO SAN','7,8':'YAOWARAT','15,6':'MARCHÉ DE NUIT'};
  const set=(x,y,t,c)=>{const k=y*W+x;tile[k]=t;if(c!==undefined)colr[k]=c;};
  function building(bx,by,w,h,pi,label,floors){
@@ -976,6 +1001,7 @@ function updatePed(p,dt){
  if(p.state==='flee'){p.timer-=dt;if(p.timer<=0)p.state='walk';}
  const sp=(p.bike?(p.scoot?(p.state==='flee'?7:4.6):p.state==='flee'?5.5:3.4):p.state==='flee'?3.8:1.3)*SPDK*NPCK;
  if(p.moving){p.t+=sp*dt;if(p.t>=1){p.cx=p.nx;p.cy=p.ny;p.t=0;p.moving=false;}else return;}
+ if(p.scoot&&p.state==='walk')scootGarde(p,dt);
  const onCross=tile[p.cy*W+p.cx]===CROSS,o=[];
  for(let d=0;d<4;d++){const x=p.cx+DX[d],y=p.cy+DY[d];if(!inB(x,y))continue;const k=y*W+x,t=tile[k];if(!pedWalk(t)&&!(p.bike&&t===ROAD&&(p.scoot||isBridgeK(k))))continue;
   if(p.scoot&&t===ROAD){ // scooter : sens de circulation, feux, jamais dans une voiture
@@ -985,8 +1011,9 @@ function updatePed(p,dt){
    if(inJunction(x,y)&&inJunction(p.cx,p.cy)&&feuxIci(x,y)&&!lightGreen(d))continue;}
   if(t===CROSS){if(occ[k]&&occ[k]!==p.id)continue;if(!onCross&&p.state==='walk'&&Math.random()>0.25)continue;}o.push(d);}
  if(p.bike&&p.state==='walk'){const busy=e=>{const x=p.cx+DX[e],y=p.cy+DY[e];for(const q of peds){if(q===p||q.bike)continue;const qx=q.moving?q.nx:q.cx,qy=q.moving?q.ny:q.cy;if((qx===x&&qy===y)||(q.cx===x&&q.cy===y))return true;}return d2(x+.5,y+.5,player.x,player.y)<0.8;};
-  const free=o.filter(e=>!busy(e));if(!free.length){p.wait=(p.wait||0)+dt;return;}if(free.length<o.length){o.length=0;o.push(...free);}}
- if(!o.length)return;
+  const free=o.filter(e=>!busy(e));if(!free.length){p.wait=(p.wait||0)+dt;if(p.scoot)p.sw=(p.sw||0)+dt;return;}if(free.length<o.length){o.length=0;o.push(...free);}}
+ if(!o.length){if(p.scoot)p.sw=(p.sw||0)+dt;return;}
+ if(p.scoot)p.sw=0;
  if(p.scoot&&p.state==='walk'){const ro=o.filter(e=>tile[(p.cy+DY[e])*W+p.cx+DX[e]]===ROAD);if(ro.length&&Math.random()<0.85){o.length=0;o.push(...ro);}}
  let d;
  if(p.state==='flee'){let bd=-1;for(const e of o){const v=d2(p.cx+DX[e],p.cy+DY[e],player.x,player.y);if(v>bd){bd=v;d=e;}}}
@@ -1002,6 +1029,17 @@ function updatePed(p,dt){
 // ---------------- délits / police ----------------
 // certains forfaits ne se discutent pas : la police est prevenue sur-le-champ,
 // sans temoin a trouver ni delai de grace
+// un scooter coincé (bouchon, cul-de-sac, deux scooters face à face) ou qui tourne en rond est remis en circulation ailleurs
+function scootRelance(p){
+ for(let i=0;i<60;i++){const x=1+Math.floor(Math.random()*(W-2)),y=1+Math.floor(Math.random()*(H-2)),k=y*W+x;
+  if(tile[k]!==ROAD||!lane[k]||occ[k])continue;
+  if(d2(x+.5,y+.5,player.x,player.y)<28*28)continue;
+  p.cx=x;p.cy=y;p.nx=x;p.ny=y;p.t=0;p.moving=false;p.sw=0;p.anT=0;p.an={x,y};p.wait=0;return true;}
+ return false;}
+function scootGarde(p,dt){
+ if((p.sw||0)>5){scootRelance(p);return;}
+ p.anT=(p.anT||0)+dt;if(!p.an)p.an={x:p.cx,y:p.cy};
+ if(p.anT>20){if(d2(p.cx,p.cy,p.an.x,p.an.y)<25)scootRelance(p);p.an={x:p.cx,y:p.cy};p.anT=0;}}
 function rechercheMin(n,msg){
  const b=stars;stars=Math.max(stars,Math.min(5,n));calm=0;crimeCd=1.5;
  if(stars>b){sfx('alarm');toast(msg+' '+'★'.repeat(stars));bfs();}}
@@ -1392,6 +1430,7 @@ function updateHUD(){
   h+=`<br><span class="job${s<10?' warn':''}">COLIS ${arrowTo(job.x+.5,job.y+.5)} ${m} m · ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}</span>`;}
  else if(giver){const m=Math.round(Math.hypot(giver.x-player.x,giver.y-player.y)*4);h+=`<br><span style="color:#ffcc00">JOB ${arrowTo(giver.x+.5,giver.y+.5)} ${m} m</span>`;}
  {const hy=Math.round(hygiene),c=hy<20?'#ff5050':hy<45?'#ffb040':'#7fd4ff';if(hy<60)h+=`<br><span style="color:${c}">Hygiène ${hy}%${hy<20?' · douche !':''}</span>`;}
+ {const fa=Math.round(faim),c=fa<20?'#ff5050':'#ffb040';if(fa<60)h+=`<br><span style="color:${c}">Faim ${fa}%${fa<25?' · mange !':''}</span>`;}
  if(inside)h+=`<br><span style="color:#ffd54a">Dans : ${inside.name}</span>`;
  h+=objHud();h+=niranHud();
  
@@ -3577,13 +3616,26 @@ function computeRoute(tx,ty,sx,sy,lm,roadOnly){
  for(let k=g;k!==-1&&out.length<2000;k=gPrev[k]){out.push(k);if(k===s)break;}
  return out.reverse();
 }
+// en voiture, l'itinéraire ne suit que la route : on vise la route la plus proche de la destination
+function roadNear(x,y){
+ if(inB(x,y)&&isRoad(tile[y*W+x]))return{x,y};
+ let best=null,bd=1e9;
+ for(let r=1;r<=14&&!best;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const nx=x+dx,ny=y+dy;if(!inB(nx,ny)||!isRoad(tile[ny*W+nx]))continue;const v=dx*dx+dy*dy;if(v<bd){bd=v;best={x:nx,y:ny};}}
+ return best;}
+function routeAuto(tx,ty){
+ if(!player.car)return computeRoute(tx,ty);
+ const r=roadNear(tx,ty);
+ const px=Math.floor(player.x),py=Math.floor(player.y),st=roadNear(px,py);
+ if(r&&st){const out=computeRoute(r.x,r.y,st.x,st.y,undefined,true);
+  if(out.length){const k0=py*W+px;if(k0!==out[0])out.unshift(k0);return out;}}
+ return computeRoute(tx,ty);}
 function updateGPS(dt){
  routeT-=dt;
  const goal=gpsGoal();
  if(!goal){route=[];return;}
  if(gpsPin&&d2(gpsPin.x+.5,gpsPin.y+.5,player.x,player.y)<2.2){gpsPin=null;toast('Destination GPS atteinte');route=[];return;}
  const key=goal.kind+goal.x+','+goal.y+(player.car?'c':'f');
- if(routeT<=0||key!==routeFor){routeT=0.4;routeFor=key;route=computeRoute(goal.x,goal.y);}
+ if(routeT<=0||key!==routeFor){routeT=0.4;routeFor=key;route=routeAuto(goal.x,goal.y);}
 }
 function setPin(x,y){const p=snapTile(x,y);if(!p)return;gpsPin=p;routeFor='';toast('GPS : itinéraire calculé');}
 function drawRoute(inV){
@@ -4844,7 +4896,7 @@ function famExtra(p){
   :[['🧸 Jouer ensemble',()=>famJouer(p)]];}
 function famDiner(p){
  if(pantry<1){toast('Le frigo est vide — fais les courses d’abord.',2800);return;}
- pantry--;heal(45);time+=DAYLEN/24*0.8;
+ pantry--;heal(45);mange(45);time+=DAYLEN/24*0.8;
  toast(p.nom+' a cuisiné : +45 ♥. On mange mieux à deux.',3200);sfx('coin');save();}
 function famJouer(p){
  heal(12);hygiene=clamp(hygiene-3,0,100);time+=DAYLEN/24*0.5;
@@ -5042,7 +5094,7 @@ function socialMenu(n,cat){
    if(!okF||!okR)return{label:`<span style="opacity:.45">🔒 ${a.l}</span>`,fn:()=>socialMenu(n,cat)};
    return{label:a.l,fn:()=>doSocial(n,a,cat)};}),{label:'← Retour',fn:()=>socialMenu(n)}]);CHAT=n;}
 function doSocial(n,a,cat){
- const R=R,mood=npcMood(n);
+ const R=relOf(n),mood=npcMood(n);
  const k=mood==='content'?1.15:mood==='énervé'?0.7:mood==='joueur'?1.2:mood==='fatigué'?0.85:1;
  const good=Math.random()<clamp(0.55+R.f/220+(k-1),0.15,0.96)||cat===3;
  let msg=KA(a.say[Math.floor(Math.random()*a.say.length)],entSex(n));
@@ -5920,6 +5972,12 @@ const owned=new Set();
 const houses=[];
 buildings.forEach((b,i)=>{if(b.label||b.lm||b.pi>=12||b.pi<4)return;if(hash(b.x*3,b.y*7)<0.13&&houses.length<12){b.house={price:Math.round((1500+b.w*b.h*48)*(0.65+hash(b.x*5+1,b.y*11+3)*1.35)*1.2/100)*100,i};houses.push(b);
  const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;}});
+// le sud (vers la mer) : maisons à vendre ou à louer, un peu plus chères près de la plage
+buildings.forEach(b=>{if(b.label||b.lm||b.pi>=12||b.pi<4||b.house||b.y<185||houses.length>=28)return;
+ if(hash(b.x*3+11,b.y*7+5)>=0.22)return;
+ const mer=1+Math.max(0,Math.min(0.35,(b.y-200)/150));
+ b.house={price:Math.round((1500+b.w*b.h*48)*(0.65+hash(b.x*5+1,b.y*11+3)*1.35)*1.2*mer/100)*100,i:houses.length};houses.push(b);
+ const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE / LOUER',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;});
 function doorOf(b){return{x:b.x+Math.floor(b.w/2),y:b.y+b.h};}
 const LMTYPE={mall:'PARAGON',gare:'GARE',mbk:'MBK',pho:'WAT PHO',stade:'STADE'};
 function bType(b){if(b.house)return'house';if(b.lm)return LMTYPE[b.lm];return b.label;}
@@ -6226,7 +6284,8 @@ function objLabel(o){if(o.c==='$')return inside.type==='BANQUE'?'COFFRE':'CAISSE
  if(o.c==='L')return license?'TAXI':'LICENCE';if(o.c==='Z'&&FOOD.has(inside.type))return'COMMANDER';return OBJ_LABEL[o.c];}
 function buy(price,fn,what){if(money<price){toast('Pas assez d\'argent ('+price+' ฿)');return;}money-=price;fn();save();toast(what+' (-'+price+' ฿)');}
 function heal(n){player.hp=Math.min(player.maxHp,player.hp+n);}
-let SLEEPING=false,hygiene=100,stinkT=0;
+let SLEEPING=false,hygiene=100,stinkT=0,faim=100;
+function mange(n){faim=Math.min(100,faim+Math.round(n*2.5));}
 // petite animation de nuit (maison / hôtel) : fenêtre, lune qui passe, Zzz, horloge qui défile, lever du soleil
 function sleepAnim(where,done){
  SLEEPING=true;const h0=hour(),span=((8-h0+24)%24||24),dur=5200,t0=performance.now();
@@ -6588,7 +6647,7 @@ function agenceFiche(b,i){
 //  REVENTE : le garage, le BRICO et l'armurerie rachètent ce que tu as
 //  Chacun paie bien ce qui l'intéresse, et mal le reste.
 // =====================================================================
-const VAL_I={menu:40,boisson:10,soda:8,cocktail:20,sandwich:8,popcorn:6,trousse:60,savon:12,shampoing:25,deo:20,dentif:15,mouchoir:8};
+const VAL_I={menu:40,boisson:10,soda:8,cocktail:20,sandwich:8,popcorn:6,cafe:8,cacao:10,energy:12,onigiri:10,banane:5,mochi:12,trousse:60,savon:12,shampoing:25,deo:20,dentif:15,mouchoir:8};
 const VAL_M={bois:8,pierre:8,fer:12};
 const VAL_W={batte:80,pistolet:300,uzi:900,fusil:1200};
 const VAL_A={pistolet:2,uzi:1.7,fusil:7.5};
@@ -6750,6 +6809,12 @@ function useObj(o){
     [[shopIco('trousse')+'Trousse de soin 60 ฿ (+35 ♥)',()=>buyN('7-ELEVEN',60,'Trousse',()=>addItem('trousse'))],
      [shopIco('sandwich')+'Sandwich 8 ฿ (+15 ♥)',()=>buyN('7-ELEVEN',8,'Sandwich',()=>addItem('sandwich'))],
      [shopIco('boisson')+'Cha yen 10 ฿ (+10 ♥)',()=>buyN('7-ELEVEN',10,'Cha',()=>addItem('boisson'))],
+     [shopIco('cafe')+'Café 20 ฿ (+12 ♥)',()=>buyN('7-ELEVEN',20,'Café',()=>addItem('cafe'))],
+     [shopIco('cacao')+'Iced cocoa 25 ฿ (+14 ♥)',()=>buyN('7-ELEVEN',25,'Iced cocoa',()=>addItem('cacao'))],
+     [shopIco('energy')+'Energy drink 30 ฿ (+18 ♥)',()=>buyN('7-ELEVEN',30,'Energy drink',()=>addItem('energy'))],
+     [shopIco('onigiri')+'Onigiri 15 ฿ (+22 ♥)',()=>buyN('7-ELEVEN',15,'Onigiri',()=>addItem('onigiri'))],
+     [shopIco('banane')+'Banane 6 ฿ (+12 ♥)',()=>buyN('7-ELEVEN',6,'Banane',()=>addItem('banane'))],
+     [shopIco('mochi')+'Mochis choco 18 ฿ (+20 ♥)',()=>buyN('7-ELEVEN',18,'Mochis choco',()=>addItem('mochi'))],
      [shopIco('savon')+'Savon 12 ฿ (+30 % hygiène)',()=>buyN('7-ELEVEN',12,'Savon',()=>addItem('savon'))],
      [shopIco('shampoing')+'Shampooing 25 ฿ (+35 %)',()=>buyN('7-ELEVEN',25,'Shampooing',()=>addItem('shampoing'))],
      [shopIco('deo')+'Déodorant 20 ฿ (+25 %)',()=>buyN('7-ELEVEN',20,'Déodorant',()=>addItem('deo'))],
@@ -6782,16 +6847,16 @@ function useObj(o){
    if(pantry<=0){menu('FRIGO','Le frigo est <b>vide</b>.<br>Argent : '+money+' ฿.',[courses]);break;}
    if(fridgeT>0){menu('FRIGO','Tu n\'as pas faim pour l\'instant.<br>Frigo : <b>'+pantry+'</b> repas.',[courses]);break;}
    menu('FRIGO','Frigo : <b>'+pantry+'</b> repas.<br>Un sandwich sur le pouce, ou passe à la cuisine pour un vrai plat.',[
-    ['🥪 Grignoter (+30 ♥)',()=>{pantry--;heal(30);fridgeT=90;toast('Tu manges un morceau (+30 ♥)');save();}],
+    ['🥪 Grignoter (+30 ♥)',()=>{pantry--;heal(30);mange(30);fridgeT=90;toast('Tu manges un morceau (+30 ♥)');save();}],
     courses]);break;}
   // --- cuisine : un vrai repas, et on remonte la santé max de la journée ---
   case '?':{
    if(pantry<2){toast('Il faut au moins 2 repas dans le frigo — fais les courses');break;}
    if(cookT>0){toast('Tu viens de manger ('+Math.ceil(cookT)+' s)');break;}
    menu('CUISINE','Frigo : <b>'+pantry+'</b> repas.<br>Un plat maison, c\'est mieux qu\'un sandwich.',[
-    ['🍛 Cuisiner un pad thai (+60 ♥)',()=>{pantry-=2;heal(60);cookT=140;fridgeT=60;time+=DAYLEN/24*0.3;
+    ['🍛 Cuisiner un pad thai (+60 ♥)',()=>{pantry-=2;heal(60);mange(60);cookT=140;fridgeT=60;time+=DAYLEN/24*0.3;
       toast('Tu cuisines et tu manges tranquillement (+60 ♥)',2600);sfx('coin');save();}],
-    ['🍜 Soupe tom yum (+40 ♥, +10 hygiène)',()=>{pantry-=2;heal(40);hygiene=Math.min(100,hygiene+10);cookT=140;fridgeT=60;time+=DAYLEN/24*0.25;
+    ['🍜 Soupe tom yum (+40 ♥, +10 hygiène)',()=>{pantry-=2;heal(40);mange(40);hygiene=Math.min(100,hygiene+10);cookT=140;fridgeT=60;time+=DAYLEN/24*0.25;
       toast('Soupe bien relevée (+40 ♥)',2600);sfx('coin');save();}]]);break;}
   // --- douche : hygiène à fond, sans passer à la laverie ---
   case '/':{
@@ -6830,7 +6895,7 @@ function useObj(o){
     ['🟡 Feuille d\'or 50 ฿ (+30 ♥, hygiène +10)',()=>buy(50,()=>{heal(30);hygiene=Math.min(100,hygiene+10);time+=DAYLEN/24*0.3;},'Feuille d\'or posée')],
     ['🙏 Grand don 500 ฿ (♥ max +5)',()=>{if(player.maxHp>=160){toast('Ta vie max est déjà au plus haut');return;}buy(500,()=>{player.maxHp+=5;player.hp=Math.min(player.maxHp,player.hp+5);},'Mérite acquis : ♥ max '+(player.maxHp+5));}]]);break;}
   case 'U':menu('HUA LAMPHONG','Les trains partent vers le nord et le sud. Argent : '+money+' ฿.',[
-    ['🚆 Ayutthaya, aller-retour 60 ฿ (+4 h, +25 ♥)',()=>buy(60,()=>{time+=DAYLEN/24*4;heal(25);},'Excursion à Ayutthaya')],
+    ['🚆 Ayutthaya, aller-retour 60 ฿ (+4 h, +25 ♥)',()=>{if(stars>0){toast('Pas question de prendre le train avec la police aux trousses !');return;}buy(60,()=>{ayutthayaStart(()=>{time+=DAYLEN/24*4;heal(25);toast('🚆 De retour d\'Ayutthaya : ♥ +25',2800);save();});},'Billet acheté');}],
     ['🛏 Train de nuit, couchette 150 ฿ (nuit complète)',()=>{if(stars>0){toast('Pas ce soir…');return;}buy(150,()=>{sleepTo8();hygiene=Math.max(hygiene,70);},'Nuit en couchette');}]]);break;
   case 'C':{const bet=p=>{if(money<p){toast('Pas assez d\'argent ('+p+' ฿)');return;}money-=p;time+=DAYLEN/24*1.5;
      if(Math.random()<0.46){money+=p*2;toast('But à la 90e ! Tu gagnes '+p*2+' ฿',3000);sfx('coin');}else{toast('Défaite 0–1… tu perds '+p+' ฿',3000);sfx('fail');}save();};
@@ -6943,8 +7008,8 @@ function drawGarageFronts(inV){
   if(night)addLight(d.x+0.5,d.y-0.2,7,1.3,1.05,0.6);
  }}
 // sauvegarde des nouveautés
-function extraSave(o){o.pos=inside&&inside.door?{x:inside.door.x+.5,y:inside.door.y+.6}:{x:player.x,y:player.y};o.gang={me:GANG.me,gi:GANG.gi,day:GANG.day};o.niran=niran;o.mar=famille.conj&&famille.conj.mar?1:0;o.pedrel=PEDREL;o.lease=lease;o.rel=npcs.map(n=>n.rel||null);o.pound=pound;o.mafia=mafiaRel;o.debt=debt;o.kidnap=kidnapT;o.vinv=vinv;o.bag=bag;o.bank=bank;o.lic=license;o.owned=[...owned];o.outfit=outfit;o.maxHp=player.maxHp;o.hyg=hygiene;o.pantry=pantry;o.sms=SMS;o.smsU=smsUnread;o.tds=tds.hired?1:0;o.fam=famille;o.prog=prog;o.met=metier;o.veh=vehSave();o.time=time;o.braqV=braqVide;o.butin=butin;return o;}
-function extraLoad(s){if(!s)return;if(s.pos&&isFinite(s.pos.x)&&isFinite(s.pos.y)){player.x=+s.pos.x;player.y=+s.pos.y;}if(s.gang&&typeof s.gang==='object'){const m=s.gang.me;if(m&&typeof m.id==='string'&&typeof m.nom==='string'&&typeof m.tag==='string')GANG.me={id:m.id.slice(0,16),nom:m.nom.slice(0,16),tag:m.tag.slice(0,4),col:/^#[0-9a-f]{6}$/i.test(m.col)?m.col:'#ff3fb4'};if(s.gang.gi&&typeof s.gang.gi==='object')for(const k in s.gang.gi){const v=s.gang.gi[k]|0;if(+k>=0&&+k<10&&v>0)GANG.gi[k]=Math.min(200,v);}GANG.day=s.gang.day|0||-1;}if(s.niran&&typeof s.niran.st==='number'){niran.st=s.niran.st|0;niran.hist=Array.isArray(s.niran.hist)?s.niran.hist.slice(0,20):[];niran.ask=[];}if(s.pedrel)Object.assign(PEDREL,s.pedrel);if(s.lease)lease=s.lease;if(Array.isArray(s.rel))s.rel.forEach((r,i)=>{if(r&&npcs[i])npcs[i].rel=r;});if(Array.isArray(s.pound)){pound.length=0;pound.push(...s.pound);}if(typeof s.mafia==='number')mafiaRel=s.mafia;if(typeof s.debt==='number')debt=s.debt;if(debt>0&&mafiaRel>-1)mafiaRel=-1;if(typeof s.kidnap==='number')kidnapT=s.kidnap;if(Array.isArray(s.vinv))vinv.push(...s.vinv);if(s.bag)Object.assign(bag,s.bag);bank=s.bank|0;license=!!s.lic;outfit=s.outfit||outfit;player.maxHp=s.maxHp||100;if(typeof s.hyg==='number')hygiene=s.hyg;if(typeof s.pantry==='number')pantry=s.pantry;if(s.tds)tds.hired=true;if(s.met&&typeof s.met==='object')Object.assign(metier,s.met);if(s.prog&&typeof s.prog==='object'){prog=Object.assign({ch:0,faits:[],fini:false,vu:0},s.prog);if(!Array.isArray(prog.faits))prog.faits=[];}if(s.fam&&typeof s.fam==='object'){famille=Object.assign({conj:null,enfants:[],due:0,lastK:0,sansEnfant:false},s.fam);if(!Array.isArray(famille.enfants))famille.enfants=[];}if(s.sms&&typeof s.sms==='object'){Object.assign(SMS,s.sms);smsUnread=s.smsU|0;for(const k in SMS){const T=SMS[k];if(!Array.isArray(T.msgs))delete SMS[k];else T.msgs.forEach(m=>{if(m.mid>=smsMid)smsMid=m.mid+1;});}}
+function extraSave(o){o.faim=Math.round(faim);o.pos=inside&&inside.door?{x:inside.door.x+.5,y:inside.door.y+.6}:{x:player.x,y:player.y};o.gang={me:GANG.me,gi:GANG.gi,day:GANG.day};o.niran=niran;o.mar=famille.conj&&famille.conj.mar?1:0;o.pedrel=PEDREL;o.lease=lease;o.rel=npcs.map(n=>n.rel||null);o.pound=pound;o.mafia=mafiaRel;o.debt=debt;o.kidnap=kidnapT;o.vinv=vinv;o.bag=bag;o.bank=bank;o.lic=license;o.owned=[...owned];o.outfit=outfit;o.maxHp=player.maxHp;o.hyg=hygiene;o.pantry=pantry;o.sms=SMS;o.smsU=smsUnread;o.tds=tds.hired?1:0;o.fam=famille;o.prog=prog;o.met=metier;o.veh=vehSave();o.time=time;o.braqV=braqVide;o.butin=butin;return o;}
+function extraLoad(s){if(!s)return;if(isFinite(s.faim))faim=Math.max(0,Math.min(100,+s.faim));if(s.pos&&isFinite(s.pos.x)&&isFinite(s.pos.y)){player.x=+s.pos.x;player.y=+s.pos.y;}if(s.gang&&typeof s.gang==='object'){const m=s.gang.me;if(m&&typeof m.id==='string'&&typeof m.nom==='string'&&typeof m.tag==='string')GANG.me={id:m.id.slice(0,16),nom:m.nom.slice(0,16),tag:m.tag.slice(0,4),col:/^#[0-9a-f]{6}$/i.test(m.col)?m.col:'#ff3fb4'};if(s.gang.gi&&typeof s.gang.gi==='object')for(const k in s.gang.gi){const v=s.gang.gi[k]|0;if(+k>=0&&+k<10&&v>0)GANG.gi[k]=Math.min(200,v);}GANG.day=s.gang.day|0||-1;}if(s.niran&&typeof s.niran.st==='number'){niran.st=s.niran.st|0;niran.hist=Array.isArray(s.niran.hist)?s.niran.hist.slice(0,20):[];niran.ask=[];}if(s.pedrel)Object.assign(PEDREL,s.pedrel);if(s.lease)lease=s.lease;if(Array.isArray(s.rel))s.rel.forEach((r,i)=>{if(r&&npcs[i])npcs[i].rel=r;});if(Array.isArray(s.pound)){pound.length=0;pound.push(...s.pound);}if(typeof s.mafia==='number')mafiaRel=s.mafia;if(typeof s.debt==='number')debt=s.debt;if(debt>0&&mafiaRel>-1)mafiaRel=-1;if(typeof s.kidnap==='number')kidnapT=s.kidnap;if(Array.isArray(s.vinv))vinv.push(...s.vinv);if(s.bag)Object.assign(bag,s.bag);bank=s.bank|0;license=!!s.lic;outfit=s.outfit||outfit;player.maxHp=s.maxHp||100;if(typeof s.hyg==='number')hygiene=s.hyg;if(typeof s.pantry==='number')pantry=s.pantry;if(s.tds)tds.hired=true;if(s.met&&typeof s.met==='object')Object.assign(metier,s.met);if(s.prog&&typeof s.prog==='object'){prog=Object.assign({ch:0,faits:[],fini:false,vu:0},s.prog);if(!Array.isArray(prog.faits))prog.faits=[];}if(s.fam&&typeof s.fam==='object'){famille=Object.assign({conj:null,enfants:[],due:0,lastK:0,sansEnfant:false},s.fam);if(!Array.isArray(famille.enfants))famille.enfants=[];}if(s.sms&&typeof s.sms==='object'){Object.assign(SMS,s.sms);smsUnread=s.smsU|0;for(const k in SMS){const T=SMS[k];if(!Array.isArray(T.msgs))delete SMS[k];else T.msgs.forEach(m=>{if(m.mid>=smsMid)smsMid=m.mid+1;});}}
  if(typeof s.time==='number'&&s.time>0&&isFinite(s.time))time=s.time;
  vehLoad(s.veh);
  if(s.braqV&&typeof s.braqV==='object')braqVide=s.braqV;
@@ -6963,7 +7028,7 @@ const CATS={
 };
 const PINFO={
  'STRIP CLUB':['rouge','XX','Strip club du quartier rouge : entrée, conso et spectacle. Bon pour le moral, moins pour l’hygiène.','STRIP'],
- '7-ELEVEN':['shop','7/11','7-Eleven ouvert 24 h : trousses de soin, sandwichs, savon, shampooing, déodorant.'],
+ '7-ELEVEN':['shop','7/11','7-Eleven ouvert 24 h : boissons (café, iced cocoa, energy drink), onigiri, banane, mochis, trousses de soin, savon, shampooing, déodorant.'],
  AGENCE:['service','AG','Agence immobilière : la carte de tous les logements, prix d’achat et loyers.'],
  PIZZA:['food','PZ','Pizzeria : menus et boissons pour te soigner.'],TACOS:['food','TC','Tacos : menus et boissons pour te soigner.'],
  KEBAB:['food','KB','Kebab : menus et boissons pour te soigner.'],DINER:['food','DN','Diner : menus et boissons pour te soigner.'],
@@ -7212,6 +7277,12 @@ const PIX={
  plant:   ['..G.G...','.GGGGG..','GGGLGGG.','.GGGGG..','..GGG...','...n....','..nnnn..','..nnnn..'],
  licence: ['........','YYYYYYYY','YJJYYYYY','YJJYwwwY','YYYYwwwY','YYYYwwwY','YYYYYYYY','........'],
  cle:     ['..YYY...','.Y...Y..','.Y...Y..','..YYY...','...Y....','...Y....','...YY...','...Y.Y..'],
+ cafe:    ['..QQ.QQ.','.QWWWWWQ','QTTTTTTQ','QTTTTTTQQ','QTTTTTTQQ','.QTTTTQ.','..QQQQ..','.AAAAAA.'],
+ cacao:   ['...P....','...Q....','QQQQQQQQ','.QnnnnQ.','.QnTTnQ.','.QnnnnQ.','..QnnQ..','..QQQQ..'],
+ energy:  ['..AAAA..','.AYYYYA.','.AYKKYA.','.AYYKYA.','.AYKYYA.','.AYYYYA.','.AAAAAA.','..AAAA..'],
+ onigiri: ['...KK...','..WWWW..','.WWWWWW.','.WWWWWW.','WWWWWWWW','WWKKKKWW','WWKKKKWW','.WWWWWW.'],
+ banane:  ['......yy','.....YY.','....YYY.','...YYY..','..YYY...','.YYYy...','YYYy....','yy......'],
+ mochi:   ['........','..WWWW..','.WTTTTW.','WWTTTTWW','WWWWWWWW','.WWWWWW.','..WWWW..','........'],
  velo:    ['........','...I.II.','..IIIII.','.I.II.I.','ZZZ..ZZZ','Z.Z..Z.Z','ZZZ..ZZZ','........'],
  moto:    ['........','...IIII.','..IIIIII','.ZZIIIZZ','ZJJZZJJZ','Z..Z.Z..','.ZZ...ZZ','........'],
 };
@@ -7244,6 +7315,8 @@ const ITEMS={
  menu:{n:'Menu',ico:'[=]',col:'#ff9f43',heal:40},boisson:{n:'Boisson',ico:'(u)',col:'#48dbfb',heal:10},
  soda:{n:'Soda',ico:'|o|',col:'#ff6b6b',heal:8},cocktail:{n:'Cocktail',ico:'\\Y/',col:'#ff9ff3',heal:20},
  sandwich:{n:'Sandwich',ico:'<=>',col:'#feca57',heal:15},popcorn:{n:'Popcorn',ico:'{::}',col:'#fff3a0',heal:10},
+ cafe:{n:'Café',ico:'c',col:'#8a5a2b',heal:12},cacao:{n:'Iced cocoa',ico:'c',col:'#a0643c',heal:14},energy:{n:'Energy drink',ico:'E',col:'#f5d94a',heal:18},
+ onigiri:{n:'Onigiri',ico:'o',col:'#f4f4f2',heal:22},banane:{n:'Banane',ico:'b',col:'#f5d94a',heal:12},mochi:{n:'Mochis choco',ico:'m',col:'#d9a05b',heal:20},
  trousse:{n:'Trousse de soin',ico:'[+]',col:'#ff4040',heal:35},
  // produits d'hygiène du 7-Eleven : ils remontent la jauge d'hygiène
  savon:{n:'Savon',ico:'[~]',col:'#6fdcea',hyg:30},
@@ -7260,7 +7333,7 @@ function useItem(id){const it=ITEMS[id];if(!bag[id])return;
   floaters.push({x:player.x,y:player.y,text:'+'+it.hyg+' %',col:C(110,220,235),t:0});
   toast(it.n+" : +"+it.hyg+" % d'hygiène ("+Math.round(hygiene)+' %)');sfx('coin');save();return;}
  if(player.hp>=player.maxHp){toast('Tu es déjà en pleine forme');return;}
- bag[id]--;if(!bag[id])delete bag[id];heal(it.heal);floaters.push({x:player.x,y:player.y,text:'+'+it.heal+' ♥',col:C(255,90,110),t:0});toast(it.n+' : +'+it.heal+' ♥');save();}
+ bag[id]--;if(!bag[id])delete bag[id];heal(it.heal);if(id!=='trousse'&&id!=='medkit')mange(it.heal);floaters.push({x:player.x,y:player.y,text:'+'+it.heal+' ♥',col:C(255,90,110),t:0});toast(it.n+' : +'+it.heal+' ♥');save();}
 function quickHeal(){const ids=Object.keys(bag).filter(k=>ITEMS[k]&&ITEMS[k].heal).sort((a,b)=>ITEMS[b].heal-ITEMS[a].heal);if(!ids.length){toast('Rien pour te soigner dans le sac');return;}
  const need=player.maxHp-player.hp,best=ids.find(k=>ITEMS[k].heal<=need)||ids[ids.length-1];useItem(best);}
 // ---------------- véhicules dans l'inventaire ----------------
@@ -7302,7 +7375,7 @@ let taxiRide=null;
 function startTaxiRide(c,g){
  const[cx,cy]=carPos(c),sx=Math.floor(cx),sy=Math.floor(cy);
  let tgt=null,bd=1e9;for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++){const x=g.x+dx,y=g.y+dy;if(!inB(x,y))continue;const k=y*W+x;if(isRoad(tile[k])&&lane[k]){const v=dx*dx+dy*dy;if(v<bd){bd=v;tgt={x,y};}}}
- const path=tgt?computeRoute(tgt.x,tgt.y,sx,sy,true):[];
+ let path=tgt?computeRoute(tgt.x,tgt.y,sx,sy,true,true):[];if(tgt&&path.length<2)path=computeRoute(tgt.x,tgt.y,sx,sy,true);
  if(path.length<2){toast('Le chauffeur ne trouve pas la route…');return;}
  cars.splice(cars.indexOf(c),1);player.car=null;player.bike=null;
  taxiRide={c,path,i:0,t:0,wait:0,dest:g};routeFor='';
@@ -7379,7 +7452,12 @@ function loop(now){
  {const rd=Math.min(0.25,(now-(loop.pn||now))/1000);loop.pn=now;loop.aa=(loop.aa||0)+rd;loop.an=(loop.an||0)+1;
   if(loop.aa>2.5){const avg=loop.aa/loop.an,base=isTouch?3.2:4.1;loop.aa=0;loop.an=0;
    }}
- {const was=hygiene;hygiene=Math.max(0,hygiene-dt*(player.moving&&!player.car?0.2:0.12));if(was>=20&&hygiene<20)toast('Tu commences à sentir mauvais… va à la LAVERIE',2600);
+ {const was=hygiene;hygiene=Math.max(0,hygiene-dt*(player.moving&&!player.car?0.22:0.15));
+  // la faim : un vrai repas par jour suffit ; sans manger, la santé finit par baisser (jamais sous 8 ♥)
+  {const wf=faim;faim=Math.max(0,faim-dt*(player.moving&&!player.car?0.22:0.16));
+   if(wf>=25&&faim<25)toast('Tu as faim… mange quelque chose (sac, resto, 7-Eleven)',3000);
+   if(faim<=0&&player.hp>8&&!SLEEPING){player.hp=Math.max(8,player.hp-dt*(player.moving&&!player.car?0.15:0.1));if(wf>0)toast('Tu es affamé : ta santé baisse !',3000);}}
+  if(was>=20&&hygiene<20)toast('Tu commences à sentir mauvais… va à la LAVERIE',2600);
   if(hygiene<20&&!inside){stinkT-=dt;if(stinkT<=0){stinkT=0.5;floaters.push({x:player.x+(Math.random()-0.5)*0.6,y:player.y-0.6,text:'~',col:C(150,190,80),t:0});}}}
  buildOcc();updateBoats(dt);updateRiver(dt);audioTick(dt);
  if(kidnapT>0&&!inside&&!taxiRide){kidnapT-=dt;if(kidnapT<=0){kidnap();requestAnimationFrame(loop);return;}}
@@ -8747,13 +8825,13 @@ function sunsetStart(spot){
  const S={ov,cvs,ctx,cap,spot,t0:performance.now(),fin:false,raf:0,last:0,seed:spot.v};
  SUNS=S;
  const close=()=>{if(SUNS!==S)return;cancelAnimationFrame(S.raf);document.removeEventListener('keydown',kd,true);ov.remove();SUNS=null;
-  if(S.fin){const day=Math.floor(time/DAYLEN);if(spot.last!==day){spot.last=day;player.hp=Math.min(player.maxHp||100,player.hp+25);toast('🌅 Quel moment… ♥ +25',3200);}else toast('🌅 Toujours aussi beau.',2000);}};
+  if(S.fin){const day=Math.floor(time/DAYLEN);time+=((19.6-hour()+24)%24)*DAYLEN/24;if(spot.last!==day){spot.last=day;player.hp=Math.min(player.maxHp||100,player.hp+25);toast('🌅 Quel moment… ♥ +25 · la nuit est tombée',3400);}else toast('🌅 Toujours aussi beau. La nuit est tombée.',2400);}};
  const kd=e=>{e.preventDefault();e.stopPropagation();if(e.key==='Escape'||e.key==='Enter'||e.key===' '||e.key==='e'||e.key==='E')close();};
  document.addEventListener('keydown',kd,true);
  ov.addEventListener('pointerup',e=>{e.preventDefault();close();});
  sunsetFrame(S);
 }
-const SUN_DUREE=34;
+const SUN_DUREE=36,SUN_TOTAL=52;
 // bruit de valeur lisse, sans tableau : suffit pour des nuages
 const cSh=(a,b)=>{let h=(a*374761393+b*668265263)|0;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296;};
 const cLerp=(a,b,t)=>a+(b-a)*t;
@@ -8812,10 +8890,10 @@ function sunsetFrame(S){
  c.font='700 '+fs+'px "Courier New",monospace';c.textBaseline='top';
  const A=w/h,HZ=0.64,p=Math.min(1,T/SUN_DUREE),v=S.seed;
  // le soleil descend, de plus en plus rouge
- const sx=v===1?A*0.30:v===0?A*0.5:A*0.40,hs=cLerp(0.31,0.03,Math.pow(p,0.85)),R=0.125;
- if(p>=1&&!S.fin){S.fin=true;}
- S.cap.textContent=S.fin?'Chao Phraya · le soleil se couche sur Bangkok — touche l\'écran ou Échap pour revenir':'Chao Phraya · 18 h 07';
- if(!S.fin){const mm=Math.floor(7+p*34);S.cap.textContent='Chao Phraya · 18 h '+String(mm%60).padStart(2,'0')+(mm>=60?'':'');}
+ const sx=v===1?A*0.30:v===0?A*0.5:A*0.40,hs=cLerp(0.31,-0.2,Math.pow(p,0.9)),R=0.125,nq=Math.max(0,Math.min(1,(T-30)/20));
+ if(T>=SUN_TOTAL&&!S.fin){S.fin=true;}
+ S.cap.textContent=S.fin?'Chao Phraya · la nuit tombe sur Bangkok — touche l\'écran ou Échap pour revenir':'';
+ if(!S.fin){const mm=Math.floor(7+Math.min(1,T/SUN_TOTAL)*88),hh=18+Math.floor(mm/60);S.cap.textContent='Chao Phraya · '+hh+' h '+String(mm%60).padStart(2,'0');}
  const rouge=Math.pow(p,1.2);
  const RAMPE=' .,:;-~=+*#%@';
  const bird=[];for(let i=0;i<9;i++)bird.push({x:((i*0.17+T*0.018*(1+i%3*0.15))%1.4)*A-0.1*A,y:0.14+0.05*Math.sin(i*2.1+T*0.9)+(i%4)*0.035,f:Math.floor(T*5+i)%2});
@@ -8857,7 +8935,7 @@ function sunsetFrame(S){
     chr=(nb>0.8)?'#':(band>0.5?'=':'~');}
    // disque solaire
    const dd=Math.hypot(XX-sx,hy-hs),inSun=dd<R&&hy>=0;
-   let sil=0;
+   let sil=0,star=0;
    if(inSun){const k=dd/R;chr=k<0.35?'@':k<0.65?'O':k<0.88?'o':'.';
     r0=255;g0=cLerp(236,176,rouge*0.7+k*0.25);b0=cLerp(130,44,rouge*0.8+k*0.4);lum=1;}
    else if(chr===' '){ // texture du ciel
@@ -8868,7 +8946,7 @@ function sunsetFrame(S){
     chr='#%@MW8&H'[(q*7+r*13)%8];
     r0=cLerp(24,95,rim*0.6);g0=cLerp(7,28,rim*0.5);b0=cLerp(5,16,rim*0.4);if(sil===1){r0*=0.8;}
     // fenetres allumees / pointes eclairees
-    if(cSh(q*3,r*5)>0.992){r0=255;g0=210;b0=110;chr='*';}}
+    if(cSh(q*3,r*5)>0.992-nq*0.05){r0=255;g0=210;b0=110;chr='*';}}
    if(water){
     // vaguelettes : tirets sombres et etincelles dorees pres de la colonne du soleil
     const wv=Math.sin(-Y*140+T*2.2+XX*18+cVn(XX*9,Y*40)*4);
@@ -8881,6 +8959,10 @@ function sunsetFrame(S){
     // brume sous l'horizon
     if(-Y<0.02){r0=cLerp(r0,255,0.5);g0=cLerp(g0,180,0.45);}
    }
+   // la nuit : le ciel s'éteint, vire au bleu nuit, les étoiles sortent
+   if(nq>0){
+    {const k=1-nq*0.88;r0=r0*k*(1-nq*0.25);g0=g0*k*(1-nq*0.1);b0=b0*k+nq*(water?34:26)*(1-0.3*(hy<0.1?1:0));}
+    if(!water&&!sil&&!inSun&&hy>0.05&&cSh(q*5+1,r*3)>1-0.05*nq*Math.min(1,hy*2.5)){chr='*';star=1;}}
    // fondu d'entree
    const fade=Math.min(1,T/2.2);
    r0*=fade;g0*=fade;b0*=fade;
@@ -8888,6 +8970,7 @@ function sunsetFrame(S){
    let fr=Math.min(255,r0*1.14+12),fg2=Math.min(255,g0*1.22+16),fb=Math.min(255,b0*1.1+8);
    if(sil){fr=Math.min(255,r0+26);fg2=g0+9;fb=b0+6;}
    else if(inSun){fr=255;fg2=g0*0.78;fb=b0*0.45;}
+   else if(star){fr=235;fg2=235;fb=255;}
    else if(chr==='*'){fr=255;fg2=240;fb=170;}
    c.fillStyle='rgb('+(r0|0)+','+(g0|0)+','+(b0|0)+')';c.fillRect(q*cw,r*ch,cw+0.7,ch+0.7);
    const o=over.get(r*cols+q);
@@ -8900,6 +8983,136 @@ function sunsetFrame(S){
  const gr=c.createRadialGradient(w/2,h*0.55,h*0.3,w/2,h*0.55,h*0.95);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(20,2,0,.55)');
  c.fillStyle=gr;c.fillRect(0,0,w,h);
  S.raf=requestAnimationFrame(()=>sunsetFrame(S));
+}
+// ================= EXCURSION À AYUTTHAYA (aller-retour) =================
+// Même principe que le coucher de soleil : une scène ASCII plein écran, en trois temps.
+//  1. le train quitte Bangkok (rizières, poteaux, skyline qui s'éloigne)
+//  2. le Wat Chaiwatthanaram : prangs de brique sous un ciel bleu
+//  3. le retour au crépuscule, les lumières de Bangkok qui reviennent
+var AYU=null;
+const AYU_A=11,AYU_B=24,AYU_END=36;
+function ayutthayaStart(done){
+ if(AYU)return;
+ const ov=document.createElement('div');
+ ov.style.cssText='position:fixed;inset:0;z-index:99999;background:#10202f;cursor:pointer;touch-action:none';
+ const cvs=document.createElement('canvas');cvs.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block';
+ const cap=document.createElement('div');
+ cap.style.cssText='position:absolute;left:0;right:0;bottom:14px;text-align:center;font:600 13px monospace;color:#fff;text-shadow:0 0 6px #000,0 0 12px #000;pointer-events:none;letter-spacing:.5px';
+ ov.appendChild(cvs);ov.appendChild(cap);document.body.appendChild(ov);
+ const S={ov,cvs,ctx:cvs.getContext('2d'),cap,t0:performance.now(),fin:false,raf:0,last:0,done};
+ AYU=S;
+ const close=()=>{if(AYU!==S)return;cancelAnimationFrame(S.raf);document.removeEventListener('keydown',kd,true);ov.remove();AYU=null;try{done&&done(S.fin);}catch(e){}};
+ const kd=e=>{e.preventDefault();e.stopPropagation();if(e.key==='Escape'||e.key==='Enter'||e.key===' '||e.key==='e'||e.key==='E')close();};
+ document.addEventListener('keydown',kd,true);
+ ov.addEventListener('pointerup',e=>{e.preventDefault();close();});
+ ayutthayaFrame(S);}
+const aLerp=(a,b,t)=>a+(b-a)*t,aClamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const aMix=(c1,c2,t)=>[aLerp(c1[0],c2[0],t),aLerp(c1[1],c2[1],t),aLerp(c1[2],c2[2],t)];
+// prang : tour à gradins qui s'affine vers la pointe (Y = hauteur au-dessus de l'horizon)
+function aPrang(dx,Y,h,w){if(Y<0||Y>h)return 0;const k=Y/h;
+ const step=Math.floor(k*9),ww=w*Math.pow(1-k,0.85)*(step%2?0.82:1)+0.003;
+ return Math.abs(dx)<ww?(Math.abs(dx)<ww*0.3&&k>0.12&&k<0.7&&(Math.floor(k*30)%5===0)?2:1):0;}
+// les cinq tours du temple + galerie basse (dans le repère du temple, centré en 0)
+function aTemple(dx,Y){
+ const m=aPrang(dx,Y,0.50,0.11);if(m)return m;
+ for(const[o,h,w]of[[-0.22,0.34,0.06],[0.23,0.36,0.065],[-0.39,0.27,0.05],[0.40,0.30,0.055]]){const v=aPrang(dx-o,Y,h,w);if(v)return v;}
+ if(Y>=0&&Y<0.065&&Math.abs(dx)<0.49)return(Math.floor(dx*70)%7===0)?2:1;   // galerie de brique
+ if(Y>=0.065&&Y<0.095&&Math.abs(dx)<0.45&&Math.floor(dx*34)%3!==0)return 1; // créneaux
+ if(Y>=0&&Math.abs(dx)<0.03&&Y<0.2)return 2;                                       // escalier central
+ return 0;}
+function aSkyline(X,Y,seed){const f=Math.floor(X*34+seed);const h=0.05+0.17*((f*2654435761>>>0)%97)/97;return Y>=0&&Y<h&&(f%5)!==0;}
+function aTrain(dx,dy){ // locomotive + 3 wagons, vus de côté ; dy=0 en bas des roues
+ const L=-1.9,Rr=0.45;if(dx<L||dx>Rr||dy<0||dy>0.2)return 0;
+ const wag=Math.floor((dx-L)/0.55);
+ if(dy<0.03)return(Math.floor(dx*60)%3===0)?3:2;                // roues
+ if(dy>0.17)return 2;
+ if(Math.abs(((dx-L)%0.55)-0.275)<0.02)return 2;               // séparations
+ if(dy>0.08&&dy<0.14&&((dx-L)%0.55)>0.08&&((dx-L)%0.55)<0.47&&((dx-L)%0.11)<0.07)return 4; // fenêtres
+ return 1;}
+function ayutthayaFrame(S){
+ if(AYU!==S)return;
+ const now=performance.now(),T=(now-S.t0)/1000;
+ if(now-S.last<42){S.raf=requestAnimationFrame(()=>ayutthayaFrame(S));return;}
+ S.last=now;
+ const dpr=Math.min(2,window.devicePixelRatio||1),w=innerWidth,h=innerHeight;
+ if(S.cvs.width!==Math.round(w*dpr)||S.cvs.height!==Math.round(h*dpr)){S.cvs.width=Math.round(w*dpr);S.cvs.height=Math.round(h*dpr);}
+ const c=S.ctx;c.setTransform(dpr,0,0,dpr,0,0);
+ const fs=w<700?10:13,cw=fs*0.6,ch=fs*1.1,cols=Math.ceil(w/cw),rows=Math.ceil(h/ch);
+ c.font='700 '+fs+'px "Courier New",monospace';c.textBaseline='top';
+ const A=w/h,HZ=0.6;
+ if(T>=AYU_END&&!S.fin)S.fin=true;
+ const ph=T<AYU_A?0:T<AYU_B?1:2;
+ // lumière : 0 = plein jour, 1 = crépuscule, 2 = nuit
+ const dusk=ph<2?0:aClamp((T-AYU_B)/(AYU_END-AYU_B),0,1);
+ const SKYTOP=aMix([70,140,225],[40,30,80],Math.pow(dusk,0.8)),SKYHZ=aMix([200,230,250],[255,140,70],Math.pow(dusk,0.7));
+ const dark=dusk>0.75?(dusk-0.75)*2.4:0;
+ // le temps affiché
+ const hh=ph===0?aLerp(8.0,9.6,T/AYU_A):ph===1?aLerp(9.6,16,(T-AYU_A)/(AYU_B-AYU_A)):aLerp(16,19.5,dusk);
+ S.cap.textContent=S.fin?'Retour à Hua Lamphong — touche l\'écran ou Échap pour revenir':
+  (ph===0?'Train n°21 · Hua Lamphong → Ayutthaya':ph===1?'Wat Chaiwatthanaram · Ayutthaya':'Train du retour · Ayutthaya → Bangkok')+' · '+String(Math.floor(hh)).padStart(2,'0')+' h '+String(Math.floor((hh%1)*60)).padStart(2,'0');
+ const zoom=ph===1?1+0.14*((T-AYU_A)/(AYU_B-AYU_A)):1;
+ const scroll=ph===1?0:(ph===0?T:(T-AYU_B))*0.35;   // défilement du paysage
+ const dir=ph===2?-1:1;
+ for(let r=0;r<rows;r++){
+  const Yp=(r*ch)/h;
+  for(let q=0;q<cols;q++){
+   const X=(q*cw+cw/2)/h,Y=HZ-Yp;
+   let chr=' ',col=[0,0,0],bg=[0,0,0],lit=false;
+   if(Y>=0){ // ---- ciel ----
+    const k=aClamp(Y/0.65,0,1);bg=aMix(SKYHZ,SKYTOP,Math.pow(k,0.7));
+    // nuages qui dérivent
+    const cx=X*3.2-T*0.05*dir+ph*7,cy=Y*7,nb=cVn(cx,cy)*0.7+cVn(cx*2.3,cy*2.6)*0.4;
+    if(Y>0.08&&nb>0.78){const kk=aClamp((nb-0.78)*4,0,1);bg=aMix(bg,dusk>0.1?[210,110,110]:[250,252,255],kk*0.85);chr=nb>0.95?'#':'~';col=aMix(bg,[255,255,255],0.4);}
+    // étoiles de fin de journée
+    if(dark>0&&cSh(q,r)>0.985-dark*0.02&&Y>0.1){chr='*';col=[255,255,230];}
+    // soleil bas au retour
+    if(ph===2){const d=Math.hypot(X-A*0.78,Y-aLerp(0.18,-0.12,dusk));if(d<0.1&&Y>=0){bg=[255,200,110];chr=d<0.05?'@':'O';col=[255,240,170];}}
+   }else{ // ---- sol ----
+    const d=-Y;
+    bg=aMix([104,170,70],[58,118,52],aClamp(d*2,0,1));
+    chr=cSh(q*7+Math.floor(scroll*30)*0,r*3)>0.7?'"':(cSh(q,r*5)>0.5?',':'.');col=aMix(bg,[170,220,110],0.5);
+   }
+   // ---- décor selon la scène ----
+   if(ph===1){ // le temple
+    const sx=(X-A*0.5)/zoom,sy=(Y-(-0.03))/zoom;
+    const t=aTemple(sx,sy);
+    if(t){const tone=t===2?0.78:1;bg=[(178+Math.sin(q*1.7+r)*14)*tone,(92+Math.cos(r*1.3)*10)*tone,(58)*tone];
+     chr='#%@H8&'[(q*5+r*11)%6];col=[(120)*tone,60*tone,36*tone];
+     if(sy>0.1&&cSh(q*3,r*5)>0.93){chr=':';col=[230,170,120];}}
+    else if(Y<0&&Y>-0.08){ // pelouse + dalles
+     if(cSh(q,r)>0.8){chr='=';col=[190,180,150];}}
+    // visiteurs minuscules
+    if(Y<-0.1&&Y>-0.13&&cSh(Math.floor(X*40),9)>0.97){chr='i';col=[250,220,120];}
+   }else{ // le train et le paysage défilent
+    const par=(sp,off)=>((X+scroll*sp*dir)+off);
+    // skyline de Bangkok qui s'éloigne (aller) / revient (retour)
+    const sk=ph===0?aLerp(1,0,aClamp(T/AYU_A,0,1)):aLerp(0,1,aClamp((T-AYU_B)/(AYU_END-AYU_B),0,1));
+    if(Y>=0&&sk>0.03){const base=aSkyline(X+scroll*0.05*dir,Y*(1/(0.3+0.7*sk)),3);
+     if(base&&X<A*0.55+0.2*sk){bg=aMix(bg,[60,70,100],0.7);chr='|';col=[90,100,140];if(dusk>0.5&&cSh(q*2,r)>0.9){chr='*';col=[255,230,120];}}}
+    // rizières, arbres, poteaux
+    if(Y<0&&Y>-0.16){const row=Math.floor(-Y*60);if(row%3===0){chr='=';col=[190,230,120];}}
+    if(Y>=0&&Y<0.12){const f=Math.floor(par(0.5,0)*28);if((f%11)===0&&Y<0.1*(1+(f%3)*0.4)){bg=[36,96,46];chr='&';col=[80,150,70];}}
+    if(Math.abs(((par(1.4,0))*9)%1)<0.025&&Y>-0.05&&Y<0.34){chr='|';col=[50,40,30];bg=aMix(bg,[60,50,40],0.5);}
+    // voie ferrée + train
+    const yR=-0.24;
+    if(Y<yR+0.012&&Y>yR-0.012){chr='=';col=[120,120,130];bg=[70,62,56];}
+    if(Y<yR-0.012&&Y>yR-0.03){chr=((q+Math.floor(scroll*40))%3===0)?'|':'-';col=[110,80,50];bg=[80,64,48];}
+    const tr=aTrain(X-A*(0.55+(ph===2?0:0)),Y-yR);
+    if(tr){const dr=ph===2?1:0; bg=tr===1?(dr?[110,30,30]:[40,80,150]):tr===2?[40,40,50]:tr===3?[160,160,170]:[255,230,130];
+     chr=tr===1?'#':tr===4?'O':'o';col=tr===4?[255,250,200]:[210,210,220];}
+   }
+   // lumière du soir
+   if(dusk>0){const k=1-dark*0.65;bg=[bg[0]*k*(1+dusk*0.12),bg[1]*k*(1-dusk*0.12),bg[2]*k*(1-dusk*0.05)+dusk*16];col=[col[0]*k,col[1]*k,col[2]*k+dusk*10];}
+   // fondu d'entrée / de sortie
+   const f=Math.min(1,T/1.6)*(T<AYU_END?1:1);
+   c.fillStyle='rgb('+(bg[0]*f|0)+','+(bg[1]*f|0)+','+(bg[2]*f|0)+')';c.fillRect(q*cw,r*ch,cw+0.7,ch+0.7);
+   if(chr!==' '){c.fillStyle='rgb('+(col[0]*f|0)+','+(col[1]*f|0)+','+(col[2]*f|0)+')';c.fillText(chr,q*cw,r*ch);}
+  }
+ }
+ // fumée de la locomotive et oiseaux
+ const gr=c.createRadialGradient(w/2,h*0.55,h*0.3,w/2,h*0.55,h*0.95);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,10,25,.45)');
+ c.fillStyle=gr;c.fillRect(0,0,w,h);
+ S.raf=requestAnimationFrame(()=>ayutthayaFrame(S));
 }
 // =====================================================================
 //  QUETE PRINCIPALE : RETROUVER NIRAN, TON FRERE
@@ -9502,12 +9715,12 @@ function netRecoit(s){
   if(netVu.has(k))continue;netVu.add(k);if(netVu.size>400)netVu.delete(netVu.values().next().value);
   netLogPush(s.nom,m.txt,false);}}
 function netLogPush(nom,txt,moi){netLog.push({nom,txt,t:Date.now(),moi});if(netLog.length>60)netLog.shift();netChatDessine();}
-let netChatOuvert=false;
+let netChatOuvert=false,netLogMasque=0;
 function netChatEl(){
  let d=document.getElementById('netChat');if(d)return d;
  d=document.createElement('div');d.id='netChat';
  d.style.cssText='position:fixed;left:10px;bottom:'+(isTouch?'170px':'14px')+';width:min(360px,88vw);z-index:40;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;color:#dfe6f3;display:none;pointer-events:none';
- d.innerHTML='<div id="netChatLog" style="padding:6px 8px;background:rgba(9,13,26,.72);border:1px solid #2b3144;border-radius:8px 8px 0 0;max-height:170px;overflow:hidden"></div>'
+ d.innerHTML='<button id="netChatX" title="Fermer le chat" style="position:absolute;top:2px;right:4px;z-index:2;pointer-events:auto;width:22px;height:22px;line-height:18px;background:#1b2338;color:#ff8a8a;border:1px solid #2b3144;border-radius:6px;cursor:pointer;font:700 13px monospace;padding:0">\u00d7</button><div id="netChatLog" style="padding:6px 8px;background:rgba(9,13,26,.72);border:1px solid #2b3144;border-radius:8px 8px 0 0;max-height:170px;overflow:hidden"></div>'
   +'<div id="netChatRow" style="display:none;pointer-events:auto;background:#0b1020;border:1px solid #2b3144;border-top:0;border-radius:0 0 8px 8px;padding:4px"><input id="netChatIn" maxlength="160" placeholder="Écrire à toute la rue…" autocomplete="off" style="width:calc(100% - 64px);background:#090d1a;color:#fff;border:1px solid #2b3144;border-radius:6px;padding:6px 8px;font:inherit"><button id="netChatOk" style="width:56px;margin-left:4px;padding:6px 0;background:#ffd54a;color:#111;border:0;border-radius:6px;font:700 12px inherit">OK</button></div>';
  document.body.appendChild(d);
  const inp=d.querySelector('#netChatIn');
@@ -9515,6 +9728,7 @@ function netChatEl(){
  inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();envoie();}else if(e.key==='Escape'){netChatFerme();}},true);
  inp.addEventListener('keyup',e=>e.stopPropagation(),true);
  d.querySelector('#netChatOk').onclick=envoie;
+ d.querySelector('#netChatX').onclick=()=>{netLogMasque=Date.now();netChatFerme();};
  {const ok=d.querySelector('#netChatOk'),g=document.createElement('button');g.textContent='\u{1F4CD}';g.title='Envoyer un point GPS (ton point, sinon ta position)';g.style.cssText='margin-left:4px;padding:4px 7px;background:#13301f;color:#7dffb0;border:1px solid #2c7a4b;border-radius:6px;cursor:pointer';g.onclick=()=>{inp.value=(inp.value+' '+gpsTok()).trim().slice(0,160);inp.focus();};ok.parentNode.insertBefore(g,ok);}
  return d;}
 function netChatOuvre(){if(!NETON)return;netChatOuvert=true;const d=netChatEl();d.style.display='block';d.querySelector('#netChatRow').style.display='block';netChatDessine();setTimeout(()=>{try{d.querySelector('#netChatIn').focus();}catch(e){}},30);}
@@ -9522,7 +9736,7 @@ function netChatFerme(){netChatOuvert=false;const d=document.getElementById('net
 function netChatDessine(){
  const d=netChatEl(),L=d.querySelector('#netChatLog');
  if(!NETON){d.style.display='none';return;}
- const now=Date.now(),vis=netLog.filter(m=>netChatOuvert||now-m.t<16000).slice(-8);
+ const now=Date.now(),vis=netLog.filter(m=>m.t>netLogMasque&&(netChatOuvert||now-m.t<16000)).slice(-8);
  if(!vis.length&&!netChatOuvert){d.style.display='none';return;}
  d.style.display='block';
  L.innerHTML=vis.map(m=>'<div style="opacity:'+(netChatOuvert?1:Math.max(.25,1-(now-m.t)/16000))+'"><b style="color:'+(m.moi?'#ffd54a':'#7fd8ff')+'">'+m.nom.replace(/[<>&"']/g,'')+'</b> '+gpsLink(m.txt.replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])))+'</div>').join('')||'<i style="color:#8fa3bd">Personne n’a encore parlé.</i>';}
