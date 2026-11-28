@@ -232,6 +232,8 @@ body.touch #kbHint{display:none}
       <p><b>Coucher de soleil :</b> l’animation va maintenant jusqu’au bout : le soleil disparaît, les étoiles sortent et il fait nuit à ton retour.</p>
       <p><b>7-Eleven :</b> café, iced cocoa, energy drink, onigiri, banane et mochis choco rejoignent les sandwichs et produits d’hygiène.</p>
       <p><b>GPS en voiture :</b> l’itinéraire ne suit plus que les routes.</p>
+      <p><b>Ferrailleur :</b> repère le « F » sur la carte (catégorie Services). Arrive-y en voiture, en scooter ou à vélo (ou avec un deux-roues garé à côté), appuie sur <b>E</b> et choisis d’être payé en <b>argent</b> ou en <b>ferraille</b>. Maquillé (papiers en règle) : plein tarif ; volé et non maquillé : 60 % en argent. Les voitures de police et les bateaux ne sont pas repris.</p>
+      <p><b>Exploiter un terrain :</b> à l’achat, choisis la <b>nature</b> : libre (tu construis), rizière, verger, élevage, pisciculture, parking, atelier, boutique, bar, restaurant ou hôtel. Le prix dépend de l’emplacement (quartier riche, plage, port, panorama…) et de la nature. Sur ton terrain, touche <b>E</b> pour <b>embaucher des PNJ</b> (salaire et compétence ★ variables), changer de nature ou licencier. Chaque semaine, le terrain rapporte en banque, <b>salaires déduits</b>. <b>Revendre</b> : bouton « Vendre » dans le menu E ; prix = 60 % de la valeur du terrain + constructions + rentabilité (moyenne hebdo × 25). Le terrain repart à vendre tel quel : l’acheteur doit détruire les constructions en mode BÂTIR pour reconstruire. Sans personnel, il ne rapporte rien ; sans argent pour payer, le personnel démissionne.</p>
       <p><b>Acheter un terrain :</b> repère les <b>$</b> (catégorie « Terrains » de la carte) ou les panneaux jaunes « À VENDRE … ฿ ». Place-toi à moins de 5 cases, ouvre <b>BÂTIR</b> (touche B), touche une case du terrain et choisis « Acheter ». L’argent est pris en poche, puis en banque. Le terrain devient le tien (★ sur la carte) et tu peux construire dessus. En multijoueur, un terrain déjà acheté par un autre joueur est verrouillé (×).</p>
       <p><b>Construction :</b> achète d’abord un <b>terrain</b> (5 000 à 20 000 ฿ selon le quartier ; les maisons coûtent un peu plus cher), puis construis dessus. Dans l’atelier, fabrique tout ce qu’il faut à une maison : <b>lit, douche, cuisine, télé, garage</b>, murs, sol et <b>toit en tôle</b> — le toit disparaît quand tu entres chez toi.</p>
       <p><b>Compte et sauvegarde en ligne :</b> sur le site hébergé, crée un compte (pseudo + mot de passe) : ta partie est enregistrée <b>automatiquement</b> toutes les 15 s sur le serveur, dans une base permanente. Tu te reconnectes <b>là où tu t’étais arrêté</b> (position, argent, missions, bâtiments, gang…), seul ou en multi, depuis n’importe quel appareil. « Jouer sans compte » garde la sauvegarde sur cet appareil seulement.</p>
@@ -2002,6 +2004,11 @@ function building3D(b,ccx,ccy){WT=bWealth(b);if(Math.abs(WT)<0.08)WT=0;try{build
 // Chaque véhicule est une pile de tranches (vue de dessus). On dessine les tranches du bas vers le haut,
 // tournées selon le cap exact et décalées vers le haut : volume + rotation fluide à 360°.
 const STK={
+ sport:{cs:0.17,L:[
+  ["tt......tt","BBBBBBBBBB","BBBBBBBBBB","BBBBBBBBBB","tt......tt"],
+  ["rbbbbbbbbf","bbbbbbbbbb","bYYYYYYYYf","bbbbbbbbbb","rbbbbbbbbf"],
+  ["Z.........","Z.bgggb...","Z.gYYYg...","Z.bgggb...","Z........."],
+  ["..........","...RRR....","...YYY....","...RRR....",".........."]]},
  car:{cs:0.17,L:[
   ["tt......tt","BBBBBBBBBB","BBBBBBBBBB","BBBBBBBBBB","tt......tt"],
   ["rbbbbbbbbf","bbbbbbbbbb","bbbbbbbbbb","bbbbbbbbbb","rbbbbbbbbf"],
@@ -2041,6 +2048,8 @@ function stkRole(ro,body,mode,z,extra){const night=curDk>0.3,dark=lighten(body,-
   case 'd':return mode==='player'?['@',C(0,0,0),C(255,215,40)]:['o',C(240,200,160),C(40,40,46)];
   case 'c':return['~',lighten(body,70),lighten(body,-20)];
   case 'h':return['#',lighten(body,-110),lighten(body,-60)];
+  case 'Y':return['=',C(250,250,252),C(232,232,238)];
+  case 'Z':return['=',C(40,40,48),C(20,20,26)];
   case 'D':return['=',C(150,120,80),C(236,226,200)];
  }return null;}
 const EMR={f:1,r:1,d:0};
@@ -2545,6 +2554,13 @@ function personSprite(o,hl){const down=o.state==='down',d=o.dir??2,mv=!!o.moving
 // ---- véhicules HD : maquettes en voxels fins (≈500 caractères à l'écran) ----
 function mkModel(Lw,Wd,Lz,cs,H,fn){const L=[];for(let z=0;z<Lz;z++){const A=[];for(let iy=0;iy<Wd;iy++){let row='';for(let ix=0;ix<Lw;ix++){const u=ix/(Lw-1),v=(iy-(Wd-1)/2)/((Wd-1)/2);row+=fn(u,v,z,ix,iy)||'.';}A.push(row);}L.push(A);}return{Lw,Wd,Lz,cs,lh:H/Lz,L};}
 const STKH={
+ sport:mkModel(46,20,6,0.0425,0.42,(u,v,z,ix)=>{const av=Math.abs(v),wheel=(u>0.12&&u<0.27)||(u>0.72&&u<0.88),nose=u>0.78?0.97-(u-0.78)*2.4:0.97,tail=u<0.07?0.82+u*2:1,hw=Math.min(nose,tail);
+  if(z===0)return wheel&&av>0.7?((Math.abs(u-0.195)<0.03||Math.abs(u-0.8)<0.03)&&av>0.9?'w':'t'):(u>0.05&&u<0.95&&av<0.78?'B':0);
+  if(z===1){if(av>hw)return 0;if(wheel&&av>0.84)return 't';if(u>0.97)return av>0.3?'f':'k';if(u<0.03)return av>0.15?'r':'k';if(av>0.9&&!wheel)return 's';if(av<0.1&&u>0.3)return 'Y';return 'b';}
+  if(z===2){const h=u>0.66?hw-0.18:hw;if(av>h)return 0;if(u>0.97)return av>0.3&&av<0.8?'f':0;if(u<0.03)return av>0.15?'r':'k';if(av<0.1&&u>0.28)return 'Y';if(u>0.52&&u<0.7&&av>0.6)return 'm';return 'b';}
+  if(z===3){if(u<0.07)return av>0.12&&av<0.88?'Z':0;if(u<0.2||u>0.62||av>0.74)return u>0.62&&u<0.7&&av<0.62?'b':0;if(u<0.26)return 'b';return av<0.1?'Y':'b';}
+  if(z===4){if(u<0.075)return (av>0.7&&av<0.88)?'Z':0;if(u<0.3||u>0.6||av>0.64-(u-0.3)*0.4)return 0;if(av<0.08&&u>0.31&&u<0.59)return 'Y';return (u<0.34||u>0.56||av>0.5)?'b':'g';}
+  if(z===5){if(u<0.075)return (av>0.14&&av<0.86)?'Z':0;if(u<0.34||u>0.54||av>0.46)return 0;return av<0.08?'Y':'R';}}),
  car:mkModel(40,20,9,0.0425,0.64,(u,v,z,ix)=>{const av=Math.abs(v),wheel=(u>0.13&&u<0.29)||(u>0.7&&u<0.86),corner=(u<0.05||u>0.95)&&av>0.82;
   if(z===0)return wheel&&av>0.66?(Math.abs(u-0.21)<0.03||Math.abs(u-0.78)<0.03)&&av>0.9?'w':'t':(u>0.04&&u<0.96&&av<0.8?'B':0);
   if(z<=2){if(corner)return 0;if(wheel&&av>0.82&&z===1)return 't';if(u<0.035||u>0.965){if(av<0.28&&u<0.5)return 'n';if(av>0.45&&av<0.86)return u>0.5?'f':'r';return 'k';}
@@ -2664,6 +2680,8 @@ function stkRoleHD(ro,body,mode,z,extra,top,night,ix,iy){const W=mode==='wreck';
   case 'L':return extra.cop?(()=>{const f=(Math.floor(time*8)+(iy<10?0:1))%2;return[f?'*':'+',f?C(255,70,70):C(90,140,255),f?C(200,20,20):C(30,60,220)];})():null;
   case 'c':{const cc=extra.cano||[C(30,90,200),C(20,150,90),C(200,30,60),C(235,185,40)][(body>>3)%4];return[top?'~':'=',lighten(cc,80),cc];}
   case 'h':return['#',lighten(body,-120),lighten(body,-75)];
+  case 'Y':return[top?'=':'|',C(250,250,252),C(236,236,242)];
+  case 'Z':return[top?'=':'#',C(70,70,80),C(22,22,28)];
   case 'D':return[top?'=':'-',C(120,92,58),C(214,196,160)];
   case 'W':return['|',C(150,108,66),C(80,56,32)];
   case 'F':{const h=(((ix*73856093)^(iy*19349663)^(z*83492791))>>>0),g=[C(52,118,58),C(34,88,42),C(78,148,70),C(96,162,74)][h%4];
@@ -3376,7 +3394,7 @@ function render(){
  const fl=Math.floor(time*8)%2;
  for(const c of cars){const[x,y]=carPos(c);if(!inV(x,y,2))continue;
   const mode=c.kind==='wreck'?'wreck':c.kind==='cop'?(stars>0?'copchase':'cop'):c.copLook?'cop':'npc',lit=c.kind==='traffic'||c.kind==='cop';
-  {const ta=Math.atan2(DY[c.dir],DX[c.dir]);if(c._h==null)c._h=ta;c._h+=angD(ta,c._h)*0.22;stack2D(c.tuk?'tuk':'car',x,y,c._h,hexC(c.color),mode,{taxi:c.taxi,cop:mode==='cop'||mode==='copchase',dmg:crantDegat(c)});}
+  {const ta=Math.atan2(DY[c.dir],DX[c.dir]);if(c._h==null)c._h=ta;c._h+=angD(ta,c._h)*0.22;stack2D(c.tuk?'tuk':c.sport?'sport':'car',x,y,c._h,hexC(c.color),mode,{taxi:c.taxi,cop:mode==='cop'||mode==='copchase',dmg:crantDegat(c)});}
   if(dk>0.05&&lit){addLight(x*TW+DX[c.dir]*TW*1.4,y*TH+DY[c.dir]*TH*1.4,5,0.85,0.85,0.7);addLight(x*TW-DX[c.dir]*TW*0.8,y*TH-DY[c.dir]*TH*0.8,2,0.6,0.05,0.05);}
   if(mode==='copchase')addLight(x*TW,y*TH,6,fl?0.9:0.1,0.1,fl?0.1:0.9);
  }
@@ -3460,7 +3478,7 @@ function render(){
  if(taxiRide){stack2D(taxiRide.tuk?'tuk':'car',player.x,player.y,taxiRideHeading(),taxiRide.tuk?hexC(taxiRide.c.color):hexC('#ff5fa8'),'npc',{taxi:!taxiRide.tuk});put(Math.floor(player.x*TW),Math.floor(player.y*TH)-3,'v',C(255,190,0),KEEP,true);}
  else if(player.ride){}else if(player.car&&player.car.boat){drawBoat2D(player.x,player.y,player.car.heading,hexC(player.car.color),player.car.jet,true,Math.abs(player.car.speed));}
  else if(player.car){const c=player.car,h=Math.round(c.heading/(Math.PI/2)),dir=((h+1)%4+4)%4;
-  stack2D(c.tuk?'tuk':'car',player.x,player.y,c.heading,c.cop?C(235,238,245):hexC(c.color),c.hp<=0?'wreck':'player',{taxi:c.taxi,cop:c.cop,dmg:crantDegat(c)});
+  stack2D(c.tuk?'tuk':c.sport?'sport':'car',player.x,player.y,c.heading,c.cop?C(235,238,245):hexC(c.color),c.hp<=0?'wreck':'player',{taxi:c.taxi,cop:c.cop,dmg:crantDegat(c)});
   if(c.hp<=0){const X=Math.floor(player.x*TW),Y=Math.floor(player.y*TH);for(let i=-1;i<=1;i++)put(X+i,Y-2-(Math.floor(time*10+i)%2),'^',Math.random()<0.5?C(255,140,20):C(255,220,60),KEEP,true);addLight(player.x*TW,player.y*TH,5,1,0.5,0.1);}
   if(dk>0.05&&c.hp>0)addLight(player.x*TW+Math.cos(c.heading)*TW*1.6,player.y*TH+Math.sin(c.heading)*TH*1.6,6,0.95,0.95,0.8);
  }else if(player.bike){const b=player.bike,h=Math.round(b.heading/(Math.PI/2)),dir=((h+1)%4+4)%4;
@@ -4132,7 +4150,7 @@ function renderCraft(){
   row.innerHTML=`<span><b>${name}</b><br><span style="color:#999">${cost}</span></span>`;
   const b=document.createElement('button');b.textContent='Fabriquer';b.disabled=!ok;b.onclick=()=>craft(r);row.appendChild(b);box.appendChild(row);
  }
- const p=document.createElement('p');p.innerHTML='Récolte : <b>COUPER</b> les arbres des parcs (bois), <b>FOUILLER</b> les épaves (ferraille), <b>RAMASSER</b> les gravats des terrains libres (pierre).';box.appendChild(p);
+ const p=document.createElement('p');p.innerHTML='Récolte : <b>COUPER</b> les arbres des parcs (bois), <b>FOUILLER</b> les épaves ou <b>RAMASSER</b> les tôles dans les rues (ferraille), <b>RAMASSER</b> les gravats des terrains libres et les cailloux des plages, berges et chemins (pierre).';box.appendChild(p);
 }
 function refreshBuildBar(){
  const bar=$('buildBar');if(!buildMode){bar.style.display='none';return;}bar.style.display='flex';
@@ -5666,6 +5684,7 @@ function nearInteract(){
  if(typeof PAX!=='undefined'&&PAX)return{t:'leavepax',label:'DESCENDRE'};
  if(taxiRide)return{t:'stoptaxi',label:'ARRÊTER'};
  if(player.ride)return{t:'leavebus',label:rideStopped(player.ride)?'DESCENDRE':'ATTENDS'};
+ if(typeof nearScrap==='function'&&nearScrap()&&!inside)return{t:'scrap',label:'FERRAILLEUR'};
  {const f=nearFerry();if(f)return{t:'ferry',f,label:'FERRY '+FERRY.fare+'฿ ('+f.load+'/'+FERRY.cap+')'};}
  if(player.car||player.bike){const px=Math.floor(player.x),py=Math.floor(player.y);for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(inB(px+dx,py+dy)&&tile[(py+dy)*W+px+dx]===B_GAR)return{t:'bgarage',label:'GARAGE'};return null;}
  for(const n of npcs)if(d2(n.x,n.y,player.x,player.y)<1.6*1.6)return{t:'npc',n,label:'PARLER'};
@@ -5683,6 +5702,7 @@ function nearInteract(){
   if(t===B_GAR)return{t:'bgarage',label:'GARAGE'};
   if(t===TREE&&d2(x+.5,y+.5,player.x,player.y)<1.5*1.5)return{t:'tree',k,label:'COUPER'};}
  for(const dd of debris)if(d2(dd.k%W+.5,((dd.k/W)|0)+.5,player.x,player.y)<1.4*1.4)return{t:'debris',d:dd,label:'RAMASSER'};
+ {const lo=(typeof lootNear==='function')?lootNear():null;if(lo)return{t:'loot',o:lo,label:lo.t==='tole'?'RAMASSER LA TÔLE':'RAMASSER LES PIERRES'};}
  for(const c of cars)if(c.kind==='wreck'&&!c.target){const[x,y]=carPos(c);if(d2(x,y,player.x,player.y)<1.7*1.7)return{t:'wreck',c,label:'FOUILLER'};}
  {const pm=(typeof plotNearOwned==='function')?plotNearOwned():null;if(pm&&!inside)return{t:'plotmgr',pl:pm,label:'GÉRER LE TERRAIN'};}
  return null;
@@ -5690,7 +5710,7 @@ function nearInteract(){
 function doInteract(it){
  if(it.t==='leavepax'){paxExit();return;}
   if(it.t==='stoptaxi'){endTaxiRide(false);return;}
- if(it.t==='plotmgr'){plotMenu(it.pl);return;}if(it.t==='ferry'){boardFerry(it.f);return;}if(it.t==='leavebus'){leaveBus();return;}if(it.t==='bus'){boardBus(it.b);return;}if(it.t==='rboat'){boardRiver(it.b);return;}if(it.t==='taxi'){hailTaxi(it.c);return;}
+ if(it.t==='scrap'){scrapMenu();return;}if(it.t==='loot'){lootTake(it.o);return;}if(it.t==='plotmgr'){plotMenu(it.pl);return;}if(it.t==='ferry'){boardFerry(it.f);return;}if(it.t==='leavebus'){leaveBus();return;}if(it.t==='bus'){boardBus(it.b);return;}if(it.t==='rboat'){boardRiver(it.b);return;}if(it.t==='taxi'){hailTaxi(it.c);return;}
  if(it.t==='enter'){enterBuilding(it.d);return;}
  if(it.t==='sunset'){sunsetStart(it.sp);return;}
  if(it.t==='npc')talk(it.n);
@@ -5738,6 +5758,8 @@ function drawWorld2(inV){
   for(const k of roofSet){if(hid&&hid.has(k))continue;const x=k%W,y=(k/W)|0;if(!inV(x,y,0))continue;
    if(buildMode){put(x*TW+3,y*TH+1,'^',C(120,220,255),KEEP,true);continue;}
    roofArt(x*TW,y*TH,x,y);}}
+ if(typeof drawLoot==='function')drawLoot(inV);
+ if(typeof drawScrapyard==='function')drawScrapyard(inV);
  for(const d of debris){const x=d.k%W,y=(d.k/W)|0;if(!inV(x,y,1))continue;const X=x*TW,Y=y*TH,g=C(120,118,112),g2=C(160,158,150);putS(X+2,Y+1,'.^.',g2,KEEP);putS(X+1,Y+2,'/#%#\\',g,KEEP);}
  if(buildMode){for(const k of freeTiles){const x=k%W,y=(k/W)|0;if(!inV(x,y,0))continue;if(d2(x+.5,y+.5,player.x,player.y)>5.5*5.5)continue;
   const X=x*TW,Y=y*TH,ow=ownedPlots.has(plotOf[k]),c=demolish?C(255,90,90):ow?C(255,255,255):C(255,200,60),ch=ow?'+':'$';put(X,Y,ch,c,KEEP,true);put(X+TW-1,Y+TH-1,ch,c,KEEP,true);}}
@@ -7154,6 +7176,7 @@ function buildPOIs(){
   const i=PINFO[t];if(!i)continue;P.push({cat:i[0],ico:i[1],name:i[3]||t,desc:i[2],x:d.x+.5,y:d.y+.5});}
  {const mg=monGarage();if(mg)P.push({cat:'home',ico:'\u2302',name:'Mon garage',desc:'La place de ta maison : une voiture gar\u00e9e ici reste \u00e0 toi, m\u00eame si tu quittes la partie. Gratuit.',x:mg.x+.5,y:mg.y+.5});}
  for(const P2 of PARKS)P.push({cat:'transport',ico:'P',name:P2.name,desc:'Parking public : '+PARK_TARIF+' \u0e3f par jour de stationnement, pay\u00e9s quand tu reprends le v\u00e9hicule.',x:P2.cx+.5,y:P2.cy+.5});
+ if(typeof SCRAP!=='undefined'&&SCRAP)P.push({cat:'service',ico:'F',name:'Ferrailleur',desc:'Rachète voitures, scooters et vélos (volés, maquillés ou non) contre argent ou ferraille.',x:SCRAP.x+.5,y:SCRAP.y+.5});
  for(const g of garages)P.push({cat:'service',ico:'G',name:'Garage (entrée voiture)',desc:'Entre en voiture sur la porte jaune : repeinture 100 ฿ si recherché, réparation 30 ฿.',x:g.x,y:g.y+1});
  for(const n of npcs){const d=n.def,left=d.missions.length-n.prog;P.push({cat:'mission',ico:d.name[0],name:d.name,desc:left?`${left} mission${left>1?'s':''} disponible${left>1?'s':''} : « ${d.missions[n.prog].t} »`:'Toutes ses missions sont terminées.',x:n.x,y:n.y,npc:n});}
  for(const L of BUSLINES)L.signs.forEach((s,i)=>P.push({cat:'transport',ico:String(L.n),name:`Arrêt bus ligne ${L.n}`,desc:`Ligne ${L.n} : 5 ฿ le trajet.`,x:s.x+.5,y:s.y+.5,small:1}));
@@ -9809,17 +9832,27 @@ function plotBuyNat(pl,nat){
  try{refreshAtlas();}catch(e){}
  toast('Terrain acheté : '+NAT[nat].c+(nat==='libre'?' · tu peux construire dessus.':' · embauche du personnel (touche E sur le terrain).'),3600);sfx('coin');saveGame();}
 // ---------- gestion ----------
+function plotBuilt(pl){let n=0;for(let y=pl.y;y<pl.y+pl.h;y++)for(let x=pl.x;x<pl.x+pl.w;x++){const k=y*W+x;if(plotOf[k]===pl.id&&tile[k]!==FREE)n++;}return n;}
+function plotValue(pl){
+ const nat=natureOf(pl.id),e=PLN[pl.id]||{},base=Math.round(plotPrice(pl,nat)*0.6),built=plotBuilt(pl)*350;
+ const avg=e.nw?e.nt/e.nw:0,prof=Math.round(Math.max(0,avg)*25);
+ return{base,built,prof,avg:Math.round(avg),tot:Math.round((base+built+prof)/100)*100};}
+function plotSell(pl){
+ const v=plotValue(pl);
+ showTalk('VENDRE LE TERRAIN',`Valeur de revente :<br>• terrain (60 % du prix, nature ${NAT[natureOf(pl.id)].c}) : ${fmtB(v.base)}<br>• constructions : +${fmtB(v.built)}<br>• rentabilité (${v.avg>=0?'+':''}${v.avg} ฿/sem en moyenne) : +${fmtB(v.prof)}<br><b style="color:#ffd54a">Total : ${fmtB(v.tot)}</b><br><small>Le personnel est licencié. Le terrain repart « à vendre » tel quel : l’acheteur devra détruire les constructions en mode BÂTIR pour reconstruire.</small>`,
+  [{label:'💸 Vendre — '+fmtB(v.tot),fn:()=>{ownedPlots.delete(pl.id);delete PLN[pl.id];bank+=v.tot;plotLabels();propSync();try{refreshAtlas();}catch(e){}toast('Terrain vendu : +'+fmtB(v.tot),3500);sfx('coin');saveGame();}},{label:'Annuler',fn:()=>setTimeout(()=>plotMenu(pl),60)}]);}
 function plotMenu(pl){
  const nat=natureOf(pl.id),N=NAT[nat],st=plotSt(pl.id),wk=Math.floor(time/DAYLEN/7);
  if(nat==='libre'){
   const rows=Object.keys(NAT).filter(k=>k!=='libre').map(k=>{const cost=Math.round(plotPrice(pl,k)*0.35/100)*100;return{label:'Aménager : '+NAT[k].c+' — '+fmtB(cost),fn:()=>plotConvert(pl,k,cost)};});
-  showTalk('MON TERRAIN · libre',`Terrain libre : tu peux y construire (BÂTIR).<br>Ou l’<b>aménager</b> pour qu’il rapporte chaque semaine. <small>Attention : l’aménagement fait disparaître tes constructions.</small><br><small>En poche ${money} ฿ · en banque ${bank} ฿.</small>`,rows.concat([{label:'Fermer'}]));return;}
+  showTalk('MON TERRAIN · libre',`Terrain libre : tu peux y construire (BÂTIR).<br>Ou l’<b>aménager</b> pour qu’il rapporte chaque semaine. <small>Attention : l’aménagement fait disparaître tes constructions.</small><br><small>En poche ${money} ฿ · en banque ${bank} ฿.</small>`,rows.concat([{label:'💸 Vendre le terrain',fn:()=>plotSell(pl)},{label:'Fermer'}]));return;}
  const gross=plotRev(pl,nat,st,wk),wages=plotWages(st),full=plotRev(pl,nat,Array.from({length:N.slots},()=>({sk:1})),wk);
  const list=st.length?st.map(s=>`• ${s.nm} (${s.w} ฿/sem · ★${s.sk.toFixed(2)})`).join('<br>'):'<i>Personne : le terrain est à l’abandon.</i>';
  const btn=[];
  if(st.length<N.slots)btn.push({label:'👤 Embaucher ('+st.length+'/'+N.slots+')',fn:()=>plotHire(pl)});
  st.forEach((s,i)=>btn.push({label:'❌ Licencier '+s.nm,fn:()=>{st.splice(i,1);toast(s.nm+' est licencié(e).',2200);saveGame();setTimeout(()=>plotMenu(pl),60);}}));
  btn.push({label:'🔄 Changer de nature',fn:()=>plotChange(pl)});
+ btn.push({label:'💸 Vendre le terrain',fn:()=>plotSell(pl)});
  if(PLLOG)btn.push({label:'📒 Dernier bilan',fn:()=>toast(PLLOG,6000)});
  btn.push({label:'Fermer'});
  showTalk('MON TERRAIN · '+N.c,`Emplacement : <b>${pl.dist}</b>${pl.tag?' · '+pl.tag:''}<br>Personnel (${st.length}/${N.slots}) :<br>${list}<br><br>Estimation hebdo : <b style="color:#7dff7d">+${gross} ฿</b> · salaires <b style="color:#ff9d6a">−${wages} ฿</b> = <b>${gross-wages>=0?'+':''}${gross-wages} ฿</b><br><small>Plein effectif : ≈ +${full} ฿/sem. Les revenus tombent en banque chaque semaine.</small>`,btn);}
@@ -9830,7 +9863,7 @@ function plotConvert(pl,nat,cost){
  if(money+bank<cost){toast('Pas assez d’argent ('+fmtB(cost)+')');return;}
  let r=cost;const m=Math.min(money,r);money-=m;r-=m;bank-=r;
  for(let y=pl.y;y<pl.y+pl.h;y++)for(let x=pl.x;x<pl.x+pl.w;x++){const k=y*W+x;if(tile[k]!==FREE&&plotOf[k]===pl.id){tile[k]=FREE;under[k]=FREE;}}
- PLN[pl.id]={nat,staff:[]};plotLabels();try{refreshAtlas();}catch(e){}
+ PLN[pl.id]={nat,staff:[],nw:0,nt:0};plotLabels();try{refreshAtlas();}catch(e){}
  toast('Terrain converti en '+NAT[nat].c+'. Embauche du personnel !',3000);sfx('coin');saveGame();setTimeout(()=>plotMenu(pl),80);}
 function plotHire(pl){
  const e=PLN[pl.id],wk=Math.floor(time/DAYLEN/7),c=[];
@@ -9843,7 +9876,7 @@ function plotsTick(dt){
  const wk=Math.floor(time/DAYLEN/7);if(PLWEEK<0){PLWEEK=wk;return;}if(wk<=PLWEEK)return;
  const weeks=Math.min(4,wk-PLWEEK);PLWEEK=wk;let gross=0,wages=0,n=0;const quit=[];
  for(let w=0;w<weeks;w++)for(const p of plots){if(!ownedPlots.has(p.id))continue;const e=PLN[p.id];if(!e||e.nat==='libre'||!e.staff.length)continue;
-  const g=plotRev(p,e.nat,e.staff,wk-w),c=plotWages(e.staff);bank+=g;gross+=g;
+  const g=plotRev(p,e.nat,e.staff,wk-w),c=plotWages(e.staff);bank+=g;gross+=g;e.nw=(e.nw||0)+1;e.nt=(e.nt||0)+g-c;
   if(money+bank>=c){let r=c;const m=Math.min(bank,r);bank-=m;r-=m;money-=r;wages+=c;n++;}
   else{quit.push(p.id);}}
  for(const id of quit){PLN[id].staff=[];}
@@ -9872,6 +9905,82 @@ function drawStaff(inV){
   e.staff.forEach((s,i)=>{const t=time*0.25+i*1.7,px=p.x+1.5+((i*3.1)%(p.w-3))+Math.sin(t)*0.6,py=p.y+1.5+((i*1.9)%(p.h-3))+Math.cos(t*0.8)*0.4;
    drawPerson(px,py,{shirt:hexC(s.col||'#e8574a'),hair:hexC('#1a1a1a'),skin:SKIN[1],state:'walk',moving:true,id:900+p.id*9+i,fem:!!s.f});
    if(inV(px,py,1)){const nm=' '+s.nm+' ',X=Math.floor(px*TW)-Math.floor(nm.length/2),Y=Math.floor(py*TH)-5;putS(X,Y,nm,C(255,255,255),C(40,40,52));}});}}
+// Matériaux ramassables : tôles et ferraille dans les rues, cailloux sur les plages, berges et chemins.
+var LOOT=[],LOOT_C={tole:[],cail:[]};
+(function(){for(let k=0;k<W*H;k++){const t=tile[k],y=(k/W)|0;
+ if((t===SIDE||t===ALLEY)&&y<CITYH)LOOT_C.tole.push(k);
+ else if(t===SAND||(t===GRASS&&y>=CITYH)||t===PATH&&y>=CITYH)LOOT_C.cail.push(k);}
+ // quelques cailloux aussi près de l'eau en ville (berges) et dans les parcs
+ for(let k=0;k<W*H;k++){if(tile[k]===GRASS&&((k/W)|0)<CITYH&&hash(k%W,(k/W)|0)>0.985)LOOT_C.cail.push(k);}})();
+function lootPlace(o){const arr=LOOT_C[o.t];if(!arr||!arr.length)return o;
+ for(let i=0;i<60;i++){const k=arr[Math.floor(Math.random()*arr.length)];
+  if(!LOOT.some(q=>q.k===k)&&!debris.some(q=>q.k===k)&&!visible(k%W,(k/W)|0)){o.k=k;return o;}}
+ return o;}
+for(let i=0;i<90;i++)LOOT.push(lootPlace({t:'tole',k:-1}));
+for(let i=0;i<60;i++)LOOT.push(lootPlace({t:'cail',k:-1}));
+function lootNear(){if(!LOOT)return null;for(const o of LOOT){if(o.k<0)continue;if(d2(o.k%W+.5,((o.k/W)|0)+.5,player.x,player.y)<1.4*1.4)return o;}return null;}
+function lootTake(o){const x=o.k%W+.5,y=((o.k/W)|0)+.5;
+ if(o.t==='tole'){const n=1+(Math.random()<0.45?1:0);inv.fer+=n;floaters.push({x,y,text:'+'+n+' ferraille',col:C(190,200,215),t:0});}
+ else{const n=1+(Math.random()<0.5?1:0);inv.pierre+=n;floaters.push({x,y,text:'+'+n+' pierre',col:C(200,200,210),t:0});}
+ sfx('coin');lootPlace(o);saveGame();}
+function drawLoot(inV){if(!LOOT)return;
+ for(const o of LOOT){if(o.k<0)continue;const x=o.k%W,y=(o.k/W)|0;if(!inV(x,y,1))continue;const X=x*TW,Y=y*TH;
+  if(o.t==='tole'){putS(X+1,Y+1,'_/=\\_',C(176,184,196),KEEP);putS(X+2,Y+2,'[###]',C(120,126,138),KEEP);}
+  else{putS(X+2,Y+1,'.o.',C(200,198,190),KEEP);putS(X+1,Y+2,'o O o',C(150,148,140),KEEP);}}}
+// =====================================================================
+//  LE FERRAILLEUR : rachète voitures, scooters et vélos (volés, maquillés ou non)
+//  contre de l'argent ou de la ferraille. Un volé non maquillé se paie moins : pas de papiers.
+// =====================================================================
+var SCRAP=null;
+(function(){let best=null,bs=9;
+ for(let y=6;y<CITYH-6;y++)for(let x=6;x<W-6;x++){const k=y*W+x;if(tile[k]!==SIDE)continue;
+  let road=0,ok=1;
+  for(let dy=-1;dy<=1;dy++)for(let dx=-3;dx<=3;dx++){const t=tile[(y+dy)*W+x+dx];if(t===ROAD||t===CROSS)road++;if(t===WALL||t===ROOF||t===WATER||t===FOUNT||t===GARAGE)ok=0;}
+  if(!ok||road<3)continue;
+  let near=0;for(const L of labels)if(Math.abs(L.x-x)<5&&Math.abs(L.y-y)<5)near=1;if(near)continue;
+  const s=wealthS(x,y)+hash(x,y)*0.1;if(s<bs){bs=s;best={x,y};}}
+ if(best){SCRAP=best;labels.push({x:best.x+0.5,y:best.y-0.8,text:'FERRAILLEUR',neon:'#ffb347'});}})();
+function nearScrap(){if(!SCRAP)return false;return d2(SCRAP.x+.5,SCRAP.y+.5,player.x,player.y)<4.2*4.2;}
+function scrapVal(v,kind){ // v : voiture ou deux-roues
+ let m,f;
+ if(kind==='car'){if(v.boat)return null;if(v.cop)return{refus:'Une voiture de police ? Pas question, trop chaud.'};
+  const hp=Math.max(10,v.hp??100)/100;m=Math.round(350*(0.4+0.6*hp)*(v.sport?2:1)*(v.taxi?0.9:1)*(v.tuk?0.5:1));f=v.sport?10:v.tuk?4:8;}
+ else{m=v.moto?140:50;f=v.moto?4:2;}
+ const papiers=!!v.owned;
+ return{money:Math.round(m*(papiers?1:0.6)/10)*10,fer:f,papiers};}
+function scrapList(){const L=[];
+ if(player.car&&!player.car.boat){L.push({n:'Ta voiture ('+(player.car.taxi?'taxi':player.car.tuk?'tuk-tuk':player.car.sport?'sportive':'berline')+')',v:player.car,kind:'car',cur:1});}
+ if(player.bike)L.push({n:player.bike.moto?'Ton scooter':'Ton vélo',v:player.bike,kind:'bike',cur:1});
+ for(const b of bikes){if(d2(b.x,b.y,player.x,player.y)<4*4)L.push({n:b.moto?'Scooter garé à côté':'Vélo garé à côté',v:b,kind:'bike',bk:b});}
+ return L;}
+function scrapSell(e,pay){
+ const s=scrapVal(e.v,e.kind);if(!s||s.refus){toast(s?s.refus:'Pas de bateau ici.');return;}
+ if(pay==='fer'){const n=Math.round(s.fer*(s.papiers?1.3:1));inv.fer+=n;floaters.push({x:player.x,y:player.y,text:'+'+n+' ferraille',col:C(190,200,215),t:0});toast('Repris contre '+n+' ferrailles.',2800);}
+ else{money+=s.money;floaters.push({x:player.x,y:player.y,text:'+'+s.money+' ฿',col:C(125,255,125),t:0});toast('Repris contre '+s.money+' ฿'+(s.papiers?'':' (sans papiers : prix réduit)'),3000);}
+ if(e.cur){if(e.kind==='car')player.car=null;else player.bike=null;}
+ else if(e.bk){const i=bikes.indexOf(e.bk);if(i>=0)bikes.splice(i,1);}
+ sfx('coin');if(typeof refreshBuildBar==='function')try{refreshBuildBar();}catch(x){}save();}
+function scrapMenu(){
+ const L=scrapList();
+ if(!L.length){showTalk('🔩 FERRAILLEUR','Un type couvert de cambouis te regarde : « Amène-moi une voiture, un scooter ou un vélo. Volé, maquillé, je m’en fiche. Je paie en cash ou en ferraille. »<br><small>Sans papiers (non maquillé) : 60 % du prix en argent. La ferraille est toujours la même.</small>',[{label:'Fermer'}]);return;}
+ const rows=[];
+ for(const e of L){const s=scrapVal(e.v,e.kind);
+  if(!s||s.refus){rows.push({label:e.n+' : refusé'+(s?' — '+s.refus:'')});continue;}
+  const tag=s.papiers?'maquillé(e)':'volé(e), sans papiers';
+  rows.push({label:'💰 '+e.n+' ('+tag+') — '+s.money+' ฿',fn:()=>{scrapSell(e,'money');setTimeout(scrapMenu,80);}});
+  rows.push({label:'🔩 '+e.n+' — '+Math.round(s.fer*(s.papiers?1.3:1))+' ferrailles',fn:()=>{scrapSell(e,'fer');setTimeout(scrapMenu,80);}});}
+ showTalk('🔩 FERRAILLEUR','« Cash ou ferraille ? Je ne demande pas d’où ça vient. »<br><small>Maquillé = papiers en règle, meilleur prix. Argent en poche : '+money+' ฿.</small>',rows.concat([{label:'Fermer'}]));}
+function drawScrapyard(inV){
+ if(!SCRAP||!inV(SCRAP.x,SCRAP.y,6))return;const X=SCRAP.x*TW,Y=SCRAP.y*TH;
+ putS(X-TW*2,Y-1,'[=#=]',C(150,110,70),KEEP);putS(X-TW*2,Y,'/#%#\\',C(130,134,146),KEEP);
+ putS(X+TW*2,Y-1,'_/=\\_',C(176,184,196),KEEP);putS(X+TW*2,Y,'[###]',C(120,126,138),KEEP);
+ putS(X+1,Y+1,'(o)==(o)',C(60,60,64),C(176,64,52));}
+// ---- voitures de sport : surtout dans les quartiers riches, design bas, long, bande blanche + aileron ----
+const SPORT_COLS=['#d11a2a','#f2c200','#f4f4f6','#16161a','#18b46a','#ff7a1a','#2a64d8','#9a2bd6'];
+(function(){let n=0;for(const c of cars){if(c.tuk||c.taxi||c.boat||c.kind==='cop'||c.kind==='wreck')continue;
+  const s=wealthS(c.cx,c.cy);if(s<0.3)continue;
+  if(hash(c.cx*7+3,c.cy*5+11)<0.45){c.sport=true;c.color=SPORT_COLS[Math.floor(hash(c.cx+9,c.cy*3)*SPORT_COLS.length)];c.spd=(c.spd||4)+1.2;n++;}}
+ if(n<4){let k=0;for(const c of cars){if(k>=8)break;if(c.tuk||c.taxi||c.boat||c.kind==='cop'||c.kind==='wreck'||c.sport)continue;if(wealthS(c.cx,c.cy)>0){c.sport=true;c.color=SPORT_COLS[k%SPORT_COLS.length];k++;}}}})();
 // =====================================================================
 //  MULTIJOUEUR
 //  Tous ceux qui ont la page ouverte en meme temps se voient marcher
