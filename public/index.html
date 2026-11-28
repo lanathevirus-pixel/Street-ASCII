@@ -220,7 +220,7 @@ body.touch #kbHint{display:none}
       <p><button id="codeBtn">Mode CODE : NON</button> <span style="color:#888">rendu 100 % caractères, sans aplats (pour les fans de code). Touche K.</span></p>
       <p><b>But :</b> gagner du fric en faisant des livraisons. Va sur un <b style="color:#ffcc00">!</b> pour prendre un colis, puis livre-le au <b style="color:#ff4fd8">X</b> avant la fin du chrono.</p>
       <p><b>Souris (PC) :</b> maintiens le <b>clic droit</b> pour avancer ou accélérer vers le pointeur : le personnage et les véhicules vont dans la direction de la souris par rapport à toi. Pointe derrière toi en voiture pour freiner / reculer.</p>
-      <p><b>Voitures :</b> approche-toi d'une voiture et appuie sur <b>MONTER</b> (touche <b>E</b>). Les voitures garées sur les parkings sont libres ; voler une voiture avec un conducteur, c'est un délit.</p>
+      <p><b>Voitures :</b> approche-toi d'une voiture et appuie sur <b>MONTER</b> (touche <b>E</b>). Si le véhicule n’est pas à toi (voiture, scooter ou vélo), il faut le <b>voler</b> avec <b>MAJ + ENTRÉE</b> (sur mobile, le bouton suffit). Les voitures garées sur les parkings sont libres ; voler une voiture avec un conducteur, c'est un délit.</p>
       <p><b>Police :</b> voler une voiture, renverser un passant ou percuter les flics te donne des étoiles ★. Plus tu en as, plus il y a de flics à tes trousses. Sème-les (ils finissent par lâcher l'affaire) ou passe au <b style="color:#ff9a00">GARAGE</b> faire repeindre ta voiture (100 ฿). Si un flic t'attrape à l'arrêt : arrêté, et tu perds 20 % de ton argent.</p>
       <p><b>Conduite :</b> appuie sur la direction où tu veux aller (comme à pied) : la voiture tourne toute seule et accélère. Direction opposée = freinage puis demi-tour. Lâche tout pour ralentir. Les trottoirs et l'herbe te ralentissent.</p>
       <p><b>Ton personnage :</b> huit orientations — face, dos, les deux profils et les quatre trois-quarts — à l’arrêt comme en marche, à pied comme à vélo. Le créateur (bouton <b>PERSO</b>) est rangé en trois onglets : Silhouette, Visage, Tenue.</p>
@@ -1149,7 +1149,7 @@ function riseRows(x,y){const xi=Math.floor(x),yi=Math.floor(y);if(!inB(xi,yi))re
 const underBridge=(x,y)=>{const xi=Math.floor(x),yi=Math.floor(y);if(!inB(xi,yi))return false;
  const k=yi*W+xi;return(isRoad(tile[k])&&isBridgeK(k))||!!(BRSW&&BRSW[k]);};
 function curbCut(k){if(!CURBC){CURBC=new Uint8Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++){const kk=y*W+x;if(tile[kk]!==SIDE)continue;for(let d=0;d<4&&!CURBC[kk];d++)for(let s=1;s<=3;s++){const nx=x+DX[d]*s,ny=y+DY[d]*s;if(!inB(nx,ny))break;const tt=tile[ny*W+nx];if(tt===LOT||tt===GARAGE||tt===ALLEY||tt===FREE){CURBC[kk]=1;break;}if(tt!==SIDE)break;}}}return CURBC[k];}
-let curbT=0;function curbHint(){const n=performance.now();if(n-curbT>6000){curbT=n;toast('Trottoir en relief : les voitures et les scooters passent par les entrées de parking',2200);}}
+let curbT=0;function curbHint(){const n=performance.now();if(n-curbT>6000){curbT=n;toast('Trottoir en relief : les voitures passent par les entrées de parking',2200);}}
 function curbBlk(x,y){const tx=Math.floor(x),ty=Math.floor(y);if(!inB(tx,ty))return false;const k=ty*W+tx;if(tile[k]!==SIDE||curbCut(k))return false;const ck=Math.floor(player.y)*W+Math.floor(player.x);return tile[ck]!==SIDE;}
 function carBlocked(x,y){
  if(player.car&&player.car.boat){for(const[ox,oy]of[[-.34,-.34],[.34,-.34],[-.34,.34],[.34,.34]]){const cx=Math.floor(x+ox),cy=Math.floor(y+oy);if(!inB(cx,cy)||tile[cy*W+cx]!==WATER)return true;}return false;}
@@ -1289,7 +1289,8 @@ function paintMenu(car){if(car.cop){toast('Garage : on ne repeint pas les voitur
  if(license&&!car.tuk)btns.unshift({label:`${sw(TAXI_COL)} 🚕 Taxi custom (rose + enseigne)`,fn:()=>pay(TAXI_COL,'Rose taxi',true)});
  btns.push({label:'Non merci'});showTalk('GARAGE · Peinture',`Ta voiture est en règle. Une nouvelle couleur ? <b style="color:#ffd000">${PAINT_FEE} ฿</b>.<br><span style="color:#ff8fc8">Le rose est réservé aux taxis${license?' : avec ta licence, tu peux en faire ton taxi custom.':' (licence au dépôt TAXIS).'}</span>${car.taxi?'<br>Une autre couleur retire l\'enseigne TAXI.':''}`,btns);}
 function nearestCar(r){let best=null,bd=r*r;for(const c of cars){if(c.kind==='wreck')continue;const[x,y]=carPos(c),v=d2(x,y,player.x,player.y);if(v<bd){bd=v;best=c;}}return best;}
-function action(){
+var STEALK=false;
+function action(shift){STEALK=!!shift; // clavier : voler = Maj+Entrée (ou Maj+E) en même temps ; le bouton tactile passe true
  if(inside){const q=nearPersonIn();if(q){if(q.sortie)outingSurPlace(q);else if(q.fam)famMenu(q);else pedTalk(q);return;}const o=nearObj();if(o)useObj(o);else toast('Approche-toi d\'un objet jaune ou de quelqu\'un');return;}
  {const it=nearInteract();if(it){doInteract(it);return;}}
  if(!player.car&&!player.bike){const pi=nearestPound(player.x,player.y),P=POUNDS[pi];if(P&&d2(P.x+.5,P.y+.5,player.x,player.y)<6.5){poundMenu(pi);return;}}
@@ -1311,8 +1312,11 @@ function action(){
   if(nc.mine){toast(motStat(Lst),3200);save();}
  }else{
   const c=nearestCar(1.7),nb=nearestBike(1.4);
-  if(nb&&(!c||nb.d<d2(...carPos(c),player.x,player.y))){mountBike(nb);return;}
+  if(nb&&(!c||nb.d<d2(...carPos(c),player.x,player.y))){
+   if((nb.p||(nb.b&&!nb.b.owned))&&!STEALK){toast('Ce '+(nb.b?(nb.b.moto?'scooter':'vélo'):(nb.p.scoot?'scooter':'vélo'))+' n\'est pas à toi : MAJ + ENTRÉE pour le voler',2800);return;}
+   mountBike(nb);return;}
   if(!c){toast('Rien à prendre ici');return;}
+  if(!c.owned&&!c.tuk&&c.kind!=='wreck'&&!c.mine&&!STEALK){toast('Cette voiture n\'est pas à toi : MAJ + ENTRÉE pour la voler',2800);return;}
   if(c.tuk&&!c.owned&&c.kind!=='wreck'){tukMenu(c);return;}
   takeCar(c);
  }
@@ -1386,7 +1390,7 @@ const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'
 addEventListener('keydown',e=>{
  if(KM[e.code]){keys[KM[e.code]]=true;e.preventDefault();return;}
  if(e.repeat)return;
- if(e.code==='KeyE'||e.code==='Enter'){action();e.preventDefault();}
+ if(e.code==='KeyE'||e.code==='Enter'){action(e.shiftKey);e.preventDefault();}
  else if(e.code==='KeyM'||e.code==='Semicolon')togglePanel('mapPanel');
  else if(e.code==='KeyI'&&e.shiftKey){storeVehicle();}
  else if(e.code==='KeyH'){quickHeal();}
@@ -1439,7 +1443,7 @@ function inputRaw(){
  if(joy.on){const m=Math.hypot(joy.x,joy.y);if(m>0.18)return{x:joy.x/m,y:joy.y/m,m:Math.min(1,(m-0.18)/0.72)};return{x:0,y:0,m:0};}
  let x=(keys.right?1:0)-(keys.left?1:0),y=(keys.down?1:0)-(keys.up?1:0);const l=Math.hypot(x,y);return l?{x:x/l,y:y/l,m:1}:{x:0,y:0,m:0};
 }
-$('bA').addEventListener('pointerdown',e=>{e.preventDefault();action();});
+$('bA').addEventListener('pointerdown',e=>{e.preventDefault();action(true);});
 {const bF=$('bF');bF.addEventListener('pointerdown',e=>{e.preventDefault();fireHeld=true;bF.classList.add('on');try{bF.setPointerCapture(e.pointerId);}catch(_){}});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>bF.addEventListener(ev,()=>{fireHeld=false;bF.classList.remove('on');}));}
 $('bW').addEventListener('pointerdown',e=>{e.preventDefault();switchWeapon();});
 cv.addEventListener('pointerdown',()=>{if(!$('talkPanel').classList.contains('open'))closePanels();});
@@ -4007,7 +4011,7 @@ function updateBike(dt){
  b.speed=clamp(b.speed,0,vmax);player.moving=b.speed>0.3;
  const ox=player.x,oy=player.y,vx=Math.cos(b.heading)*b.speed*dt,vy=Math.sin(b.heading)*b.speed*dt;
  const noRd=(x,y)=>{if(b.moto||!inB(Math.floor(x),Math.floor(y)))return false;const k=Math.floor(y)*W+Math.floor(x);return tile[k]===ROAD&&!isBridgeK(k)&&tile[Math.floor(player.y)*W+Math.floor(player.x)]!==ROAD;};
- const blk=(x,y)=>{if(footBlocked(x,y))return true;if(b.moto&&curbBlk(x,y)){curbHint();return true;}if(noRd(x,y)){if(!b.rdWarn){b.rdWarn=1;toast('Les vélos ne roulent pas sur la route : trottoirs, passages piétons et ponts',2400);}return true;}return false;};
+ const blk=(x,y)=>{if(footBlocked(x,y))return true;if(noRd(x,y)){if(!b.rdWarn){b.rdWarn=1;toast('Les vélos ne roulent pas sur la route : trottoirs, passages piétons et ponts',2400);}return true;}return false;};
  if(!blk(player.x+vx,player.y))player.x+=vx;else b.speed*=Math.abs(vx)>Math.abs(vy)?0.3:0.97;
  if(!blk(player.x,player.y+vy))player.y+=vy;else b.speed*=Math.abs(vy)>Math.abs(vx)?0.3:0.97;
  if(hitCar(ox,oy,0.6)){player.x=ox;player.y=oy;if(b.speed>6)hurt(b.moto?Math.round(b.speed):6,'Aïe !');b.speed=0;}
