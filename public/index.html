@@ -3993,14 +3993,15 @@ for(const p of plots){
  p.dist=d;p.price=clamp(Math.round(base*(0.9+hash(p.x*7+1,p.y*13+5)*0.2)/100)*100,5000,20000);
  for(let y=p.y;y<p.y+p.h;y++)for(let x=p.x;x<p.x+p.w;x++)if(tile[y*W+x]===FREE)plotOf[y*W+x]=p.id;}
 const fmtB=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ฿';
-function plotLabels(){for(const p of plots){if(!p.lab)continue;const o=ownedPlots.has(p.id);
- p.lab.text=o?'MON TERRAIN':'À VENDRE '+fmtB(p.price);p.lab.neon=o?'#7dff7d':'#ffd54a';}}
+function plotLabels(){for(const p of plots){if(!p.lab)continue;const o=ownedPlots.has(p.id),x=(!o&&typeof propAutre==='function')?propAutre('p'+p.id):null;
+ p.lab.text=o?'MON TERRAIN':x?'TERRAIN DE '+String(x.n).toUpperCase().slice(0,14):'À VENDRE '+fmtB(p.price);p.lab.neon=o?'#7dff7d':x?'#ff9d3a':'#ffd54a';}}
 plotLabels();
 function buyPlot(p,done){
  if(ownedPlots.has(p.id)){toast('Ce terrain est déjà à toi.');return;}
+ {const x=propAutre('p'+p.id);if(x){toast('Ce terrain appartient à '+x.n+'.',2800);return;}}
  if(money+bank<p.price){toast('Pas assez d\'argent ('+fmtB(p.price)+')');return;}
  let r=p.price;const m=Math.min(money,r);money-=m;r-=m;bank-=r;
- ownedPlots.add(p.id);plotLabels();toast('Terrain acheté ! Tu peux construire dessus.',3000);sfx('coin');saveGame();if(done)done();}
+ ownedPlots.add(p.id);plotLabels();propSync();toast('Terrain acheté ! Tu peux construire dessus.',3000);sfx('coin');saveGame();if(done)done();}
 function plotOfTile(k){const i=plotOf[k];return i>=0?plots[i]:null;}
 // le toit disparaît quand le joueur se trouve sous un toit : on masque toute la nappe de toit connectée
 let _rhK=-1,_rhV=-1,_rhS=null;
@@ -4018,6 +4019,7 @@ function tryBuildAt(tx,ty){
  const pl=plotOfTile(k);
  if(!pl){toast('On ne construit que sur un TERRAIN LIBRE');return;}
  if(!ownedPlots.has(pl.id)){
+  {const x=propAutre('p'+pl.id);if(x){toast('Terrain privé : il appartient à '+x.n+'.',2800);return;}}
   showTalk('TERRAIN À VENDRE',`Parcelle ${pl.w*pl.h*4} m² · quartier <b>${pl.dist}</b><br>Prix : <b style="color:#ffd54a">${fmtB(pl.price)}</b><br><small>Il faut acheter le terrain avant d'y construire. En poche ${money} ฿ · en banque ${bank} ฿.</small>`,
    [{label:'🏗 Acheter — '+fmtB(pl.price),fn:()=>buyPlot(pl)},{label:'Pas maintenant'}]);return;}
  if(demolish){
@@ -4896,8 +4898,8 @@ function famExtra(p){
   :[['🧸 Jouer ensemble',()=>famJouer(p)]];}
 function famDiner(p){
  if(pantry<1){toast('Le frigo est vide — fais les courses d’abord.',2800);return;}
- pantry--;heal(45);mange(45);time+=DAYLEN/24*0.8;
- toast(p.nom+' a cuisiné : +45 ♥. On mange mieux à deux.',3200);sfx('coin');save();}
+ pantry--;mange(45);time+=DAYLEN/24*0.8;
+ toast(p.nom+' a cuisiné : faim à fond. On mange mieux à deux.',3200);sfx('coin');save();}
 function famJouer(p){
  heal(12);hygiene=clamp(hygiene-3,0,100);time+=DAYLEN/24*0.5;
  toast('Vous jouez un moment : +12 ♥. '+p.nom+' rigole.',3000);sfx('coin');save();}
@@ -5401,6 +5403,7 @@ function outingFin(e){
  const bonus=Math.min(3,outing.trinque||0);
  if(g.hp>0)heal(g.hp);else if(g.hp<0)player.hp=Math.max(1,player.hp+g.hp);
  if(g.hyg)hygiene=clamp(hygiene+g.hyg,0,100);
+ if(/restaurant/i.test(o[0]))mange(45);
  const amitie=g.f+bonus*2;
  relTouch(e,amitie,'sortie','notre sortie à '+(outing.name||'deux'));
  time+=DAYLEN/24*2;
@@ -5721,7 +5724,8 @@ function drawNPCs(inV){
  if(mission&&mission.def.type==='cps'){const p=mission.pts[mission.cp];if(p&&inV(p.x,p.y,2)){const X=p.x*TW,Y=p.y*TH,c=C(125,255,125),b=Math.floor(time*4)%2;putS(X,Y,b?'\\  |  /':' \\ | / ',c,KEEP,true);putS(X,Y+1,`-[${mission.cp+1}/${mission.def.n}]-`.slice(0,7),C(0,0,0),c,true);putS(X,Y+2,b?'/  |  \\':' / | \\ ',c,KEEP,true);addLight(X+3.5,Y+1.5,6,0.4,1,0.4);}}
 }
 // ---------------- sauvegarde ----------------
-function saveGame(){
+var NOSAVE=false;
+function saveGame(){if(NOSAVE)return;
  try{const b=[];for(const k of freeTiles){const t=tile[k];if(BLD_BY_T[t])b.push([k,t,under[k]]);}
   const _sv=JSON.stringify(extraSave({W,money,jobs:jobsDone,inv,b,pl:[...ownedPlots],rf:[...roofSet],prog:npcs.map(n=>n.prog),has:player.has,ammo:player.ammo}));localStorage.setItem(KEY,_sv);if(typeof cloudDirty==='function')cloudDirty(_sv);}catch(e){}
 }
@@ -5971,13 +5975,13 @@ const owned=new Set();
 // maisons à vendre
 const houses=[];
 buildings.forEach((b,i)=>{if(b.label||b.lm||b.pi>=12||b.pi<4)return;if(hash(b.x*3,b.y*7)<0.13&&houses.length<12){b.house={price:Math.round((1500+b.w*b.h*48)*(0.65+hash(b.x*5+1,b.y*11+3)*1.35)*1.2/100)*100,i};houses.push(b);
- const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;}});
+ const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE',def:'A VENDRE',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;}});
 // le sud (vers la mer) : maisons à vendre ou à louer, un peu plus chères près de la plage
 buildings.forEach(b=>{if(b.label||b.lm||b.pi>=12||b.pi<4||b.house||b.y<185||houses.length>=28)return;
  if(hash(b.x*3+11,b.y*7+5)>=0.22)return;
  const mer=1+Math.max(0,Math.min(0.35,(b.y-200)/150));
  b.house={price:Math.round((1500+b.w*b.h*48)*(0.65+hash(b.x*5+1,b.y*11+3)*1.35)*1.2*mer/100)*100,i:houses.length};houses.push(b);
- const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE / LOUER',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;});
+ const L={x:b.x+b.w/2,y:b.y+Math.floor(b.h/2)+0.5,text:'A VENDRE / LOUER',def:'A VENDRE / LOUER',neon:'#7dff7d',b};labels.push(L);b.houseLabel=L;});
 function doorOf(b){return{x:b.x+Math.floor(b.w/2),y:b.y+b.h};}
 const LMTYPE={mall:'PARAGON',gare:'GARE',mbk:'MBK',pho:'WAT PHO',stade:'STADE'};
 function bType(b){if(b.house)return'house';if(b.lm)return LMTYPE[b.lm];return b.label;}
@@ -6228,6 +6232,7 @@ function enterBuilding(d){sfx('door');
  const b=d.b,type=bType(b);
  if(stars>0&&type!=='POLICE'&&type!=='GARAGE'&&type!=='LAVERIE'&&type!=='WAT'&&type!=='WAT PHO'&&type!=='PALAIS'){toast('Pas avec la police aux trousses !');return;}
  if(!estOuvert(type)){toast(messageFerme(type),3400);sfx('fail');return;}
+ if(type==='house'&&typeof propAutre==='function'){const po=propAutre('h'+b.house.i);if(po){toast('C’est la propriété de '+po.n+' : porte verrouillée.',3000);sfx('fail');return;}}
  const L=layout(type);let name=type==='house'?(owned.has(b.house.i)?'CHEZ MOI':(lease&&lease.i===b.house.i)?'CHEZ MOI (location)':'À VENDRE / À LOUER'):(LMNOM[type]||type);
  if(type==='house'&&!isHome(b)){place(L.g,18,12,'V');}
  poserCaisse(L,type);
@@ -6588,22 +6593,24 @@ function slotSpin(bet){if(money<bet){toast('Pas assez d\'argent ('+bet+' ฿)');
 function signLease(b,done){
  const rt=rentOf(b);
  if(owned.has(b.house.i)){toast('Ce logement est déjà à toi.');return;}
+ {const x=propAutre('h'+b.house.i);if(x){toast('Déjà pris : logement à '+x.n+'.',2800);return;}}
  if(lease){toast('Tu as déjà un bail en cours — résilie-le d’abord.');return;}
  if(money+bank<rt){toast('Il faut '+rt+' ฿ pour le premier loyer');return;}
  let r=rt;const c=Math.min(money,r);money-=c;r-=c;bank-=r;
  lease={i:b.house.i,due:dayNow()+MONTH,late:0,rent:rt};
- if(b.houseLabel){b.houseLabel.text='CHEZ MOI (loc.)';b.houseLabel.neon='#7dff7d';}
- toast('Bail signé : '+rt+' ฿ payés. Prochain loyer dans '+MONTH+' jours.',3400);sfx('coin');save();if(done)done();}
+ if(b.houseLabel){b.houseLabel.text='CHEZ MOI';b.houseLabel.neon='#7dff7d';}
+ propSync();toast('Bail signé : '+rt+' ฿ payés. Prochain loyer dans '+MONTH+' jours.',3400);sfx('coin');save();if(done)done();}
 function buyHouse(b,done){
  const p=b.house.price;
  if(owned.has(b.house.i)){toast('Ce logement est déjà à toi.');return;}
+ {const x=propAutre('h'+b.house.i);if(x){toast('Déjà pris : logement à '+x.n+'.',2800);return;}}
  if(money+bank<p){toast('Pas assez d’argent ('+p+' ฿)');return;}
  let r=p;const mm=Math.min(money,r);money-=mm;r-=mm;bank-=r;owned.add(b.house.i);
  if(lease&&lease.i===b.house.i)lease=null;
  if(b.houseLabel){b.houseLabel.text='CHEZ MOI';b.houseLabel.neon='#ffd54a';}
- toast('Félicitations, tu es propriétaire !',2600);sfx('coin');save();if(done)done();}
+ propSync();toast('Félicitations, tu es propriétaire !',2600);sfx('coin');save();if(done)done();}
 function hStatus(b){return owned.has(b.house.i)?'<span style="color:#ffd54a">ACHETÉ</span>'
- :(lease&&lease.i===b.house.i)?'<span style="color:#7dff7d">LOUÉ</span>':'<span style="color:#8fa3bd">libre</span>';}
+ :(lease&&lease.i===b.house.i)?'<span style="color:#7dff7d">LOUÉ</span>':propAutre('h'+b.house.i)?'<span style="color:#ff9d3a">PRIS · '+propAutre('h'+b.house.i).n+'</span>':'<span style="color:#8fa3bd">libre</span>';}
 const hLab=i=>i<9?String(i+1):String.fromCharCode(97+i-9);
 function hDistrict(b){return districtAt(b.x+b.w/2,b.y+b.h/2);}
 // petite carte de la ville en ASCII, avec un numéro par bien
@@ -6616,7 +6623,7 @@ function houseMap(){
  const mput=(x,y,ch)=>{x=clamp(x,0,MW-1);y=clamp(y,0,MH-1);g[y][x]=ch;};
  mput(Math.floor(player.x/W*MW),Math.floor(player.y/H*MH),'<b style="color:#3ce0ff">@</b>');
  if(agenceDoor)mput(Math.floor(agenceDoor.x/W*MW),Math.floor(agenceDoor.y/H*MH),'<b style="color:#4fe3ff">A</b>');
- houses.forEach((b,i)=>{const col=owned.has(b.house.i)?'#ffd54a':(lease&&lease.i===b.house.i)?'#7dff7d':'#ff4fd8';
+ houses.forEach((b,i)=>{const col=owned.has(b.house.i)?'#ffd54a':(lease&&lease.i===b.house.i)?'#7dff7d':propAutre('h'+b.house.i)?'#ff9d3a':'#ff4fd8';
   mput(Math.floor((b.x+b.w/2)/W*MW),Math.floor((b.y+b.h/2)/H*MH),'<b style="color:'+col+'">'+hLab(i)+'</b>');});
  return '<pre style="margin:4px 0;line-height:1.05;font-size:11px;letter-spacing:1px;background:#0d1016;padding:6px;border-radius:6px">'
   +g.map(r=>r.join('')).join('\n')+'</pre>'
@@ -6640,7 +6647,7 @@ function agenceFiche(b,i){
   +`Achat : <b style="color:#ffd54a">${b.house.price} ฿</b><br>Location : <b>${rentOf(b)} ฿</b>/mois<br>État : ${hStatus(b)}<br>`
   +`<span style="color:#8fa3bd">Lit, douche, frigo et cuisine fournis.</span>`,
   [{label:'📍 Mettre le GPS dessus',fn:()=>{gpsTo({x:d.x,y:d.y,name:'Logement n°'+hLab(i)});closePanels();}}]
-  .concat(own||loc?[]:[{label:'🔑 Louer — '+rentOf(b)+' ฿/mois',fn:()=>signLease(b,()=>setTimeout(agenceMenu,80))},
+  .concat(own||loc||propAutre('h'+b.house.i)?[]:[{label:'🔑 Louer — '+rentOf(b)+' ฿/mois',fn:()=>signLease(b,()=>setTimeout(agenceMenu,80))},
                       {label:'🏠 Acheter — '+b.house.price+' ฿',fn:()=>buyHouse(b,()=>setTimeout(agenceMenu,80))}])
   .concat([{label:'← Retour',fn:()=>agenceMenu()},{label:'Fermer'}]));}
 // =====================================================================
@@ -6793,35 +6800,35 @@ function useObj(o){
  if(inside&&t==='house'&&!inside.own&&o.c!=='V'){toast('Achète d\'abord la maison (panneau V)');return;}
  switch(o.c){
   case 'Z':
-   if(FOOD.has(t))menu(t,'Qu\'est-ce que je te sers ?',[['Menu 15 ฿ (+40 ♥)',()=>buyN(t,15,'Menu',()=>addItem('menu'))],['Boisson 5 ฿ (+10 ♥)',()=>buyN(t,5,'Boisson',()=>addItem('boisson'))]]);
+   if(FOOD.has(t))menu(t,'Qu\'est-ce que je te sers ?',[['Menu 15 ฿ (+100 % faim)',()=>buyN(t,15,'Menu',()=>addItem('menu'))],['Boisson 5 ฿ (+25 % faim)',()=>buyN(t,5,'Boisson',()=>addItem('boisson'))]]);
    else if(t==='ARMES')menu('ARMURERIE','Tout est en règle, évidemment.',[['Batte 80 ฿',()=>buy(80,()=>{player.has.batte=1;},'Batte achetée')],['Pistolet 300 ฿',()=>buy(300,()=>{player.has.pistolet=1;player.ammo.pistolet=(player.ammo.pistolet||0)+30;},'Pistolet acheté')],['30 balles 60 ฿',()=>buyN('ARMURERIE',60,'30 balles',()=>{player.ammo.pistolet=(player.ammo.pistolet||0)+30;},20)],['UZI 900 ฿',()=>buy(900,()=>{player.has.uzi=1;player.ammo.uzi=(player.ammo.uzi||0)+90;},'UZI acheté')],['90 balles UZI 150 ฿',()=>buyN('ARMURERIE',150,'Chargeur UZI',()=>{player.ammo.uzi=(player.ammo.uzi||0)+90;},20)],['Fusil 1200 ฿',()=>buy(1200,()=>{player.has.fusil=1;player.ammo.fusil=(player.ammo.fusil||0)+16;},'Fusil acheté')],['16 cartouches 120 ฿',()=>buyN('ARMURERIE',120,'16 cartouches',()=>{player.ammo.fusil=(player.ammo.fusil||0)+16;},20)],['💰 Revendre tes affaires',()=>sellMenu('ARMES')]]);
    else if(t==='BRICO')menu('BRICO','Des matériaux pour tes constructions.',[['5 bois 40 ฿',()=>buyN('BRICO',40,'5 bois',()=>{inv.bois+=5;},20)],['5 pierres 40 ฿',()=>buyN('BRICO',40,'5 pierres',()=>{inv.pierre+=5;},20)],['5 ferrailles 60 ฿',()=>buyN('BRICO',60,'5 ferrailles',()=>{inv.fer+=5;},20)],['💰 Revendre tes affaires',()=>sellMenu('BRICO')]]);
    else if(t==='GARAGE')menu('GARAGE','Le mécano s\'essuie les mains : « Qu\'est-ce que je peux faire pour toi ? »',[['Repeinture express 100 ฿ (efface tes étoiles)',()=>{if(stars===0){toast('Tu n\'es pas recherché');return;}buy(100,()=>{stars=0;},'Les flics ont perdu ta trace');}],['Voiture d\'occasion 600 ฿',()=>buy(600,()=>{const d=inside.door;exitBuilding();const p=findCellAt(d.x+.5,d.y+.5,t=>isRoad(t),1,4)||{x:d.x,y:d.y+1};player.x=p.x+.5;player.y=p.y+.5;player.car={heading:0,speed:0,color:rnd(CAR_COLORS),hp:100,cop:false,taxi:false,owned:true};},'Voiture achetée, elle est à toi')],['Moto 1200 ฿',()=>buy(1200,()=>{const d=inside.door;exitBuilding();player.bike={heading:0,speed:0,color:'#c0392b',owned:true,moto:true};},'Moto achetée !')],['Voiture de sport 2500 ฿',()=>buy(2500,()=>{const d=inside.door;exitBuilding();const p=findCellAt(d.x+.5,d.y+.5,t=>isRoad(t),1,4)||{x:d.x,y:d.y+1};player.x=p.x+.5;player.y=p.y+.5;player.car={heading:0,speed:0,color:'#ff2d55',hp:160,cop:false,taxi:false,sport:true,owned:true};},'Bolide acheté !')],['💰 Revendre tes affaires',()=>sellMenu('GARAGE')]]);
    else if(t==='HOPITAL')menu('PHARMACIE','Besoin de quelque chose ?',[['Trousse de soin 40 ฿',()=>buyN('PHARMACIE',40,'Trousse',()=>addItem('trousse'))],['Soins complets 30 ฿',()=>buy(30,()=>{player.hp=player.maxHp;},'Soigné')]]);
-   else if(t==='PARAGON')menu('SIAM PARAGON','Vitrines de luxe et supermarché gourmet.',[['Sushi box 25 ฿ (+40 ♥)',()=>buyN(t,25,'Sushi',()=>addItem('menu'),20)],['Trousse de soin 80 ฿',()=>buyN(t,80,'Trousse',()=>addItem('trousse'),10)],['Parfum de luxe 60 ฿ (hygiène 100 %)',()=>buy(60,()=>{hygiene=100;},'Tu sens bon')]]);
-   else if(t==='MBK')menu('MBK CENTER','Faux sacs, coques de téléphone, montres… <i>« Same same, but different ! »</i>',[['Savon 10 ฿',()=>buyN(t,10,'Savon',()=>addItem('savon'),10)],['Déodorant 15 ฿',()=>buyN(t,15,'Déodorant',()=>addItem('deo'),10)],['Sandwich 8 ฿ (+15 ♥)',()=>buyN(t,8,'Sandwich',()=>addItem('sandwich'),20)],['Nouvelle tenue 40 ฿',()=>buy(40,()=>{outfit=rnd(['#c0392b','#2e86de','#27ae60','#8e44ad','#f39c12','#e84393','#16a085']);},'Nouvelle tenue')]]);
-   else if(t==='GARE')menu('KIOSQUE','Sandwichs et boissons fraîches pour le voyage.',[['Sandwich 8 ฿ (+15 ♥)',()=>buyN(t,8,'Sandwich',()=>addItem('sandwich'),20)],['Cha yen 10 ฿ (+10 ♥)',()=>buyN(t,10,'Cha',()=>addItem('boisson'),20)]]);
-   else if(t==='STADE')menu('BUVETTE','Hot-dogs et sodas bien frais.',[['Hot-dog 12 ฿ (+15 ♥)',()=>buyN(t,12,'Hot-dog',()=>addItem('sandwich'),20)],['Soda 4 ฿',()=>buyN(t,4,'Soda',()=>addItem('soda'),20)]]);
+   else if(t==='PARAGON')menu('SIAM PARAGON','Vitrines de luxe et supermarché gourmet.',[['Sushi box 25 ฿ (+100 % faim)',()=>buyN(t,25,'Sushi',()=>addItem('menu'),20)],['Trousse de soin 80 ฿',()=>buyN(t,80,'Trousse',()=>addItem('trousse'),10)],['Parfum de luxe 60 ฿ (hygiène 100 %)',()=>buy(60,()=>{hygiene=100;},'Tu sens bon')]]);
+   else if(t==='MBK')menu('MBK CENTER','Faux sacs, coques de téléphone, montres… <i>« Same same, but different ! »</i>',[['Savon 10 ฿',()=>buyN(t,10,'Savon',()=>addItem('savon'),10)],['Déodorant 15 ฿',()=>buyN(t,15,'Déodorant',()=>addItem('deo'),10)],['Sandwich 8 ฿ (+38 % faim)',()=>buyN(t,8,'Sandwich',()=>addItem('sandwich'),20)],['Nouvelle tenue 40 ฿',()=>buy(40,()=>{outfit=rnd(['#c0392b','#2e86de','#27ae60','#8e44ad','#f39c12','#e84393','#16a085']);},'Nouvelle tenue')]]);
+   else if(t==='GARE')menu('KIOSQUE','Sandwichs et boissons fraîches pour le voyage.',[['Sandwich 8 ฿ (+38 % faim)',()=>buyN(t,8,'Sandwich',()=>addItem('sandwich'),20)],['Cha yen 10 ฿ (+25 % faim)',()=>buyN(t,10,'Cha',()=>addItem('boisson'),20)]]);
+   else if(t==='STADE')menu('BUVETTE','Hot-dogs et sodas bien frais.',[['Hot-dog 12 ฿ (+38 % faim)',()=>buyN(t,12,'Hot-dog',()=>addItem('sandwich'),20)],['Soda 4 ฿',()=>buyN(t,4,'Soda',()=>addItem('soda'),20)]]);
    else if(t==='WAT PHO')menu('BOUTIQUE DU TEMPLE','Amulettes, encens et eau de coco.',[['Amulette 30 ฿ (+15 ♥)',()=>buy(30,()=>{heal(15);},'Amulette achetée')],['Eau de coco 8 ฿',()=>buyN(t,8,'Eau de coco',()=>addItem('boisson'),20)]]);
    else if(t==='PALAIS')menu('BOUTIQUE ROYALE','Souvenirs officiels du Grand Palais.',[['Éventail doré 40 ฿ (+10 ♥)',()=>buy(40,()=>{heal(10);},'Éventail acheté')],['Eau de coco 8 ฿',()=>buyN(t,8,'Eau de coco',()=>addItem('boisson'),20)]]);
-   else if(t==='CINE')menu('CINÉ','Popcorn ?',[['Popcorn 6 ฿ (+10 ♥)',()=>buyN('CINÉ',6,'Popcorn',()=>addItem('popcorn'))]]);
+   else if(t==='CINE')menu('CINÉ','Popcorn ?',[['Popcorn 6 ฿ (+25 % faim)',()=>buyN('CINÉ',6,'Popcorn',()=>addItem('popcorn'))]]);
    else menu('7-ELEVEN','<b style="color:#ff8a1f">Sawasdee</b> ! Rayon snacks à gauche, <b style="color:#6fdcea">hygiène</b> à droite.<br><span style="color:#9ab">Hygiène actuelle : <b>'+Math.round(hygiene)+' %</b></span>',
     [[shopIco('trousse')+'Trousse de soin 60 ฿ (+35 ♥)',()=>buyN('7-ELEVEN',60,'Trousse',()=>addItem('trousse'))],
-     [shopIco('sandwich')+'Sandwich 8 ฿ (+15 ♥)',()=>buyN('7-ELEVEN',8,'Sandwich',()=>addItem('sandwich'))],
-     [shopIco('boisson')+'Cha yen 10 ฿ (+10 ♥)',()=>buyN('7-ELEVEN',10,'Cha',()=>addItem('boisson'))],
-     [shopIco('cafe')+'Café 20 ฿ (+12 ♥)',()=>buyN('7-ELEVEN',20,'Café',()=>addItem('cafe'))],
-     [shopIco('cacao')+'Iced cocoa 25 ฿ (+14 ♥)',()=>buyN('7-ELEVEN',25,'Iced cocoa',()=>addItem('cacao'))],
-     [shopIco('energy')+'Energy drink 30 ฿ (+18 ♥)',()=>buyN('7-ELEVEN',30,'Energy drink',()=>addItem('energy'))],
-     [shopIco('onigiri')+'Onigiri 15 ฿ (+22 ♥)',()=>buyN('7-ELEVEN',15,'Onigiri',()=>addItem('onigiri'))],
-     [shopIco('banane')+'Banane 6 ฿ (+12 ♥)',()=>buyN('7-ELEVEN',6,'Banane',()=>addItem('banane'))],
-     [shopIco('mochi')+'Mochis choco 18 ฿ (+20 ♥)',()=>buyN('7-ELEVEN',18,'Mochis choco',()=>addItem('mochi'))],
+     [shopIco('sandwich')+'Sandwich 8 ฿ (+38 % faim)',()=>buyN('7-ELEVEN',8,'Sandwich',()=>addItem('sandwich'))],
+     [shopIco('boisson')+'Cha yen 10 ฿ (+25 % faim)',()=>buyN('7-ELEVEN',10,'Cha',()=>addItem('boisson'))],
+     [shopIco('cafe')+'Café 20 ฿ (+30 % faim)',()=>buyN('7-ELEVEN',20,'Café',()=>addItem('cafe'))],
+     [shopIco('cacao')+'Iced cocoa 25 ฿ (+35 % faim)',()=>buyN('7-ELEVEN',25,'Iced cocoa',()=>addItem('cacao'))],
+     [shopIco('energy')+'Energy drink 30 ฿ (+45 % faim)',()=>buyN('7-ELEVEN',30,'Energy drink',()=>addItem('energy'))],
+     [shopIco('onigiri')+'Onigiri 15 ฿ (+55 % faim)',()=>buyN('7-ELEVEN',15,'Onigiri',()=>addItem('onigiri'))],
+     [shopIco('banane')+'Banane 6 ฿ (+30 % faim)',()=>buyN('7-ELEVEN',6,'Banane',()=>addItem('banane'))],
+     [shopIco('mochi')+'Mochis choco 18 ฿ (+50 % faim)',()=>buyN('7-ELEVEN',18,'Mochis choco',()=>addItem('mochi'))],
      [shopIco('savon')+'Savon 12 ฿ (+30 % hygiène)',()=>buyN('7-ELEVEN',12,'Savon',()=>addItem('savon'))],
      [shopIco('shampoing')+'Shampooing 25 ฿ (+35 %)',()=>buyN('7-ELEVEN',25,'Shampooing',()=>addItem('shampoing'))],
      [shopIco('deo')+'Déodorant 20 ฿ (+25 %)',()=>buyN('7-ELEVEN',20,'Déodorant',()=>addItem('deo'))],
      [shopIco('dentif')+'Dentifrice 15 ฿ (+15 %)',()=>buyN('7-ELEVEN',15,'Dentifrice',()=>addItem('dentif'))],
      [shopIco('mouchoir')+'Mouchoirs 8 ฿ (+10 %)',()=>buyN('7-ELEVEN',8,'Mouchoirs',()=>addItem('mouchoir'))]]);
    break;
-  case 'Q':menu(t,'Qu\'est-ce que tu bois ?',[['Soda 4 ฿ (+8 ♥)',()=>buy(4,()=>addItem('soda'),'Soda ajouté au sac')],['Cocktail 12 ฿ (+20 ♥)',()=>buy(12,()=>addItem('cocktail'),'Cocktail ajouté au sac')],['Tournée générale 60 ฿',()=>buy(60,()=>{},'Tout le monde t\'adore')]]);break;
+  case 'Q':menu(t,'Qu\'est-ce que tu bois ?',[['Soda 4 ฿ (+20 % faim)',()=>buy(4,()=>addItem('soda'),'Soda ajouté au sac')],['Cocktail 12 ฿ (+50 % faim)',()=>buy(12,()=>addItem('cocktail'),'Cocktail ajouté au sac')],['Tournée générale 60 ฿',()=>buy(60,()=>{},'Tout le monde t\'adore')]]);break;
   case 'A':menu('🎰 ARCADE','Une machine à sous clignote, et au fond une borne des <b style="color:#ffb000">Tigres de Lumphini</b>.',[['🎰 Machine à sous · 5 ฿',()=>slotSpin(5)],['🎰 Machine à sous · 20 ฿',()=>slotSpin(20)],['🎰 Machine à sous · 100 ฿',()=>slotSpin(100)],['📦 <b>CONTREBANDE</b> (mafia)',()=>smuggleMenu()]]);break;
   case 'X':boxingMenu();break;
   case 'G':if(player.maxHp>=160){toast('Tu es déjà au top de ta forme !');break;}buy(25,()=>{player.maxHp+=5;player.hp=Math.min(player.maxHp,player.hp+5);time+=DAYLEN/24;},'Séance de muscu : ♥ max '+(player.maxHp+5));break;
@@ -6847,17 +6854,17 @@ function useObj(o){
    if(pantry<=0){menu('FRIGO','Le frigo est <b>vide</b>.<br>Argent : '+money+' ฿.',[courses]);break;}
    if(fridgeT>0){menu('FRIGO','Tu n\'as pas faim pour l\'instant.<br>Frigo : <b>'+pantry+'</b> repas.',[courses]);break;}
    menu('FRIGO','Frigo : <b>'+pantry+'</b> repas.<br>Un sandwich sur le pouce, ou passe à la cuisine pour un vrai plat.',[
-    ['🥪 Grignoter (+30 ♥)',()=>{pantry--;heal(30);mange(30);fridgeT=90;toast('Tu manges un morceau (+30 ♥)');save();}],
+    ['🥪 Grignoter (+75 % faim)',()=>{pantry--;mange(30);fridgeT=90;toast('Tu manges un morceau (faim '+Math.round(faim)+' %)');save();}],
     courses]);break;}
   // --- cuisine : un vrai repas, et on remonte la santé max de la journée ---
   case '?':{
    if(pantry<2){toast('Il faut au moins 2 repas dans le frigo — fais les courses');break;}
    if(cookT>0){toast('Tu viens de manger ('+Math.ceil(cookT)+' s)');break;}
    menu('CUISINE','Frigo : <b>'+pantry+'</b> repas.<br>Un plat maison, c\'est mieux qu\'un sandwich.',[
-    ['🍛 Cuisiner un pad thai (+60 ♥)',()=>{pantry-=2;heal(60);mange(60);cookT=140;fridgeT=60;time+=DAYLEN/24*0.3;
-      toast('Tu cuisines et tu manges tranquillement (+60 ♥)',2600);sfx('coin');save();}],
-    ['🍜 Soupe tom yum (+40 ♥, +10 hygiène)',()=>{pantry-=2;heal(40);mange(40);hygiene=Math.min(100,hygiene+10);cookT=140;fridgeT=60;time+=DAYLEN/24*0.25;
-      toast('Soupe bien relevée (+40 ♥)',2600);sfx('coin');save();}]]);break;}
+    ['🍛 Cuisiner un pad thai (faim à fond)',()=>{pantry-=2;mange(60);cookT=140;fridgeT=60;time+=DAYLEN/24*0.3;
+      toast('Tu cuisines et tu manges tranquillement (faim '+Math.round(faim)+' %)',2600);sfx('coin');save();}],
+    ['🍜 Soupe tom yum (+100 % faim, +10 hygiène)',()=>{pantry-=2;mange(40);hygiene=Math.min(100,hygiene+10);cookT=140;fridgeT=60;time+=DAYLEN/24*0.25;
+      toast('Soupe bien relevée (faim '+Math.round(faim)+' %)',2600);sfx('coin');save();}]]);break;}
   // --- douche : hygiène à fond, sans passer à la laverie ---
   case '/':{
    if(showT>0){toast('Tu sors juste de la douche');break;}
@@ -7014,7 +7021,7 @@ function extraLoad(s){if(!s)return;if(isFinite(s.faim))faim=Math.max(0,Math.min(
  vehLoad(s.veh);
  if(s.braqV&&typeof s.braqV==='object')braqVide=s.braqV;
  if(typeof s.butin==='number'&&s.butin>0)butin=s.butin;
- (s.owned||[]).forEach(i=>{owned.add(i);const b=houses.find(h=>h.house.i===i);if(b){b.houseLabel.text='CHEZ MOI';b.houseLabel.neon='#ffd54a';}});}
+ (s.owned||[]).forEach(i=>{owned.add(i);const b=houses.find(h=>h.house.i===i);if(b){b.houseLabel.text='CHEZ MOI';b.houseLabel.neon='#ffd54a';}});if(lease){const bl=houses.find(h=>h.house.i===lease.i);if(bl&&bl.houseLabel){bl.houseLabel.text='CHEZ MOI';bl.houseLabel.neon='#7dff7d';}}}
 try{extraLoad(JSON.parse(localStorage.getItem(KEY)||'null'));}catch(e){}
 
 // ---------------- grande carte interactive (v2) ----------------
@@ -7325,15 +7332,19 @@ const ITEMS={
  dentif:{n:'Dentifrice',ico:'[=',col:'#8ae87d',hyg:15},
  mouchoir:{n:'Mouchoirs',ico:'[W]',col:'#9b59b6',hyg:10},
 };
+for(const k in ITEMS){const it=ITEMS[k];if(it.heal&&k!=='trousse'&&k!=='medkit'){it.faim=it.heal;delete it.heal;}}
 function addItem(id,n){bag[id]=(bag[id]||0)+(n||1);}
-const itemDesc=id=>{const it=ITEMS[id];return it.hyg?`+${it.hyg} % d'hygiène`:`Soigne +${it.heal} ♥`;};
+const itemDesc=id=>{const it=ITEMS[id];return it.hyg?`+${it.hyg} % d'hygiène`:it.faim?`Calme la faim (+${Math.min(100,Math.round(it.faim*2.5))} %)`:`Soigne +${it.heal} ♥`;};
 function useItem(id){const it=ITEMS[id];if(!bag[id])return;
  if(it.hyg){if(hygiene>=100){toast('Tu es déjà impeccable');return;}
   bag[id]--;if(!bag[id])delete bag[id];hygiene=Math.min(100,hygiene+it.hyg);
   floaters.push({x:player.x,y:player.y,text:'+'+it.hyg+' %',col:C(110,220,235),t:0});
   toast(it.n+" : +"+it.hyg+" % d'hygiène ("+Math.round(hygiene)+' %)');sfx('coin');save();return;}
+ if(it.faim){if(faim>=99){toast('Tu n’as plus faim');return;}
+  const g=Math.min(100-faim,Math.round(it.faim*2.5));bag[id]--;if(!bag[id])delete bag[id];mange(it.faim);
+  floaters.push({x:player.x,y:player.y,text:'+'+Math.round(g)+' % faim',col:C(255,176,64),t:0});toast(it.n+' : faim +'+Math.round(g)+' % ('+Math.round(faim)+' %)');sfx('coin');save();return;}
  if(player.hp>=player.maxHp){toast('Tu es déjà en pleine forme');return;}
- bag[id]--;if(!bag[id])delete bag[id];heal(it.heal);if(id!=='trousse'&&id!=='medkit')mange(it.heal);floaters.push({x:player.x,y:player.y,text:'+'+it.heal+' ♥',col:C(255,90,110),t:0});toast(it.n+' : +'+it.heal+' ♥');save();}
+ bag[id]--;if(!bag[id])delete bag[id];heal(it.heal);floaters.push({x:player.x,y:player.y,text:'+'+it.heal+' ♥',col:C(255,90,110),t:0});toast(it.n+' : +'+it.heal+' ♥');save();}
 function quickHeal(){const ids=Object.keys(bag).filter(k=>ITEMS[k]&&ITEMS[k].heal).sort((a,b)=>ITEMS[b].heal-ITEMS[a].heal);if(!ids.length){toast('Rien pour te soigner dans le sac');return;}
  const need=player.maxHp-player.hp,best=ids.find(k=>ITEMS[k].heal<=need)||ids[ids.length-1];useItem(best);}
 // ---------------- véhicules dans l'inventaire ----------------
@@ -9261,7 +9272,7 @@ function marieSigne(c){
 //  points d'influence dans sa sauvegarde et les annonce aux autres avec sa
 //  presence. Le territoire est donc calcule a partir de ceux qui sont en ligne.
 // =====================================================================
-var WORLD={gangs:{},infl:{},me:'',t:0};
+var WORLD={gangs:{},infl:{},me:'',t:0};var PROPS={};
 var NETUID=(()=>{if(window.SA_ACC&&SA_ACC.on&&SA_ACC.uid)return String(SA_ACC.uid).replace(/[^a-z0-9]/gi,'').slice(0,12);let s='';try{s=sessionStorage.getItem('sa-uid')||'';}catch(e){}
  if(!s){const a=new Uint32Array(3);try{crypto.getRandomValues(a);}catch(e){a[0]=Math.random()*4e9;a[1]=Math.random()*4e9;a[2]=Math.random()*4e9;}
   s=Array.from(a).map(v=>v.toString(36)).join('').replace(/[^a-z0-9]/g,'').slice(0,12);try{sessionStorage.setItem('sa-uid',s);}catch(e){}}
@@ -9491,7 +9502,7 @@ function commerceAt(i){const L=commerces(i);return L[Math.floor(Math.random()*L.
 
 // ---------------- monde partagé sur le serveur (comptes) ----------------
 const accH=()=>({'Content-Type':'application/json','Authorization':'Bearer '+SA_ACC.tok});
-function worldSet(j){if(!j||!j.gangs)return;WORLD=j;
+function worldSet(j){if(!j||!j.gangs)return;WORLD=j;PROPS=j.props||{};try{propLabels();}catch(e){}
  const m=j.me&&j.gangs[j.me]?j.gangs[j.me]:null;
  if(m)GANG.me={id:m.id,nom:m.nom,tag:m.tag,col:m.col};else if(GANG.me&&cloudOn())GANG.me=null;
  GANG.gi={};}
@@ -9501,13 +9512,17 @@ function gangApi(route,body,ok){fetch('/api/gang/'+route,{method:'POST',headers:
  .then(x=>{if(x.s===200){if(x.j&&x.j.gangs)worldSet(x.j);try{ok&&ok();}catch(e){}if(typeof netPousse==='function')netPousse(true);}
   else toast(x.j&&x.j.err?x.j.err:'Action impossible.',3000);})
  .catch(()=>toast('Serveur injoignable.',2400));}
-if(cloudOn()){worldPull();setInterval(worldPull,20000);}
+if(cloudOn()){worldPull();setInterval(worldPull,10000);}
 
 // ---------------- compte + mode pacifique ----------------
 var PACIF=false;try{PACIF=localStorage.getItem('sa-pacif')==='1';}catch(e){}
 function netExtraBtns(){const L=[{label:'☮ Mode pacifique : '+(PACIF?'OUI (on ne peut pas te frapper)':'NON'),fn:()=>{PACIF=!PACIF;try{localStorage.setItem('sa-pacif',PACIF?'1':'0');}catch(e){}toast(PACIF?'☮ Mode pacifique : personne ne peut t’attaquer, et tu ne peux attaquer personne.':'⚔ Mode pacifique désactivé.',3000);if(typeof netPousse==='function')netPousse(true);}}];
  if(window.SA_ACC&&SA_ACC.on)L.push({label:'👤 Compte : '+SA_ACC.nom+' · se déconnecter',fn:()=>{try{saveGame();}catch(e){}cloudFlush(false);setTimeout(()=>{try{localStorage.removeItem('sa-tok');}catch(e){}location.reload();},500);}});
  else if(window.SA_ACC&&SA_ACC.api)L.push({label:'👤 Créer un compte / me connecter',fn:()=>{try{sessionStorage.removeItem('sa-guest');}catch(e){}location.reload();}});
+ L.push({label:'🆕 Nouvelle partie (efface toute ta progression)',fn:()=>{if(!confirm('Recommencer une nouvelle partie ? Toute ta progression (argent, objets, maisons…) sera définitivement effacée.'))return;
+  NOSAVE=true;CLOUD.str=null;
+  const fin=()=>{try{localStorage.removeItem(KEY);localStorage.removeItem('street-ascii-lore');}catch(e){}location.reload();};
+  if(cloudOn()){try{fetch('/api/save',{method:'DELETE',headers:{'Authorization':'Bearer '+SA_ACC.tok}}).then(fin).catch(fin);}catch(e){fin();}setTimeout(fin,3000);}else fin();}});
  return L;}
 
 // ---------------- combat entre joueurs ----------------
@@ -9559,6 +9574,43 @@ function paxTick(){
  if(player.car){const n=NETP.filter(p=>p.rd===NETUID).length;
   if(n>paxN){const q=NETP.filter(p=>p.rd===NETUID).pop();toast('🚗 '+(q?q.nom:'Un joueur')+' monte à bord ('+(n+1)+'/4)',2600);}
   paxN=n;}else paxN=0;}
+// =====================================================================
+//  PROPRIÉTÉS PARTAGÉES : en ligne, une maison ou un terrain n'a qu'un seul propriétaire
+//  (le premier arrivé). Les autres joueurs voient « CHEZ <pseudo> » et ne peuvent ni entrer,
+//  ni acheter, ni construire.
+// =====================================================================
+function propAutre(k){if(!PROPS||!cloudOn())return null;const p=PROPS[k];return(p&&WORLD&&p.u!==WORLD.uid)?p:null;}
+function propMesClaims(){const c=[];owned.forEach(i=>c.push({k:'h'+i,t:'own'}));if(lease)c.push({k:'h'+lease.i,t:'lease'});ownedPlots.forEach(i=>c.push({k:'p'+i,t:'own'}));return c;}
+function propLabels(){
+ for(const b of houses){const L=b.houseLabel;if(!L)continue;const i=b.house.i,x=propAutre('h'+i);
+  if(owned.has(i)){L.text='CHEZ MOI';L.neon='#ffd54a';}
+  else if(lease&&lease.i===i){L.text='CHEZ MOI';L.neon='#7dff7d';}
+  else if(x){L.text='CHEZ '+String(x.n).toUpperCase().slice(0,14);L.neon='#ff9d3a';}
+  else{L.text=L.def||'A VENDRE';L.neon='#7dff7d';}}
+ try{plotLabels();}catch(e){}}
+var PROP_SIG='',PROP_BUSY=false;
+function propSync(){
+ if(!cloudOn()||PROP_BUSY)return;
+ const claim=propMesClaims(),mine=new Set(claim.map(c=>c.k));
+ const release=Object.keys(PROPS||{}).filter(k=>PROPS[k].u===WORLD.uid&&!mine.has(k));
+ const sig=JSON.stringify([claim,release]);if(sig===PROP_SIG)return;
+ PROP_BUSY=true;
+ fetch('/api/prop',{method:'POST',headers:accH(),body:JSON.stringify({claim,release})})
+  .then(r=>r.json()).then(j=>{PROP_BUSY=false;
+   if(j&&j.gangs){WORLD=j;PROPS=j.props||{};}
+   // conflit : un autre joueur était arrivé avant → on rembourse et on rend le bien
+   for(const r of (j&&j.refus)||[]){
+    const n=+r.k.slice(1);
+    if(r.k[0]==='h'){const b=houses.find(h=>h.house.i===n);
+     if(owned.has(n)){owned.delete(n);bank+=b?b.house.price:0;}
+     else if(lease&&lease.i===n){lease=null;}
+     toast('Ce logement appartenait déjà à '+r.n+' : tu es remboursé(e).',4200);}
+    else{const p=plots[n];if(ownedPlots.has(n)){ownedPlots.delete(n);bank+=p?p.price:0;}
+     toast('Ce terrain appartenait déjà à '+r.n+' : tu es remboursé(e).',4200);}}
+   PROP_SIG=(j&&j.refus&&j.refus.length)?'':sig;
+   propLabels();try{save();}catch(e){}})
+  .catch(()=>{PROP_BUSY=false;});}
+setInterval(()=>{try{propLabels();propSync();}catch(e){}},4000);
 // =====================================================================
 //  MULTIJOUEUR
 //  Tous ceux qui ont la page ouverte en meme temps se voient marcher
