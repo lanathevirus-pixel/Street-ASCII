@@ -71,7 +71,7 @@ function decroit(w) {
   }
   store.set('world', w); return true;
 }
-const vueMonde = (w, u) => ({ gangs: Object.fromEntries(Object.entries(w.gangs).map(([id, g]) => [id, { id, nom: g.nom, tag: g.tag, col: g.col, n: Object.keys(g.membres).length }])), infl: w.infl, me: u ? (u.gid || '') : '', t: now() });
+const vueMonde = (w, u) => ({ gangs: Object.fromEntries(Object.entries(w.gangs).map(([id, g]) => [id, { id, nom: g.nom, tag: g.tag, col: g.col, n: Object.keys(g.membres).length }])), infl: w.infl, me: u ? (u.gid || '') : '', uid: u ? u.id : '', props: w.props || {}, t: now() });
 function quitterGang(u) {
   const w = monde(); const g = w.gangs[u.gid];
   if (g) {
@@ -121,11 +121,29 @@ async function api(req, res, url) {
   if (!u) return json(res, 401, { err: 'Connexion requise.' });
 
   if (p === '/api/save') {
+    if (req.method === 'DELETE') { const w = monde(); for (const k in (w.props || {})) if (w.props[k].u === u.id) delete w.props[k]; store.set('world', w); store.set('save:' + u.id, ''); store.set('savet:' + u.id, now()); return json(res, 200, { ok: 1 }); }
     if (req.method === 'GET') return json(res, 200, { ...vueUser(u), data: store.get('save:' + u.id) || '', maj: (store.get('savet:' + u.id) || 0) });
     if (typeof b.data !== 'string' || b.data.length > 2_000_000) return json(res, 400, { err: 'sauvegarde invalide' });
     try { JSON.parse(b.data); } catch (e) { return json(res, 400, { err: 'sauvegarde invalide' }); }
     store.set('save:' + u.id, b.data); store.set('savet:' + u.id, now());
     return json(res, 200, { ok: 1 });
+  }
+  if (p === '/api/prop' && req.method === 'POST') {
+    // propriété partagée : maisons (h<i>) et terrains (p<i>) ; le premier arrivé est propriétaire
+    const w = monde(); w.props = w.props || {};
+    const ok = k => /^[hp]\d{1,3}$/.test(String(k));
+    const refus = [];
+    for (const c of (Array.isArray(b.claim) ? b.claim.slice(0, 80) : [])) {
+      if (!c || !ok(c.k)) continue;
+      const cur = w.props[c.k];
+      if (cur && cur.u !== u.id) { refus.push({ k: c.k, n: cur.n }); continue; }
+      w.props[c.k] = { u: u.id, n: u.nom, t: c.t === 'lease' ? 'lease' : 'own' };
+    }
+    for (const k of (Array.isArray(b.release) ? b.release.slice(0, 80) : [])) {
+      if (ok(k) && w.props[k] && w.props[k].u === u.id) delete w.props[k];
+    }
+    store.set('world', w);
+    return json(res, 200, { ...vueMonde(w, u), refus });
   }
   if (p === '/api/gang/create' && req.method === 'POST') {
     const nom = propre(b.nom, 16), tag = String(b.tag || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 4);
