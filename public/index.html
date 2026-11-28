@@ -233,6 +233,8 @@ body.touch #kbHint{display:none}
       <p><b>7-Eleven :</b> café, iced cocoa, energy drink, onigiri, banane et mochis choco rejoignent les sandwichs et produits d’hygiène.</p>
       <p><b>GPS en voiture :</b> l’itinéraire ne suit plus que les routes.</p>
       <p><b>Ferrailleur :</b> repère le « FR » sur la carte (catégorie Boutiques). À l’intérieur, tu peux acheter ou revendre ferraille et pierres. Pour vendre un véhicule, arrive devant sa porte en voiture, scooter ou vélo (ou avec un deux-roues garé à côté), appuie sur <b>E</b> et choisis d’être payé en <b>argent</b> ou en <b>ferraille</b>. Maquillé (papiers en règle) : plein tarif ; volé et non maquillé : 60 % en argent. Les voitures de police et les bateaux ne sont pas repris.</p>
+      <p><b>Tourner et creuser :</b> en mode BÂTIR, la touche <b>R</b> (ou le bouton « Orientation ») change l’orientation de la prochaine pose : lit, télé, cuisine, douche, garage, clôture (horizontale/verticale). Le bouton <b>↻ Tourner</b> permet de toucher un objet déjà posé pour le faire pivoter. Pour une <b>piscine</b>, fabrique-la à l’atelier (4 pierres + 1 ferraille) puis « creuse-la » sur un terrain libre : touche <b>E</b> à côté pour te baigner (hygiène au maximum).</p>
+      <p><b>Construire :</b> en mode BÂTIR, <b>↻ Tourner</b> fait pivoter un meuble, une clôture ou un garage déjà posé, et <b>Orientation</b> règle la direction de la prochaine pose. Un <b>toit en tôle</b> couvre 2×2 cases (4 fois un mur) ; la <b>piscine</b> se creuse comme un objet. Lit, douche, cuisine et télé fonctionnent comme dans les maisons (sommeil, hygiène, faim). Les lampes éclairent sans clignoter. Dès qu’une <b>porte</b> est posée sur un terrain habitation, il est fermé : en ligne, seuls ceux à qui tu donnes la <b>clé</b> (touche E sur ton terrain, « Clés ») peuvent y entrer.</p>
       <p><b>Exploiter un terrain :</b> à l’achat, choisis la <b>nature</b> : libre (tu construis), rizière, verger, élevage, pisciculture, parking, atelier, boutique, bar, restaurant ou hôtel. Le prix dépend de l’emplacement (quartier riche, plage, port, panorama…) et de la nature. Sur ton terrain, touche <b>E</b> pour <b>embaucher des PNJ</b> (salaire et compétence ★ variables), changer de nature ou licencier. Chaque semaine, le terrain rapporte en banque, <b>salaires déduits</b>. <b>Revendre</b> : bouton « Vendre » dans le menu E ; prix = 60 % de la valeur du terrain + constructions + rentabilité (moyenne hebdo × 25). Le terrain repart à vendre tel quel : l’acheteur doit détruire les constructions en mode BÂTIR pour reconstruire. Sans personnel, il ne rapporte rien ; sans argent pour payer, le personnel démissionne.</p>
       <p><b>Acheter un terrain :</b> repère les <b>$</b> (catégorie « Terrains » de la carte) ou les panneaux jaunes « À VENDRE … ฿ ». Place-toi à moins de 5 cases, ouvre <b>BÂTIR</b> (touche B), touche une case du terrain et choisis « Acheter ». L’argent est pris en poche, puis en banque. Le terrain devient le tien (★ sur la carte) et tu peux construire dessus. En multijoueur, un terrain déjà acheté par un autre joueur est verrouillé (×).</p>
       <p><b>Construction :</b> achète d’abord un <b>terrain</b> (5 000 à 20 000 ฿ selon le quartier ; les maisons coûtent un peu plus cher), puis construis dessus. Dans l’atelier, fabrique tout ce qu’il faut à une maison : <b>lit, douche, cuisine, télé, garage</b>, murs, sol et <b>toit en tôle</b> — le toit disparaît quand tu entres chez toi.</p>
@@ -327,7 +329,7 @@ const profDeb=()=>{if(PROF.on)_pt=performance.now();};
 const profFin=k=>{if(!PROF.on)return;const d=performance.now()-_pt;PROF.t[k]=(PROF.t[k]||0)+d;_pt=performance.now();};
 const profImage=()=>{if(PROF.on)PROF.n++;};
 const PX=18,PY=14,RWD=4,SCX=PX/16,SCY=PY/12,NB0=14,NB=18,W=PX*NB+2,CITYH=PY*NB+2,BEACH=6,SEA=135,H=CITYH+BEACH+SEA,KEY='street-ascii-v2';
-const ROAD=1,SIDE=2,WALL=3,ROOF=4,ALLEY=5,GRASS=6,TREE=7,PATH=8,LOT=9,FOUNT=10,GARAGE=11,CROSS=12,FREE=13,B_BRICK=14,B_WOOD=15,B_FENCE=16,B_FLOOR=17,B_DOOR=18,B_LAMP=19,B_BED=20,B_PLANT=21,WATER=22,SAND=23,DOCK=24,B_SHOWER=25,B_KITCHEN=26,B_TV=27,B_GAR=28;
+const ROAD=1,SIDE=2,WALL=3,ROOF=4,ALLEY=5,GRASS=6,TREE=7,PATH=8,LOT=9,FOUNT=10,GARAGE=11,CROSS=12,FREE=13,B_BRICK=14,B_WOOD=15,B_FENCE=16,B_FLOOR=17,B_DOOR=18,B_LAMP=19,B_BED=20,B_PLANT=21,WATER=22,SAND=23,DOCK=24,B_SHOWER=25,B_KITCHEN=26,B_TV=27,B_GAR=28,B_POOL=29;
 const DX=[0,1,0,-1],DY=[-1,0,1,0],GLYPH=['^','>','v','<'];
 // coefficient global de vitesse (pietons, PNJ, voitures, motos, bus, bateaux, taxis)
 const SPDK=0.8;
@@ -350,7 +352,7 @@ const inRed=(x,y)=>{for(const z of REDZ)if(x>=z[0]&&y>=z[1]&&x<z[2]&&y<z[3])retu
 function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
 function hash(x,y){let h=(x*374761393+y*668265263)|0;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296;}
 const inB=(x,y)=>x>=0&&x<W&&y>=0&&y<H;
-const carSolid=t=>t===WATER||t===WALL||t===ROOF||t===TREE||t===FOUNT||t===B_BRICK||t===B_WOOD||t===B_FENCE||t===B_PLANT;
+const carSolid=t=>t===WATER||t===WALL||t===ROOF||t===TREE||t===FOUNT||t===B_BRICK||t===B_WOOD||t===B_FENCE||t===B_PLANT||t===B_POOL;
 const isRoad=t=>t===ROAD||t===CROSS;
 const pedWalk=t=>t===SAND||t===DOCK||t===SIDE||t===CROSS||t===PATH||t===GRASS||t===LOT||t===ALLEY||t===FREE||t===B_FLOOR||t===B_DOOR;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -1102,7 +1104,7 @@ function busted(){sfx('bust');
 
 // ---------------- joueur ----------------
 function footBlocked(x,y){
- for(const[ox,oy]of[[-.28,-.28],[.28,-.28],[-.28,.28],[.28,.28]]){const cx=Math.floor(x+ox),cy=Math.floor(y+oy);if(!inB(cx,cy)||carSolid(tile[cy*W+cx]))return true;}
+ for(const[ox,oy]of[[-.28,-.28],[.28,-.28],[-.28,.28],[.28,.28]]){const cx=Math.floor(x+ox),cy=Math.floor(y+oy);if(!inB(cx,cy)||carSolid(tile[cy*W+cx])||(typeof plotForbidden==='function'&&plotForbidden(cx,cy)))return true;}
  return false;
 }
 // trottoirs en relief : les 4 roues et les scooters ne peuvent pas y monter (sauf aux bateaux de garage, devant les parkings / sois)
@@ -1384,7 +1386,7 @@ function updateGoals(dt){
 }
 
 // ---------------- entrées ----------------
-addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='KeyF'){fireHeld=true;e.preventDefault();}else if(e.code==='KeyR'&&!e.repeat)switchWeapon();});
+addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='KeyF'){fireHeld=true;e.preventDefault();}else if(e.code==='KeyR'&&!e.repeat){if(buildMode)buildRotSel();else switchWeapon();}});
 addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='KeyF')fireHeld=false;});
 const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down'};
 addEventListener('keydown',e=>{
@@ -1929,8 +1931,8 @@ let OVL=null,camFX=0,camFY=0;
 window.__put=(...a)=>put(...a);window.__putS=(...a)=>putS(...a);
 let PUTDY=0;
 let TXTMODE=0;   // mis a 1 le temps d'ecrire un nom : ces cases gardent leurs lettres
-var WT=0;
-function put(wx,wy,ch,fg,bg,em){if(WT!==0){fg=wtf(fg);if(bg!==KEEP&&bg!==undefined)bg=wtf(bg);}wy+=PUTDY;if(OVL){OVL.push([wx,wy,ch,fg,bg,em]);const sx=wx-ox,sy=wy-oy;if(sx>=0&&sy>=0&&sx<cols&&sy<rows&&ch!==' ')chB[sy*cols+sx]=' ';return;}const sx=wx-ox,sy=wy-oy;if(sx<0||sy<0||sx>=cols||sy>=rows)return;const i=sy*cols+sx;chB[i]=ch;fgB[i]=fg;txB[i]=TXTMODE;if(bg!==KEEP&&bg!==undefined){bgB[i]=bg;upB[i]=ELEV;}if(em)emB[i]=1;else if(bg!==KEEP&&bg!==undefined)emB[i]=0;}
+var WT=0,PUTCAP=null;
+function put(wx,wy,ch,fg,bg,em){if(PUTCAP){PUTCAP.push([wx,wy,ch,fg,bg,em]);return;}if(WT!==0){fg=wtf(fg);if(bg!==KEEP&&bg!==undefined)bg=wtf(bg);}wy+=PUTDY;if(OVL){OVL.push([wx,wy,ch,fg,bg,em]);const sx=wx-ox,sy=wy-oy;if(sx>=0&&sy>=0&&sx<cols&&sy<rows&&ch!==' ')chB[sy*cols+sx]=' ';return;}const sx=wx-ox,sy=wy-oy;if(sx<0||sy<0||sx>=cols||sy>=rows)return;const i=sy*cols+sx;chB[i]=ch;fgB[i]=fg;txB[i]=TXTMODE;if(bg!==KEEP&&bg!==undefined){bgB[i]=bg;upB[i]=ELEV;}if(em)emB[i]=1;else if(bg!==KEEP&&bg!==undefined)emB[i]=0;}
 function putS(wx,wy,s,fg,bg,em){for(let i=0;i<s.length;i++)put(wx+i,wy,s[i],fg,bg,em);}
 // un mot qu'il faut pouvoir lire : ces cases gardent leurs lettres, meme en style NET
 function putMot(wx,wy,s,fg,bg,em){TXTMODE=1;putS(wx,wy,s,fg,bg,em);TXTMODE=0;}
@@ -2058,6 +2060,7 @@ function stkRole(ro,body,mode,z,extra){const night=curDk>0.3,dark=lighten(body,-
  }return null;}
 const EMR={f:1,r:1,d:0};
 function stack2D(kind,fx,fy,heading,body,mode,extra){
+ if(roofCovered(fx,fy))return;
  if(PREC&&STKH[kind]){const M=STKH[kind],ch=Math.cos(heading),sh=Math.sin(heading),cxf=fx*TW,cyf=fy*TH,hl0=M.Lw*M.cs/2*(kind==='tuk'?0.92:1.25),hw0=M.Wd*M.cs/2*(kind==='tuk'?0.92:1.25),E=Math.hypot(hl0,hw0)+0.1;
   for(let sy=Math.floor(cyf-E*TH);sy<=Math.ceil(cyf+E*TH);sy++)for(let sx=Math.floor(cxf-E*TW);sx<=Math.ceil(cxf+E*TW);sx++){const dx=(sx+0.5-cxf)/TW-0.12,dy=(sy+0.5-cyf)/TH-0.1,u=dx*ch+dy*sh,v=-dx*sh+dy*ch;if(Math.abs(u)<hl0&&Math.abs(v)<hw0)put(sx,sy,' ',0,C(25,25,30));}
   PREC.push({veh:1,kind,x:fx,y:fy,heading,body:mode==='wreck'?C(60,55,50):body,mode,extra:extra||{},dmg:(extra&&extra.dmg)|0});return;}
@@ -2939,6 +2942,7 @@ function titleScreen(){
   try{if(!localStorage.getItem('street-ascii-lore')){localStorage.setItem('street-ascii-lore','1');setTimeout(()=>showLore(true),500);}}catch(e){}};
 }
 function drawPerson(x,y,o){
+ if(roofCovered(x,y))return;
  if(HD){hdEnt.push({t:'p',x,y,o});return;}
  return drawPersonS(x,y,o);
  const X=Math.floor(x*TW),Y=Math.floor(y*TH),L=leanOf(X);
@@ -3688,7 +3692,7 @@ function render(){
 // ---------------- GPS ----------------
 let gpsPin=null,route=[],routeT=0,routeFor='';
 const gDist=new Float32Array(W*H),gPrev=new Int32Array(W*H),gDone=new Uint8Array(W*H);
-const tcost=t=>t===ROAD||t===CROSS||t===GARAGE?1:t===LOT?2:t===ALLEY?2.5:t===SIDE||t===B_FLOOR||t===B_DOOR?4:t===PATH||t===B_LAMP||t===B_BED||t===B_SHOWER||t===B_KITCHEN||t===B_TV||t===B_GAR?5:t===GRASS||t===FOUNT||t===FREE?6:0;
+const tcost=t=>t===ROAD||t===CROSS||t===GARAGE?1:t===LOT?2:t===ALLEY?2.5:t===SIDE||t===B_FLOOR||t===B_DOOR?4:t===PATH||t===B_LAMP||t===B_BED||t===B_SHOWER||t===B_KITCHEN||t===B_TV||t===B_GAR?5:t===B_POOL?0:t===GRASS||t===FOUNT||t===FREE?6:0;
 function gpsGoal(){if(gpsPin)return{x:gpsPin.x,y:gpsPin.y,kind:'pin'};{const g=typeof missionGoal==='function'?missionGoal():null;if(g)return{x:g.x,y:g.y,kind:'mission'};}{const g=typeof taxiGoal==='function'?taxiGoal():null;if(g)return{x:g.x,y:g.y,kind:'taxi'};}if(job)return{x:job.x,y:job.y,kind:'job'};if(giver)return{x:giver.x,y:giver.y,kind:'giver'};return null;}
 const GPS_COL={pin:'#3ce0ff',job:'#ff4fd8',giver:'#ffcc00',mission:'#7dff7d',taxi:'#ffd000'};
 function snapTile(x,y){
@@ -3753,7 +3757,7 @@ function drawRoute(inV){
 }
 
 // ---------------- image de la ville (carte et mini-carte) ----------------
-const MAPCOL={[WATER]:'#3d8fd6',[SAND]:'#ecd9a6',[DOCK]:'#9a6a3e',[ROAD]:'#4c4e56',[CROSS]:'#4c4e56',[GARAGE]:'#e0a800',[SIDE]:'#bdb9ae',[LOT]:'#62646b',[ALLEY]:'#b9ab92',[GRASS]:'#63ad52',[TREE]:'#63ad52',[PATH]:'#d8c290',[FOUNT]:'#63ad52',[WALL]:'#888',[ROOF]:'#888',[FREE]:'#b48c5c',[B_BRICK]:'#a8523a',[B_WOOD]:'#a7763f',[B_FENCE]:'#8a6a3a',[B_FLOOR]:'#d0a56a',[B_DOOR]:'#7a4a22',[B_LAMP]:'#d0a56a',[B_BED]:'#3a5ab4',[B_PLANT]:'#3e8a3a',[B_SHOWER]:'#6fb7d6',[B_KITCHEN]:'#c9c9c9',[B_TV]:'#222',[B_GAR]:'#8d8f96'};
+const MAPCOL={[WATER]:'#3d8fd6',[SAND]:'#ecd9a6',[DOCK]:'#9a6a3e',[ROAD]:'#4c4e56',[CROSS]:'#4c4e56',[GARAGE]:'#e0a800',[SIDE]:'#bdb9ae',[LOT]:'#62646b',[ALLEY]:'#b9ab92',[GRASS]:'#63ad52',[TREE]:'#63ad52',[PATH]:'#d8c290',[FOUNT]:'#63ad52',[WALL]:'#888',[ROOF]:'#888',[FREE]:'#b48c5c',[B_BRICK]:'#a8523a',[B_WOOD]:'#a7763f',[B_FENCE]:'#8a6a3a',[B_FLOOR]:'#d0a56a',[B_DOOR]:'#7a4a22',[B_LAMP]:'#d0a56a',[B_BED]:'#3a5ab4',[B_PLANT]:'#3e8a3a',[B_SHOWER]:'#6fb7d6',[B_KITCHEN]:'#c9c9c9',[B_TV]:'#222',[B_GAR]:'#8d8f96',[B_POOL]:'#46a0e0'};
 const MS=4,cityC=document.createElement('canvas');cityC.width=W*MS;cityC.height=H*MS;const WMS=8,cityW=document.createElement('canvas');cityW.width=W*WMS;cityW.height=H*WMS;
 function warpMap(x0,y0,x1,y1){const sc=cityC.getContext('2d'),dc=cityW.getContext('2d');x0=Math.max(0,(x0*WMS/MS)|0);y0=Math.max(0,(y0*WMS/MS)|0);x1=Math.min(W*WMS,(x1*WMS/MS)|0);y1=Math.min(H*WMS,(y1*WMS/MS)|0);if(x1<=x0||y1<=y0)return;
  if(!warpMap.src)warpMap.src=sc.getImageData(0,0,W*MS,H*MS);const S=warpMap.src.data,out=dc.createImageData(x1-x0,y1-y0),O=out.data;
@@ -4058,9 +4062,14 @@ const BLD={
  floor:{t:B_FLOOR,n:'Plancher',ico:'=_='},door:{t:B_DOOR,n:'Porte',ico:'[o]'},lamp:{t:B_LAMP,n:'Lampe',ico:' * '},
  bed:{t:B_BED,n:'Lit',ico:'[=]'},plant:{t:B_PLANT,n:'Plante',ico:'%&%'},
  shower:{t:B_SHOWER,n:'Douche',ico:'~|~'},kitchen:{t:B_KITCHEN,n:'Cuisine',ico:'[o]'},tv:{t:B_TV,n:'Télé',ico:'[T]'},garage:{t:B_GAR,n:'Garage',ico:'|=|'},
- roof:{t:-1,n:'Toit en tôle',ico:'/\\/'},
+ pool:{t:B_POOL,n:'Piscine',ico:'~~~'},
+ roof:{t:-1,n:'Toit en tôle (2×2)',ico:'/\\/'},
 };
 const BLD_BY_T={};for(const k in BLD)BLD_BY_T[BLD[k].t]=k;
+// orientation des objets posés : 0..3 (miroirs / 90° pour clôture et garage) ; clôture = 2 états
+const brot=new Uint8Array(W*H);let brotSel=0,rotMode=false;
+const ROTK=new Set(['bed','kitchen','tv','shower','garage','fence']);
+function buildRotSel(){brotSel=(brotSel+1)%4;toast('Orientation de la prochaine pose : '+(brotSel+1)+'/4 (clôture : '+(brotSel&1?'verticale':'horizontale')+')',2200);refreshBuildBar();}
 const FURN=new Set([B_LAMP,B_BED,B_PLANT,B_SHOWER,B_KITCHEN,B_TV,B_GAR]);
 const MATS={bois:'Bois',fer:'Ferraille',pierre:'Pierre'};
 const RECIPES=[
@@ -4069,6 +4078,7 @@ const RECIPES=[
  {out:'bed',n:1,cost:{bois:3,pierre:1}},{out:'plant',n:1,cost:{bois:1}},
  {out:'shower',n:1,cost:{fer:2,pierre:1}},{out:'kitchen',n:1,cost:{fer:2,pierre:2,bois:1}},{out:'tv',n:1,cost:{fer:3,bois:1}},{out:'garage',n:1,cost:{fer:3,bois:2,pierre:2}},
  {out:'roof',n:2,cost:{fer:2}},
+ {out:'pool',n:1,cost:{pierre:4,fer:1},label:'1 × Piscine (à creuser) <span style="color:#888">~~~</span>'},
  {out:'ammo',n:10,cost:{fer:2},label:'10 balles de pistolet'},
  {out:'medkit',n:1,cost:{fer:1,bois:1},label:'Trousse de soin (dans le sac)'},
 ];
@@ -4086,7 +4096,8 @@ function builtCount(t){let n=0;for(const k of freeTiles)if(tile[k]===t)n++;retur
 // ---- terrains : chaque TERRAIN LIBRE est une parcelle à acheter (5 000 – 20 000 ฿ selon le quartier) ----
 const PLOT_BASE={SUKHUMVIT:19000,SILOM:17500,SATHORN:16500,SIAM:18500,RATTANAKOSIN:13500,CHATUCHAK:9500,YAOWARAT:12000,THONBURI:7000,'BANG KRACHAO':5200,'BANG KHUN THIAN':5000};
 const plotOf=new Int16Array(W*H).fill(-1),ownedPlots=new Set();
-const roofSet=new Set();let roofVer=0;
+const roofSet=new Set(),roofG=new Map();let roofVer=0;
+function roofCovered(x,y){if(!roofSet.size)return false;const k=Math.floor(y)*W+Math.floor(x);if(!roofSet.has(k))return false;const h=roofHidden();return !(h&&h.has(k));}
 for(const p of plots){
  const d=districtAt(p.x+p.w/2,p.y+p.h/2),base=PLOT_BASE[d]||9000;
  p.dist=d;p.price=clamp(Math.round(base*(0.9+hash(p.x*7+1,p.y*13+5)*0.2)/100)*100,5000,20000);if(p.fixed){p.dist='KOH TALAY';p.price=p.fixed;}
@@ -4121,21 +4132,26 @@ function tryBuildAt(tx,ty){
   {const x=propAutre('p'+pl.id);if(x){toast('Terrain privé : il appartient à '+x.n+'.',2800);return;}}
   plotBuyMenu(pl);return;}
  if(PLN&&PLN[pl.id]&&PLN[pl.id].nat!=='libre'){toast('Terrain exploité ('+NAT[PLN[pl.id].nat].c+') : touche E sur le terrain pour le gérer.',3000);return;}
+ if(rotMode&&!demolish){const key=BLD_BY_T[t];if(key&&ROTK.has(key)){brot[k]=((brot[k]|0)+1)%(key==='fence'?2:4);setTile(k,t);saveGame();toast('Objet tourné',1200);}else toast('Touche un meuble, une clôture ou un garage pour le tourner',2200);return;}
  if(demolish){
-  if(roofSet.has(k)){roofSet.delete(k);roofVer++;inv.roof=(inv.roof||0)+1;toast('Démoli : toit récupéré');saveGame();refreshBuildBar();return;}
+  if(roofSet.has(k)){const g=roofG.has(k)?roofG.get(k):k;const del=[k];for(const[a,b]of roofG)if(b===g&&a!==k)del.push(a);
+   for(const a of del){roofSet.delete(a);roofG.delete(a);}roofVer++;inv.roof=(inv.roof||0)+1;toast('Démoli : toit récupéré');saveGame();refreshBuildBar();return;}
   const key=BLD_BY_T[t];if(!key){toast('Rien à démolir ici');return;}
-  inv[key]=(inv[key]||0)+1;setTile(k,FURN.has(t)?(under[k]||FREE):FREE);toast('Démoli : '+BLD[key].n+' récupéré');saveGame();refreshBuildBar();return;}
+  inv[key]=(inv[key]||0)+1;brot[k]=0;setTile(k,FURN.has(t)?(under[k]||FREE):FREE);toast('Démoli : '+BLD[key].n+' récupéré');saveGame();refreshBuildBar();return;}
  const b=BLD[bsel];
  if(!(inv[bsel]>0)){toast('Plus de '+b.n.toLowerCase()+' : fabrique-en à l\'ATELIER');return;}
  if(bsel==='roof'){
-  if(roofSet.has(k)){toast('Il y a déjà du toit ici');return;}
-  roofSet.add(k);roofVer++;inv.roof--;refreshBuildBar();saveGame();toast('Toit posé — il disparaît quand tu es dessous',2200);return;}
+  {const cov=[[0,0],[1,0],[0,1],[1,1]].map(([dx,dy])=>[tx+dx,ty+dy]).filter(([x,y])=>inB(x,y)&&plotOf[y*W+x]===pl.id&&!roofSet.has(y*W+x));
+   if(!cov.length){toast('Il y a déjà du toit ici (ou hors de ton terrain)');return;}
+   for(const[x,y]of cov){const kk=y*W+x;roofSet.add(kk);roofG.set(kk,k);}
+   roofVer++;inv.roof--;refreshBuildBar();saveGame();toast('Toit posé (couvre jusqu’à 4 cases, comme 4 murs) — il disparaît quand tu es dessous',2800);return;}}
  const okBase=t===FREE||(FURN.has(b.t)&&t===B_FLOOR);
  if(!okBase){toast(t===B_FLOOR?'Seuls lampe, lit, plante, douche, cuisine, télé et garage vont sur un plancher':'On ne construit que sur un terrain libre (ou un plancher pour les meubles)');return;}
  if(carSolid(b.t)&&Math.floor(player.x)===tx&&Math.floor(player.y)===ty){toast('Tu es dessus !');return;}
  if(cars.some(c=>c.cx===tx&&c.cy===ty)){toast('Une voiture gêne');return;}
  const di=debris.findIndex(o=>o.k===k);if(di>=0){toast('Ramasse d\'abord les gravats');return;}
- under[k]=t;setTile(k,b.t);inv[bsel]--;refreshBuildBar();saveGame();
+ under[k]=t;brot[k]=ROTK.has(bsel)?(bsel==='fence'?(brotSel&1):brotSel):0;setTile(k,b.t);inv[bsel]--;if(bsel==='door'&&typeof plotLockedNow==='function'&&plotLockedNow(pl.id))toast('Porte posée : ton terrain est fermé. Donne la clé à qui tu veux (touche E sur le terrain).',3600);
+ if(bsel==='pool')toast('Piscine creusée ! Approche-toi et touche E pour te baigner',2600);refreshBuildBar();saveGame();
 }
 function craft(r){
  if(!Object.entries(r.cost).every(([k,v])=>(inv[k]||0)>=v)){toast('Matériaux insuffisants');return;}
@@ -4162,9 +4178,10 @@ function refreshBuildBar(){
  const bar=$('buildBar');if(!buildMode){bar.style.display='none';return;}bar.style.display='flex';
  let h=`<div class="bmat">${matsLine()}</div>`;
  for(const k in BLD){const n=inv[k]||0;h+=`<div class="slot${!demolish&&bsel===k?' sel':''}${n?'':' zero'}" data-k="${k}"><span class="ch">${BLD[k].ico}</span>${BLD[k].n} ×${n}</div>`;}
+ h+=`<div class="slot${rotMode?' sel':''}" data-k="__rot"><span class="ch" style="color:#7dd3ff">↻</span>Tourner</div><div class="slot" data-k="__ori"><span class="ch" style="color:#7dd3ff">${brotSel+1}/4</span>Orientation</div>`;
  h+=`<div class="slot${demolish?' sel':''}" data-k="__dem"><span class="ch" style="color:#f66">[X]</span>Démolir</div><div class="slot" data-k="__craft"><span class="ch" style="color:#ffd27a">/&gt;</span>Atelier</div>`;
  bar.innerHTML=h;
- bar.querySelectorAll('.slot').forEach(el=>el.onclick=()=>{const k=el.dataset.k;if(k==='__dem')demolish=!demolish;else if(k==='__craft'){togglePanel('craftPanel');return;}else{bsel=k;demolish=false;}refreshBuildBar();});
+ bar.querySelectorAll('.slot').forEach(el=>el.onclick=()=>{const k=el.dataset.k;if(k==='__dem'){demolish=!demolish;rotMode=false;}else if(k==='__rot'){rotMode=!rotMode;if(rotMode)demolish=false;}else if(k==='__ori'){buildRotSel();return;}else if(k==='__craft'){togglePanel('craftPanel');return;}else{bsel=k;demolish=false;rotMode=false;}refreshBuildBar();});
 }
 function toggleBuild(){buildMode=!buildMode;$('buildBtn').classList.toggle('hl',buildMode);refreshBuildBar();
  if(buildMode)toast('Mode construction : touche un TERRAIN LIBRE proche (à acheter avant de bâtir)');}
@@ -5706,6 +5723,7 @@ function nearInteract(){
   if(t===B_KITCHEN)return{t:'bkitchen',label:'CUISINER'};
   if(t===B_TV)return{t:'btv',label:'REGARDER LA TÉLÉ'};
   if(t===B_GAR)return{t:'bgarage',label:'GARAGE'};
+  if(t===B_POOL)return{t:'bpool',label:'SE BAIGNER'};
   if(t===TREE&&d2(x+.5,y+.5,player.x,player.y)<1.5*1.5)return{t:'tree',k,label:'COUPER'};}
  for(const dd of debris)if(d2(dd.k%W+.5,((dd.k/W)|0)+.5,player.x,player.y)<1.4*1.4)return{t:'debris',d:dd,label:'RAMASSER'};
  {const lo=(typeof lootNear==='function')?lootNear():null;if(lo)return{t:'loot',o:lo,label:lo.t==='tole'?'RAMASSER LA TÔLE':'RAMASSER LES PIERRES'};}
@@ -5720,12 +5738,12 @@ function doInteract(it){
  if(it.t==='enter'){enterBuilding(it.d);return;}
  if(it.t==='sunset'){sunsetStart(it.sp);return;}
  if(it.t==='npc')talk(it.n);
- else if(it.t==='bed'){if(stars>0){toast('Impossible de dormir avec la police aux trousses !');return;}
-  const h=hour();time+=((8-h+24)%24||24)*DAYLEN/24;player.hp=player.maxHp;toast('Bien dormi ! ♥ 100 · il est 8 h',2400);saveGame();}
+ else if(it.t==='bed')useObj({c:'B'});
  else if(it.t==='bshower')useObj({c:'/'});
- else if(it.t==='bkitchen')useObj({c:'?'});
+ else if(it.t==='bkitchen')useObj({c:pantry<2?'F':'?'});
  else if(it.t==='btv')useObj({c:'T'});
  else if(it.t==='bgarage')garageMenu();
+ else if(it.t==='bpool'){hygiene=100;player.hp=Math.min(player.maxHp,player.hp+8);floaters.push({x:player.x,y:player.y,text:'PLOUF ! hygiène 100 %',col:C(120,210,255),t:0});toast('Tu te baignes dans ta piscine : hygiène au maximum.',3000);sfx('coin');saveGame();}
  else if(it.t==='tree'){setTile(it.k,GRASS);regrow.push({k:it.k,t:240});const n=2+(Math.random()<0.4?1:0);inv.bois+=n;floaters.push({x:it.k%W+.5,y:((it.k/W)|0)+.5,text:'+'+n+' bois',col:C(230,190,110),t:0});saveGame();}
  else if(it.t==='debris'){const n=2+(Math.random()<0.5?1:0);inv.pierre+=n;floaters.push({x:it.d.k%W+.5,y:((it.d.k/W)|0)+.5,text:'+'+n+' pierre',col:C(200,200,210),t:0});placeDebris(it.d);saveGame();}
  else if(it.t==='wreck'){cars.splice(cars.indexOf(it.c),1);const n=2+Math.floor(Math.random()*2);inv.fer+=n;floaters.push({x:it.c.cx+.5,y:it.c.cy+.5,text:'+'+n+' ferraille',col:C(190,200,215),t:0});saveGame();}
@@ -5742,12 +5760,38 @@ function extraTile(x,y,k,t){
  const X=x*TW,Y=y*TH;const base=FURN.has(t)?(under[k]||FREE):t;
  if(base===FREE||t===B_FENCE)dirtArt(X,Y,x,y);
  if(base===B_FLOOR){const bg=C(208,168,118),fg=C(150,110,65);for(let r=0;r<TH;r++)for(let i=0;i<TW;i++)put(X+i,Y+r,(X+i+r*2)%4===0?'|':'=',fg,bg);}
+ if(t===B_POOL){poolArt(x,y,X,Y);return;}
+ const rot=(brot[k]|0)&3;
+ if(t===B_FENCE&&(rot&1)){const f=C(120,85,45);putS(X+3,Y,'+',f,KEEP);putS(X+3,Y+1,'|',f,KEEP);putS(X+3,Y+2,'|',f,KEEP);putS(X+3,Y+3,'+',f,KEEP);return;}
+ if(t===B_GAR&&rot){garRot(X,Y,rot);return;}
+ if(rot&&ROTK.has(BLD_BY_T[t]))rotDraw(X,Y,rot,()=>builtArt(t,X,Y));else builtArt(t,X,Y);
+}
+function rotDraw(X,Y,r,draw){
+ PUTCAP=[];let cap;try{draw();}finally{cap=PUTCAP;PUTCAP=null;}
+ const MH={'/':'\\','\\':'/','(':')',')':'(','[':']',']':'[','<':'>','>':'<','{':'}','}':'{'},MV={'/':'\\','\\':'/','^':'v','v':'^','.':"'","'":'.',',':'`','`':','};
+ for(const[wx,wy,ch,fg,bg,em]of cap){let dx=wx-X,dy=wy-Y,c=ch;if(r===1||r===3){dx=TW-1-dx;c=MH[c]||c;}if(r===2||r===3){dy=TH-1-dy;c=MV[c]||c;}put(X+dx,Y+dy,c,fg,bg,em);}
+}
+function garRot(X,Y,r){
+ const bg=C(150,152,160),fg=C(80,82,92),yel=C(255,210,60);
+ if(r===2){rotDraw(X,Y,2,()=>builtArt(B_GAR,X,Y));return;}
+ const E=['#=====|','#=====|','#=[P]=|','#=====|'];
+ for(let rr=0;rr<TH;rr++)for(let i=0;i<TW;i++){let c=r===3?E[rr][TW-1-i]:E[rr][i];if(r===3&&(c==='['||c===']'))c=c==='['?']':'[';put(X+i,Y+rr,c,(c==='P')?yel:fg,bg);}
+}
+function poolArt(x,y,X,Y){
+ const P=(dx,dy)=>inB(x+dx,y+dy)&&tile[(y+dy)*W+x+dx]===B_POOL;
+ for(let r=0;r<TH;r++)for(let i=0;i<TW;i++){const h=hash(X+i,Y+r),w=Math.sin((X+i)*0.7+(Y+r)*1.4)>0.45;
+  let ch=w?'~':(h<0.1?'.':' '),fg=C(190,232,252),bg=C(46+h*10,150+h*12,214);
+  if((r===0&&!P(0,-1))||(r===TH-1&&!P(0,1))){ch='=';fg=C(120,116,108);bg=C(226,222,210);}
+  else if((i===0&&!P(-1,0))||(i===TW-1&&!P(1,0))){ch='|';fg=C(120,116,108);bg=C(226,222,210);}
+  put(X+i,Y+r,ch,fg,bg);}
+}
+function builtArt(t,X,Y){
  switch(t){
   case B_BRICK:{const bg=C(172,82,60),fg=C(118,48,34);for(let r=0;r<TH;r++)for(let i=0;i<TW;i++)put(X+i,Y+r,(X+i+(r%2)*3)%6===0?'|':'_',fg,bg);break;}
   case B_WOOD:{const bg=C(168,118,66),fg=C(100,65,30);for(let r=0;r<TH;r++)for(let i=0;i<TW;i++)put(X+i,Y+r,r===0||r===TH-1?'=':(X+i)%2?'|':':',fg,bg);break;}
   case B_FENCE:{const f=C(120,85,45);putS(X,Y+1,'+-+-+-+',f,KEEP);putS(X,Y+2,'| | | |',f,KEEP);break;}
   case B_DOOR:{const bg=C(150,100,55),fg=C(70,40,20);putS(X,Y,'[-----]',fg,bg);putS(X,Y+1,'|     |',fg,bg);putS(X,Y+2,'|   o |',fg,bg);putS(X,Y+3,'[_____]',fg,bg);break;}
-  case B_LAMP:{const n=curDk>0.3;put(X+3,Y,n?'*':'o',n?C(255,235,170):C(60,60,65),KEEP,n);put(X+3,Y+1,'|',C(60,60,65),KEEP);put(X+3,Y+2,'|',C(60,60,65),KEEP);putS(X+2,Y+3,'/_\\',C(60,60,65),KEEP);if(curDk>0.05)addLight(X+3.5,Y+0.5,9,1.2,1,0.6);break;}
+  case B_LAMP:{const n=curDk>0.3;put(X+3,Y,n?'*':'o',n?C(255,235,170):C(60,60,65),KEEP,n);put(X+3,Y+1,'|',C(60,60,65),KEEP);put(X+3,Y+2,'|',C(60,60,65),KEEP);putS(X+2,Y+3,'/_\\',C(60,60,65),KEEP);break;}
   case B_BED:{const w=C(245,245,245),bl=C(60,90,180),fr=C(110,70,35);putS(X,Y,'.-----.',fr,KEEP);putS(X,Y+1,'|o====|',C(40,60,120),bl);put(X+1,Y+1,'o',C(120,120,120),w);putS(X,Y+2,'|=====|',C(40,60,120),bl);putS(X,Y+3,"'-----'",fr,KEEP);break;}
   case B_SHOWER:{const m=C(120,170,200),w=C(200,230,245),g=C(90,95,105);putS(X+1,Y,'.-o-.',g,KEEP);putS(X+1,Y+1,'|~~~|',m,w);putS(X+1,Y+2,'|~~~|',m,w);putS(X+1,Y+3,"'---'",g,KEEP);break;}
   case B_KITCHEN:{const bg=C(205,205,210),fg=C(70,70,80),r=C(220,80,60);putS(X,Y,'[=====]',fg,bg);putS(X,Y+1,'|o o o|',fg,bg);put(X+1,Y+1,'o',r,bg);put(X+3,Y+1,'o',r,bg);put(X+5,Y+1,'o',r,bg);putS(X,Y+2,'|_____|',fg,bg);putS(X,Y+3,'|[___]|',fg,bg);break;}
@@ -5760,6 +5804,9 @@ function roofArt(X,Y,x,y){const j=hash(x*3,y*5),bg=C(150+j*22,158+j*18,170+j*14)
  for(let r=0;r<TH;r++)for(let i=0;i<TW;i++){const rust=hash(X+i,Y+r)<0.06;put(X+i,Y+r,r===0||r===TH-1?'=':((i+r)%2?'/':'\\'),rust?C(160,84,50):fg,bg);}}
 function drawWorld2(inV){
  racketDraw(inV);
+ // lampes posées : leur halo est ajouté à chaque image (et non quand la tuile est redessinée : ça clignotait)
+ if(curDk>0.05){const x0=Math.max(0,Math.floor(camX)-2),x1=Math.min(W-1,Math.ceil(camX+viewW)+2),y0=Math.max(0,Math.floor(camY)-2),y1=Math.min(H-1,Math.ceil(camY+viewH)+2);
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(tile[y*W+x]===B_LAMP)addLight(x*TW+3.5,y*TH+0.5,9,1.2,1,0.6);}
  if(roofSet.size){const hid=roofHidden();
   for(const k of roofSet){if(hid&&hid.has(k))continue;const x=k%W,y=(k/W)|0;if(!inV(x,y,0))continue;
    if(buildMode){put(x*TW+3,y*TH+1,'^',C(120,220,255),KEEP,true);continue;}
@@ -5843,14 +5890,14 @@ function drawNPCs(inV){
 // ---------------- sauvegarde ----------------
 var NOSAVE=false;
 function saveGame(){if(NOSAVE)return;
- try{const b=[];for(const k of freeTiles){const t=tile[k];if(BLD_BY_T[t])b.push([k,t,under[k]]);}
-  const _sv=JSON.stringify(extraSave({W,money,jobs:jobsDone,inv,b,pl:[...ownedPlots],rf:[...roofSet],prog:npcs.map(n=>n.prog),has:player.has,ammo:player.ammo}));localStorage.setItem(KEY,_sv);if(typeof cloudDirty==='function')cloudDirty(_sv);}catch(e){}
+ try{const b=[];for(const k of freeTiles){const t=tile[k];if(BLD_BY_T[t])b.push([k,t,under[k],brot[k]|0]);}
+  const _sv=JSON.stringify(extraSave({W,money,jobs:jobsDone,inv,b,pl:[...ownedPlots],rf:[...roofSet],rg:[...roofG],prog:npcs.map(n=>n.prog),has:player.has,ammo:player.ammo}));localStorage.setItem(KEY,_sv);if(typeof cloudDirty==='function')cloudDirty(_sv);}catch(e){}
 }
 (function loadGame(){
  try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s)return;
-  if(s.inv)inv=Object.assign(inv,s.inv);if(s.b)for(let[k,t,u]of s.b){const oW=s.W||226;if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(tile[k]===FREE||tile[k]===B_FLOOR){under[k]=u||FREE;tile[k]=t;paintTileMap(k%W,(k/W)|0);if(plotOf[k]>=0)ownedPlots.add(plotOf[k]);}}
+  if(s.inv)inv=Object.assign(inv,s.inv);if(s.b)for(let[k,t,u,rr]of s.b){const oW=s.W||226;if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(tile[k]===FREE||tile[k]===B_FLOOR){under[k]=u||FREE;tile[k]=t;brot[k]=rr&3;paintTileMap(k%W,(k/W)|0);if(plotOf[k]>=0)ownedPlots.add(plotOf[k]);}}
   if(Array.isArray(s.pl))s.pl.forEach(i=>{if(plots[i])ownedPlots.add(i);});
-  if(Array.isArray(s.rf)){const oW=s.W||226;for(let k of s.rf){if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(plotOf[k]>=0)roofSet.add(k);}roofVer++;}
+  if(Array.isArray(s.rf)){const oW=s.W||226;for(let k of s.rf){if(oW!==W)k=((k/oW)|0)*W+(k%oW);if(plotOf[k]>=0)roofSet.add(k);}if(Array.isArray(s.rg))for(let[a,b]of s.rg){if(oW!==W){a=((a/oW)|0)*W+(a%oW);b=((b/oW)|0)*W+(b%oW);}if(roofSet.has(a))roofG.set(a,b);}roofVer++;}
   plotLabels();
   if(s.prog)s.prog.forEach((p,i)=>{if(npcs[i])npcs[i].prog=p|0;});if(s.has)player.has=Object.assign({poing:1},s.has);if(s.ammo)player.ammo=s.ammo;
  }catch(e){}
@@ -7138,8 +7185,8 @@ function drawGarageFronts(inV){
   if(night)addLight(d.x+0.5,d.y-0.2,7,1.3,1.05,0.6);
  }}
 // sauvegarde des nouveautés
-function extraSave(o){o.pln=PLN;o.plw=PLWEEK;o.faim=Math.round(faim);o.pos=inside&&inside.door?{x:inside.door.x+.5,y:inside.door.y+.6}:{x:player.x,y:player.y};o.gang={me:GANG.me,gi:GANG.gi,day:GANG.day};o.niran=niran;o.mar=famille.conj&&famille.conj.mar?1:0;o.pedrel=PEDREL;o.lease=lease;o.rel=npcs.map(n=>n.rel||null);o.pound=pound;o.mafia=mafiaRel;o.debt=debt;o.kidnap=kidnapT;o.vinv=vinv;o.bag=bag;o.bank=bank;o.lic=license;o.owned=[...owned];o.outfit=outfit;o.maxHp=player.maxHp;o.hyg=hygiene;o.pantry=pantry;o.sms=SMS;o.smsU=smsUnread;o.tds=tds.hired?1:0;o.fam=famille;o.prog=prog;o.met=metier;o.veh=vehSave();o.time=time;o.braqV=braqVide;o.butin=butin;return o;}
-function extraLoad(s){if(!s)return;if(s.pln&&typeof s.pln==='object')PLN=s.pln;if(isFinite(s.plw))PLWEEK=s.plw;if(isFinite(s.faim))faim=Math.max(0,Math.min(100,+s.faim));if(s.pos&&isFinite(s.pos.x)&&isFinite(s.pos.y)){player.x=+s.pos.x;player.y=+s.pos.y;}if(s.gang&&typeof s.gang==='object'){const m=s.gang.me;if(m&&typeof m.id==='string'&&typeof m.nom==='string'&&typeof m.tag==='string')GANG.me={id:m.id.slice(0,16),nom:m.nom.slice(0,16),tag:m.tag.slice(0,4),col:/^#[0-9a-f]{6}$/i.test(m.col)?m.col:'#ff3fb4'};if(s.gang.gi&&typeof s.gang.gi==='object')for(const k in s.gang.gi){const v=s.gang.gi[k]|0;if(+k>=0&&+k<10&&v>0)GANG.gi[k]=Math.min(200,v);}GANG.day=s.gang.day|0||-1;}if(s.niran&&typeof s.niran.st==='number'){niran.st=s.niran.st|0;niran.hist=Array.isArray(s.niran.hist)?s.niran.hist.slice(0,20):[];niran.ask=[];}if(s.pedrel)Object.assign(PEDREL,s.pedrel);if(s.lease)lease=s.lease;if(Array.isArray(s.rel))s.rel.forEach((r,i)=>{if(r&&npcs[i])npcs[i].rel=r;});if(Array.isArray(s.pound)){pound.length=0;pound.push(...s.pound);}if(typeof s.mafia==='number')mafiaRel=s.mafia;if(typeof s.debt==='number')debt=s.debt;if(debt>0&&mafiaRel>-1)mafiaRel=-1;if(typeof s.kidnap==='number')kidnapT=s.kidnap;if(Array.isArray(s.vinv))vinv.push(...s.vinv);if(s.bag)Object.assign(bag,s.bag);bank=s.bank|0;license=!!s.lic;outfit=s.outfit||outfit;player.maxHp=s.maxHp||100;if(typeof s.hyg==='number')hygiene=s.hyg;if(typeof s.pantry==='number')pantry=s.pantry;if(s.tds)tds.hired=true;if(s.met&&typeof s.met==='object')Object.assign(metier,s.met);if(s.prog&&typeof s.prog==='object'){prog=Object.assign({ch:0,faits:[],fini:false,vu:0},s.prog);if(!Array.isArray(prog.faits))prog.faits=[];}if(s.fam&&typeof s.fam==='object'){famille=Object.assign({conj:null,enfants:[],due:0,lastK:0,sansEnfant:false},s.fam);if(!Array.isArray(famille.enfants))famille.enfants=[];}if(s.sms&&typeof s.sms==='object'){Object.assign(SMS,s.sms);smsUnread=s.smsU|0;for(const k in SMS){const T=SMS[k];if(!Array.isArray(T.msgs))delete SMS[k];else T.msgs.forEach(m=>{if(m.mid>=smsMid)smsMid=m.mid+1;});}}
+function extraSave(o){o.plk=PLK;o.pln=PLN;o.plw=PLWEEK;o.faim=Math.round(faim);o.pos=inside&&inside.door?{x:inside.door.x+.5,y:inside.door.y+.6}:{x:player.x,y:player.y};o.gang={me:GANG.me,gi:GANG.gi,day:GANG.day};o.niran=niran;o.mar=famille.conj&&famille.conj.mar?1:0;o.pedrel=PEDREL;o.lease=lease;o.rel=npcs.map(n=>n.rel||null);o.pound=pound;o.mafia=mafiaRel;o.debt=debt;o.kidnap=kidnapT;o.vinv=vinv;o.bag=bag;o.bank=bank;o.lic=license;o.owned=[...owned];o.outfit=outfit;o.maxHp=player.maxHp;o.hyg=hygiene;o.pantry=pantry;o.sms=SMS;o.smsU=smsUnread;o.tds=tds.hired?1:0;o.fam=famille;o.prog=prog;o.met=metier;o.veh=vehSave();o.time=time;o.braqV=braqVide;o.butin=butin;return o;}
+function extraLoad(s){if(!s)return;if(s.plk&&typeof s.plk==='object')PLK=s.plk;if(s.pln&&typeof s.pln==='object')PLN=s.pln;if(isFinite(s.plw))PLWEEK=s.plw;if(isFinite(s.faim))faim=Math.max(0,Math.min(100,+s.faim));if(s.pos&&isFinite(s.pos.x)&&isFinite(s.pos.y)){player.x=+s.pos.x;player.y=+s.pos.y;}if(s.gang&&typeof s.gang==='object'){const m=s.gang.me;if(m&&typeof m.id==='string'&&typeof m.nom==='string'&&typeof m.tag==='string')GANG.me={id:m.id.slice(0,16),nom:m.nom.slice(0,16),tag:m.tag.slice(0,4),col:/^#[0-9a-f]{6}$/i.test(m.col)?m.col:'#ff3fb4'};if(s.gang.gi&&typeof s.gang.gi==='object')for(const k in s.gang.gi){const v=s.gang.gi[k]|0;if(+k>=0&&+k<10&&v>0)GANG.gi[k]=Math.min(200,v);}GANG.day=s.gang.day|0||-1;}if(s.niran&&typeof s.niran.st==='number'){niran.st=s.niran.st|0;niran.hist=Array.isArray(s.niran.hist)?s.niran.hist.slice(0,20):[];niran.ask=[];}if(s.pedrel)Object.assign(PEDREL,s.pedrel);if(s.lease)lease=s.lease;if(Array.isArray(s.rel))s.rel.forEach((r,i)=>{if(r&&npcs[i])npcs[i].rel=r;});if(Array.isArray(s.pound)){pound.length=0;pound.push(...s.pound);}if(typeof s.mafia==='number')mafiaRel=s.mafia;if(typeof s.debt==='number')debt=s.debt;if(debt>0&&mafiaRel>-1)mafiaRel=-1;if(typeof s.kidnap==='number')kidnapT=s.kidnap;if(Array.isArray(s.vinv))vinv.push(...s.vinv);if(s.bag)Object.assign(bag,s.bag);bank=s.bank|0;license=!!s.lic;outfit=s.outfit||outfit;player.maxHp=s.maxHp||100;if(typeof s.hyg==='number')hygiene=s.hyg;if(typeof s.pantry==='number')pantry=s.pantry;if(s.tds)tds.hired=true;if(s.met&&typeof s.met==='object')Object.assign(metier,s.met);if(s.prog&&typeof s.prog==='object'){prog=Object.assign({ch:0,faits:[],fini:false,vu:0},s.prog);if(!Array.isArray(prog.faits))prog.faits=[];}if(s.fam&&typeof s.fam==='object'){famille=Object.assign({conj:null,enfants:[],due:0,lastK:0,sansEnfant:false},s.fam);if(!Array.isArray(famille.enfants))famille.enfants=[];}if(s.sms&&typeof s.sms==='object'){Object.assign(SMS,s.sms);smsUnread=s.smsU|0;for(const k in SMS){const T=SMS[k];if(!Array.isArray(T.msgs))delete SMS[k];else T.msgs.forEach(m=>{if(m.mid>=smsMid)smsMid=m.mid+1;});}}
  if(typeof s.time==='number'&&s.time>0&&isFinite(s.time))time=s.time;
  vehLoad(s.veh);
  if(s.braqV&&typeof s.braqV==='object')braqVide=s.braqV;
@@ -8642,7 +8689,7 @@ function garerDehors(){
   nc.hp=car.hp;nc.copLook=car.cop;nc.taxi=car.taxi;nc.tuk=car.tuk;nc.owned=car.owned;nc.sport=car.sport;
   marquerStat(nc,cx,cy);player.car=null;}
  else if(player.bike){const b=player.bike;
-  if(b.owned||b.moto){bikes.push({x:cx+0.5,y:cy+0.5,color:b.color,moto:!!b.moto,owned:!!b.owned,mine:1});}
+  if(b.owned||b.moto){bikes.push({x:cx+0.5,y:cy+0.5,color:b.color,moto:!!b.moto,owned:!!b.owned,mine:b.owned?1:0});}
   player.bike=null;}
  player.car=null;player.bike=null;}
 
@@ -8655,18 +8702,18 @@ function vehSave(){
    taxi:!!c.taxi,tuk:!!c.tuk,sport:!!c.sport,cop:!!c.copLook,ep:c.kind==='wreck'?1:0,
    chez:c.chez,parkN:c.parkN,depuis:c.depuis});}
  for(const b of bikes){if(!b.owned&&!b.mine)continue;
-  L.push({t:'bike',x:Math.floor(b.x),y:Math.floor(b.y),col:b.color,moto:!!b.moto});}
+  L.push({t:'bike',x:Math.floor(b.x),y:Math.floor(b.y),col:b.color,moto:!!b.moto,own:b.owned?1:0});}
  // le véhicule sous nos fesses au moment où l'on sauvegarde
  if(player.car&&!player.car.boat){const c=player.car;
   L.push({t:'car',x:Math.floor(player.x),y:Math.floor(player.y),dir:0,hp:c.hp??100,col:c.color,
    taxi:!!c.taxi,tuk:!!c.tuk,sport:!!c.sport,cop:!!c.cop,ep:0,sous:1});}
- else if(player.bike)L.push({t:'bike',x:Math.floor(player.x),y:Math.floor(player.y),col:player.bike.color,moto:!!player.bike.moto,sous:1});
+ else if(player.bike)L.push({t:'bike',x:Math.floor(player.x),y:Math.floor(player.y),col:player.bike.color,moto:!!player.bike.moto,own:player.bike.owned?1:0,sous:1});
  return L.slice(0,24);}
 function vehLoad(L){
  if(!Array.isArray(L))return;
  for(const v of L){
   if(!inB(v.x,v.y))continue;
-  if(v.t==='bike'){bikes.push({x:v.x+0.5,y:v.y+0.5,color:v.col,moto:!!v.moto,owned:true,mine:1});continue;}
+  if(v.t==='bike'){{const ow=v.own!==0;bikes.push({x:v.x+0.5,y:v.y+0.5,color:v.col,moto:!!v.moto,owned:ow,mine:ow?1:0});}continue;}
   const c=addCar(v.ep?'wreck':'parked',v.x,v.y,v.dir|0,v.col);
   c.hp=v.hp??100;c.taxi=!!v.taxi;c.tuk=!!v.tuk;c.sport=!!v.sport;c.copLook=!!v.cop;c.owned=true;c.mine=1;
   if(v.chez!=null)c.chez=v.chez;
@@ -9728,7 +9775,7 @@ function paxTick(){
 //  ni acheter, ni construire.
 // =====================================================================
 function propAutre(k){if(!PROPS||!cloudOn())return null;const p=PROPS[k];return(p&&WORLD&&p.u!==WORLD.uid)?p:null;}
-function propMesClaims(){const c=[];owned.forEach(i=>c.push({k:'h'+i,t:'own'}));if(lease)c.push({k:'h'+lease.i,t:'lease'});ownedPlots.forEach(i=>c.push({k:'p'+i,t:'own'}));return c;}
+function propMesClaims(){const c=[];owned.forEach(i=>c.push({k:'h'+i,t:'own'}));if(lease)c.push({k:'h'+lease.i,t:'lease'});ownedPlots.forEach(i=>c.push({k:'p'+i,t:'own',lk:(typeof plotLockedNow==='function'&&plotLockedNow(i))?1:0,ks:(typeof PLK!=='undefined'&&PLK[i])?PLK[i].slice(0,12):[]}));return c;}
 function propLabels(){
  for(const b of houses){const L=b.houseLabel;if(!L)continue;const i=b.house.i,x=propAutre('h'+i);
   if(owned.has(i)){L.text='CHEZ MOI';L.neon='#ffd54a';}
@@ -9874,7 +9921,7 @@ function plotMenu(pl){
  const nat=natureOf(pl.id),N=NAT[nat],st=plotSt(pl.id),wk=Math.floor(time/DAYLEN/7);
  if(nat==='libre'){
   const rows=Object.keys(NAT).filter(k=>k!=='libre').map(k=>{const cost=Math.round(plotPrice(pl,k)*0.35/100)*100;return{label:'Aménager : '+NAT[k].c+' — '+fmtB(cost),fn:()=>plotConvert(pl,k,cost)};});
-  showTalk('MON TERRAIN · libre',`Terrain libre : tu peux y construire (BÂTIR).<br>Ou l’<b>aménager</b> pour qu’il rapporte chaque semaine. <small>Attention : l’aménagement fait disparaître tes constructions.</small><br><small>En poche ${money} ฿ · en banque ${bank} ฿.</small>`,rows.concat([{label:'💸 Vendre le terrain',fn:()=>plotSell(pl)},{label:'Fermer'}]));return;}
+  showTalk('MON TERRAIN · libre',`Terrain libre : tu peux y construire (BÂTIR).<br>Ou l’<b>aménager</b> pour qu’il rapporte chaque semaine. <small>Attention : l’aménagement fait disparaître tes constructions.</small><br><small>En poche ${money} ฿ · en banque ${bank} ฿.</small>`,[{label:'🔑 Clés ('+((PLK[pl.id]||[]).length)+') · terrain '+(plotHasDoor(pl)?'fermé':'ouvert'),fn:()=>plotKeysMenu(pl)}].concat(rows).concat([{label:'💸 Vendre le terrain',fn:()=>plotSell(pl)},{label:'Fermer'}]));return;}
  const gross=plotRev(pl,nat,st,wk),wages=plotWages(st),full=plotRev(pl,nat,Array.from({length:N.slots},()=>({sk:1})),wk);
  const list=st.length?st.map(s=>`• ${s.nm} (${s.w} ฿/sem · ★${s.sk.toFixed(2)})`).join('<br>'):'<i>Personne : le terrain est à l’abandon.</i>';
  const btn=[];
@@ -10004,6 +10051,27 @@ const SPORT_COLS=['#d11a2a','#f2c200','#f4f4f6','#16161a','#18b46a','#ff7a1a','#
   const s=wealthS(c.cx,c.cy);if(s<0.3)continue;
   if(hash(c.cx*7+3,c.cy*5+11)<0.45){c.sport=true;c.color=SPORT_COLS[Math.floor(hash(c.cx+9,c.cy*3)*SPORT_COLS.length)];c.spd=(c.spd||4)+1.2;n++;}}
  if(n<4){let k=0;for(const c of cars){if(k>=8)break;if(c.tuk||c.taxi||c.boat||c.kind==='cop'||c.kind==='wreck'||c.sport)continue;if(wealthS(c.cx,c.cy)>0){c.sport=true;c.color=SPORT_COLS[k%SPORT_COLS.length];k++;}}}})();
+// =====================================================================
+//  PORTE ET CLÉS : sur un terrain habitation (nature « libre »), dès qu'une PORTE est posée
+//  le terrain est fermé : en ligne, seuls les joueurs à qui tu as donné la clé peuvent y entrer.
+// =====================================================================
+var PLK={};               // id de parcelle -> liste de pseudos (minuscules) qui ont la clé
+function plotHasDoor(pl){for(let y=pl.y;y<pl.y+pl.h;y++)for(let x=pl.x;x<pl.x+pl.w;x++){const k=y*W+x;if(plotOf[k]===pl.id&&tile[k]===B_DOOR)return true;}return false;}
+function plotLockedNow(id){const pl=plots[id];if(!pl||!ownedPlots.has(id))return false;if(typeof PLN!=='undefined'&&PLN&&PLN[id]&&PLN[id].nat!=='libre')return false;return plotHasDoor(pl);}
+const nomCle=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N} -]/gu,'').trim().slice(0,16);
+function plotForbidden(cx,cy){ // vrai si la case est dans le terrain fermé d'un autre joueur dont je n'ai pas la clé
+ if(!PROPS)return false;const pi=plotOf[cy*W+cx];if(pi<0)return false;
+ const x=propAutre('p'+pi);if(!x||!x.lk)return false;
+ const me=nomCle(typeof PNAME!=='undefined'?PNAME:'');return !((x.ks||[]).includes(me));}
+function plotKeysMenu(pl){
+ const ks=PLK[pl.id]||(PLK[pl.id]=[]);
+ const on=[];try{for(const q of NETP||[]){const n=nomCle(q.nom);if(n&&!on.includes(n))on.push(n);}}catch(e){}
+ const rows=[];
+ for(const n of ks)rows.push({label:'🔑 '+n+' — retirer la clé',fn:()=>{PLK[pl.id]=ks.filter(z=>z!==n);toast('Clé retirée à '+n,2000);saveGame();try{propSync();}catch(e){}setTimeout(()=>plotKeysMenu(pl),60);}});
+ for(const n of on)if(!ks.includes(n))rows.push({label:'➕ Donner la clé à '+n+' (en ligne)',fn:()=>{ks.push(n);toast('Clé donnée à '+n,2000);saveGame();try{propSync();}catch(e){}setTimeout(()=>plotKeysMenu(pl),60);}});
+ rows.push({label:'➕ Donner une clé à un pseudo…',fn:()=>{const v=nomCle(prompt('Pseudo du joueur :','')||'');if(!v)return;if(!ks.includes(v)&&ks.length<12)ks.push(v);saveGame();try{propSync();}catch(e){}setTimeout(()=>plotKeysMenu(pl),60);}});
+ rows.push({label:'Retour',fn:()=>setTimeout(()=>plotMenu(pl),60)});
+ showTalk('🔑 CLÉS DU TERRAIN',`Dès qu'une porte est posée, personne d'autre n'entre sur ton terrain (en ligne), sauf ceux qui ont la clé.<br>Terrain : <b>${plotHasDoor(pl)?'fermé (porte posée)':'ouvert (pas de porte)'}</b> · clés : ${ks.length?ks.join(', '):'aucune'}`,rows);}
 // =====================================================================
 //  MULTIJOUEUR
 //  Tous ceux qui ont la page ouverte en meme temps se voient marcher
