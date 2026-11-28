@@ -138,6 +138,7 @@ async function api(req, res, url) {
       const cur = w.props[c.k];
       if (cur && cur.u !== u.id) { refus.push({ k: c.k, n: cur.n }); continue; }
       w.props[c.k] = { u: u.id, n: u.nom, t: c.t === 'lease' ? 'lease' : 'own' };
+      if (c.k[0] === 'p') { w.props[c.k].lk = c.lk ? 1 : 0; w.props[c.k].ks = (Array.isArray(c.ks) ? c.ks.slice(0, 12) : []).map(z => String(z || '').toLowerCase().replace(/[^\p{L}\p{N} -]/gu, '').trim().slice(0, 16)).filter(Boolean); }
     }
     for (const k of (Array.isArray(b.release) ? b.release.slice(0, 80) : [])) {
       if (ok(k) && w.props[k] && w.props[k].u === u.id) delete w.props[k];
